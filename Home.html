@@ -36,14 +36,8 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             border-radius: 4px;
             overflow: hidden;
-            z-index: 1000;
         }
-        .dropdown.show { display: block; }
-        .dropdown-close {
-            text-align: right;
-            padding: 5px;
-            cursor: pointer;
-        }
+        .user-info:hover .dropdown { display: block; }
         .dropdown a {
             display: block;
             padding: 10px 15px;
@@ -52,11 +46,16 @@
             transition: background-color 0.3s;
         }
         .dropdown a:hover { background-color: #f1f1f1; }
-        #chat-area {
+        #chat-container {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
             background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
         #messages {
             flex-grow: 1;
@@ -106,7 +105,6 @@
             justify-content: center;
         }
         #message-form button:hover { background-color: #0056b3; }
-        #message-form button:disabled { background-color: #cccccc; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -115,14 +113,13 @@
         <div class="user-info">
             <span id="user-email"></span>
             <div class="dropdown">
-                <div class="dropdown-close">✕</div>
                 <a href="#" id="change-username">Change Username</a>
                 <a href="#" id="logout">Log out</a>
             </div>
         </div>
     </header>
 
-    <div id="chat-area">
+    <div id="chat-container">
         <div id="messages"></div>
         <form id="message-form">
             <input type="text" id="message-input" placeholder="Type a message...">
@@ -152,10 +149,6 @@
         const messagesDiv = document.getElementById('messages');
         const messageForm = document.getElementById('message-form');
         const messageInput = document.getElementById('message-input');
-        const sendButton = document.querySelector('#message-form button');
-        const userInfo = document.querySelector('.user-info');
-        const dropdown = document.querySelector('.dropdown');
-        const dropdownClose = document.querySelector('.dropdown-close');
 
         let currentUser = null;
 
@@ -167,20 +160,6 @@
             } else {
                 window.location.href = 'Index.html';
             }
-        });
-
-        userInfo.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdown.classList.toggle('show');
-        });
-
-        dropdownClose.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdown.classList.remove('show');
-        });
-
-        document.addEventListener('click', () => {
-            dropdown.classList.remove('show');
         });
 
         logoutButton.addEventListener('click', (e) => {
@@ -210,25 +189,15 @@
             e.preventDefault();
             const message = messageInput.value.trim();
             if (message) {
-                sendButton.disabled = true;
-                sendMessage(message).then(() => {
-                    messageInput.value = '';
-                    sendButton.disabled = false;
-                }).catch((error) => {
-                    console.error('Error sending message:', error);
-                    sendButton.disabled = false;
+                database.ref('messages').push({
+                    user: currentUser.displayName || currentUser.email,
+                    text: message,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    isAdmin: currentUser.email === 'admin@gmail.com' // Replace with your admin email
                 });
+                messageInput.value = '';
             }
         });
-
-        function sendMessage(message) {
-            return database.ref('messages').push({
-                user: currentUser.displayName || currentUser.email,
-                text: message,
-                timestamp: firebase.database.ServerValue.TIMESTAMP,
-                isAdmin: currentUser.email === 'admin@gmail.com'
-            });
-        }
 
         function loadMessages() {
             database.ref('messages').on('child_added', (snapshot) => {
@@ -241,7 +210,7 @@
                 userSpan.textContent = message.user;
                 
                 if (message.isAdmin) {
-                    userSpan.textContent += ' 🔧🔨';
+                    userSpan.textContent += '🛠️'; // Adding hammer and wrench emoji
                 }
                 
                 messageElement.appendChild(userSpan);
@@ -251,8 +220,6 @@
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
             });
         }
-
-        loadMessages();
     </script>
 </body>
 </html>
