@@ -27,6 +27,10 @@
             display: flex;
             align-items: center;
         }
+        .user-info .tappable {
+            padding: 10px;
+            cursor: pointer;
+        }
         .dropdown {
             display: none;
             position: absolute;
@@ -37,7 +41,6 @@
             border-radius: 4px;
             overflow: hidden;
         }
-        .user-info:hover .dropdown { display: block; }
         .dropdown a {
             display: block;
             padding: 10px 15px;
@@ -105,13 +108,29 @@
             justify-content: center;
         }
         #message-form button:hover { background-color: #0056b3; }
+        @media (max-width: 768px) {
+            .dropdown {
+                display: none;
+                position: fixed;
+                left: 0;
+                right: 0;
+                top: 60px;
+                background-color: #ffffff;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                z-index: 1000;
+            }
+            .dropdown a {
+                padding: 15px;
+                font-size: 18px;
+            }
+        }
     </style>
 </head>
 <body>
     <header class="header">
         <h1>Chat App</h1>
         <div class="user-info">
-            <span id="user-email"></span>
+            <span id="user-email" class="tappable"></span>
             <div class="dropdown">
                 <a href="#" id="change-username">Change Username</a>
                 <a href="#" id="logout">Log out</a>
@@ -162,6 +181,17 @@
             }
         });
 
+        userEmailElement.addEventListener('click', (e) => {
+            const dropdown = document.querySelector('.dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-info')) {
+                document.querySelector('.dropdown').style.display = 'none';
+            }
+        });
+
         logoutButton.addEventListener('click', (e) => {
             e.preventDefault();
             auth.signOut().then(() => {
@@ -193,7 +223,7 @@
                     user: currentUser.displayName || currentUser.email,
                     text: message,
                     timestamp: firebase.database.ServerValue.TIMESTAMP,
-                    isAdmin: currentUser.email === 'admin@gmail.com' // Replace with your admin email
+                    isAdmin: currentUser.email === 'admin@gmail.com'
                 });
                 messageInput.value = '';
             }
@@ -210,7 +240,7 @@
                 userSpan.textContent = message.user;
                 
                 if (message.isAdmin) {
-                    userSpan.textContent += '🛠️'; // Adding hammer and wrench emoji
+                    userSpan.textContent += '🛠️';
                 }
                 
                 messageElement.appendChild(userSpan);
@@ -223,5 +253,4 @@
     </script>
 </body>
 </html>
-
 
