@@ -106,6 +106,7 @@
             justify-content: center;
         }
         #message-form button:hover { background-color: #0056b3; }
+        #message-form button:disabled { background-color: #cccccc; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -151,6 +152,7 @@
         const messagesDiv = document.getElementById('messages');
         const messageForm = document.getElementById('message-form');
         const messageInput = document.getElementById('message-input');
+        const sendButton = document.querySelector('#message-form button');
         const userInfo = document.querySelector('.user-info');
         const dropdown = document.querySelector('.dropdown');
         const dropdownClose = document.querySelector('.dropdown-close');
@@ -208,13 +210,19 @@
             e.preventDefault();
             const message = messageInput.value.trim();
             if (message) {
-                sendMessage(message);
-                messageInput.value = '';
+                sendButton.disabled = true;
+                sendMessage(message).then(() => {
+                    messageInput.value = '';
+                    sendButton.disabled = false;
+                }).catch((error) => {
+                    console.error('Error sending message:', error);
+                    sendButton.disabled = false;
+                });
             }
         });
 
         function sendMessage(message) {
-            database.ref('messages').push({
+            return database.ref('messages').push({
                 user: currentUser.displayName || currentUser.email,
                 text: message,
                 timestamp: firebase.database.ServerValue.TIMESTAMP,
@@ -248,4 +256,5 @@
     </script>
 </body>
 </html>
+
 
