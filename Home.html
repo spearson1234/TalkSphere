@@ -108,6 +108,29 @@
             justify-content: center;
         }
         #message-form button:hover { background-color: #0056b3; }
+        .online-indicator {
+            width: 10px;
+            height: 10px;
+            background-color: #2ecc71;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .typing-indicator {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+        .mention {
+            background-color: #f1c40f;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .read-receipt {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-align: right;
+        }
         @media (max-width: 768px) {
             .dropdown {
                 display: none;
@@ -140,6 +163,7 @@
 
     <div id="chat-container">
         <div id="messages"></div>
+        <div id="typing-indicator"></div>
         <form id="message-form">
             <input type="text" id="message-input" placeholder="Type a message...">
             <button type="submit">➤</button>
@@ -170,12 +194,15 @@
         const messageInput = document.getElementById('message-input');
 
         let currentUser = null;
+        let users = {};
 
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
                 userEmailElement.textContent = user.displayName || user.email;
                 loadMessages();
+                setupPresence();
+                loadUsers();
             } else {
                 window.location.href = 'Index.html';
             }
@@ -215,42 +242,150 @@
             }
         });
 
+        function setupPresence() {
+            const uid = currentUser.uid;
+            const userStatusDatabaseRef = database.ref('/status/' + uid);
+
+            const isOfflineForDatabase = {
+                state: 'offline',
+                last_changed: firebase.database.ServerValue.TIMESTAMP,
+            };
+
+            const isOnlineForDatabase = {
+                state: 'online',
+                last_changed: firebase.database.ServerValue.TIMESTAMP,
+            };
+
+            database.ref('.info/connected').on('value', function(snapshot) {
+                if (snapshot.val() == false) {
+                    return;
+                };
+
+                userStatusDatabaseRef.onDisconnect().set(isOfflineForDatabase).then(function() {
+                    userStatusDatabaseRef.set(isOnlineForDatabase);
+                });
+            });
+        }
+
+        function loadUsers() {
+            database.ref('users').on('value', (snapshot) => {
+                users = snapshot.val() || {};
+                updateOnlineStatus();
+            });
+        }
+
+        function updateOnlineStatus() {
+            database.ref('status').on('value', (snapshot) => {
+                const statuses = snapshot.val() || {};
+                Object.keys(users).forEach(uid => {
+                    const userElement = document.getElementById(`user-${uid}`);
+                    if (userElement) {
+                        const isOnline = statuses[uid]?.state === 'online';
+                        userElement.querySelector('.online-indicator').style.backgroundColor = isOnline ? '#2ecc71' : '#95a5a6';
+                    }
+                });
+            });
+        }
+
+        messageInput.addEventListener('input', () => {
+            database.ref('typing/' + currentUser.uid).set({
+                user: currentUser.displayName || currentUser.email,
+                isTyping: messageInput.value.length > 0
+            });
+        });
+
+        database.ref('typing').on('value', (snapshot) => {
+            const typingUsers = snapshot.val();
+            const typingIndicator = document.getElementById('typing-indicator');
+            typingIndicator.innerHTML = '';
+            Object.keys(typingUsers || {}).forEach(uid => {
+                if (uid !== currentUser.uid && typingUsers[uid].isTyping) {
+                    typingIndicator.innerHTML += `${typingUsers[uid].user} is typing...<br>`;
+                }
+            });
+        });
+
         messageForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const message = messageInput.value.trim();
             if (message) {
+                const mentions = message.match(/@(\w+)/g) || [];
                 database.ref('messages').push({
                     user: currentUser.displayName || currentUser.email,
                     text: message,
                     timestamp: firebase.database.ServerValue.TIMESTAMP,
-                    isAdmin: currentUser.email === 'admin@gmail.com'
+                    isAdmin: currentUser.email === 'admin@gmail.com',
+                    mentions: mentions.map(m => m.slice(1)),
+                    read: {}
                 });
                 messageInput.value = '';
+                database.ref('typing/' + currentUser.uid).remove();
             }
         });
 
         function loadMessages() {
             database.ref('messages').on('child_added', (snapshot) => {
                 const message = snapshot.val();
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('message');
-                messageElement.classList.add(message.user === (currentUser.displayName || currentUser.email) ? 'sent' : 'received');
-                
-                const userSpan = document.createElement('span');
-                userSpan.textContent = message.user;
-                
-                if (message.isAdmin) {
-                    userSpan.textContent += '🛠️';
-                }
-                
-                messageElement.appendChild(userSpan);
-                messageElement.appendChild(document.createTextNode(`: ${message.text}`));
-                
+                const messageElement = createMessageElement(message, snapshot.key);
                 messagesDiv.appendChild(messageElement);
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                
+                if (message.user !== (currentUser.displayName || currentUser.email)) {
+                    markAsRead(snapshot.key);
+                }
             });
         }
+
+        function createMessageElement(message, messageId) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            messageElement.classList.add(message.user === (currentUser.displayName || currentUser.email) ? 'sent' : 'received');
+            
+            const userSpan = document.createElement('span');
+            userSpan.textContent = message.user;
+            
+            if (message.isAdmin) {
+                userSpan.textContent += '🛠️';
+            }
+            
+            messageElement.appendChild(userSpan);
+            
+            const messageText = document.createElement('p');
+            messageText.innerHTML = formatMessage(message.text);
+            messageElement.appendChild(messageText);
+            
+            const readReceipt = document.createElement('div');
+            readReceipt.classList.add('read-receipt');
+            readReceipt.id = `read-${messageId}`;
+            messageElement.appendChild(readReceipt);
+            
+            updateReadReceipt(messageId, message.read);
+            
+            return messageElement;
+        }
+
+        function formatMessage(text) {
+            return text.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
+        }
+
+        function markAsRead(messageId) {
+            const updates = {};
+            updates[`messages/${messageId}/read/${currentUser.uid}`] = true;
+            database.ref().update(updates);
+        }
+
+        function updateReadReceipt(messageId, readStatus) {
+            const readReceipt = document.getElementById(`read-${messageId}`);
+            if (readReceipt) {
+                const readCount = Object.values(readStatus || {}).filter(Boolean).length;
+                readReceipt.textContent = readCount > 0 ? `Read by ${readCount}` : '';
+            }
+        }
+
+        database.ref('messages').on('child_changed', (snapshot) => {
+            const message = snapshot.val();
+            updateReadReceipt(snapshot.key, message.read);
+        });
     </script>
 </body>
 </html>
-
