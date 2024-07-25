@@ -17,6 +17,11 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
+        }
+        body.dark-mode {
+            background-color: #181818;
+            color: #e0e0e0;
         }
         .header {
             background-color: #ffffff;
@@ -25,6 +30,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+        .header.dark-mode {
+            background-color: #282828;
         }
         .user-info {
             position: relative;
@@ -60,6 +68,15 @@
         .dropdown a:hover {
             background-color: #f1f1f1;
         }
+        .dropdown.dark-mode {
+            background-color: #282828;
+        }
+        .dropdown.dark-mode a {
+            color: #e0e0e0;
+        }
+        .dropdown.dark-mode a:hover {
+            background-color: #383838;
+        }
         @media (max-width: 768px) {
             .dropdown {
                 right: auto;
@@ -81,6 +98,10 @@
             background-color: #fff;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            transition: transform 0.3s ease-in-out;
+        }
+        #chat-container.dark-mode {
+            background-color: #282828;
         }
         #messages {
             flex-grow: 1;
@@ -94,7 +115,15 @@
             border-radius: 18px;
             line-height: 1.4;
             word-wrap: break-word;
-            animation: fadeIn 0.3s ease-out;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: messageAppear 0.5s forwards;
+        }
+        @keyframes messageAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         .message.received {
             background-color: #e9e9eb;
@@ -105,20 +134,35 @@
             color: #fff;
             align-self: flex-end;
         }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
+        .message.received.dark-mode {
+            background-color: #383838;
+            color: #e0e0e0;
+        }
+        .message.sent.dark-mode {
+            background-color: #0084ff;
+        }
+        .message.rainbow-text p {
+            background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff);
+            -webkit-background-clip: text;
+            color: transparent;
+            animation: rainbow 2s linear infinite;
+            background-size: 400%;
+        }
+        @keyframes rainbow {
+            0% {
+                background-position: 0%;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            100% {
+                background-position: 100%;
             }
         }
         #message-form {
             display: flex;
             padding: 15px;
             background-color: #f0f2f5;
+        }
+        #message-form.dark-mode {
+            background-color: #383838;
         }
         #message-input {
             flex-grow: 1;
@@ -127,6 +171,11 @@
             border-radius: 20px;
             font-size: 16px;
             outline: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        #message-input.dark-mode {
+            background-color: #484848;
+            color: #e0e0e0;
         }
         #message-form button {
             background-color: #0084ff;
@@ -156,6 +205,7 @@
             border: none;
             border-radius: 50%;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
         #basket-button:hover {
             background-color: #e0b800;
@@ -209,7 +259,23 @@
             right: 10px;
         }
         .shop-item {
-            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .shop-item:hover {
+            background-color: #f9f9f9;
+        }
+        .shop-item.dark-mode {
+            border: 1px solid #555;
+        }
+        .shop-item.dark-mode:hover {
+            background-color: #2a2a2a;
         }
         .shop-item .item-name {
             font-weight: bold;
@@ -221,7 +287,7 @@
             background-color: #0084ff;
             color: #fff;
             border: none;
-            padding: 10px 20px;
+            padding: 5px 10px;
             cursor: pointer;
             border-radius: 5px;
             transition: background-color 0.3s;
@@ -255,11 +321,168 @@
             font-size: 16px;
             text-align: center;
         }
+        .mod {
+            color: #888;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        /* User Info Frame Styles */
+        .user-frame {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 2000;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .user-frame h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .user-frame p {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .user-frame .close-frame {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background-color: #ccc;
+            color: white;
+        }
+        .user-frame .close-frame:hover {
+            background-color: #999;
+        }
+
+        /* Settings Sidebar Styles */
+        .settings-sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: #ffffff;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s;
+            padding: 20px;
+            z-index: 1000;
+        }
+        .settings-sidebar.open {
+            left: 0;
+        }
+        .settings-sidebar .close-btn {
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: #333;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .settings-sidebar h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .settings-sidebar .toggle-button {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #f0f2f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .settings-sidebar .toggle-button.dark-mode {
+            background-color: #383838;
+            border: 1px solid #555;
+        }
+        .settings-sidebar .toggle-button span {
+            margin-left: 10px;
+            font-size: 16px;
+        }
+        .settings-sidebar .section-divider {
+            margin: 20px 0;
+            border-top: 1px solid #ccc;
+        }
+        .settings-sidebar input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Modern Button Styles */
+        .modern-button {
+            background: linear-gradient(90deg, #ff006e, #ffaf40, #00ff87, #009fff, #ff00e0);
+            background-size: 400% 400%;
+            border: 2px solid #ffffff;
+            border-radius: 5px;
+            padding: 10px 15px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+        .modern-button:hover {
+            animation: gradient 3s ease infinite;
+        }
+        .modern-button.loading .loading-circle {
+            display: block;
+        }
+        .modern-button.loading .initial {
+            display: none;
+        }
+        .modern-button.complete .complete {
+            display: block;
+        }
+        .modern-button.complete .initial,
+        .modern-button.complete .loading-circle {
+            display: none;
+        }
+        .loading-circle {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #3498db;
+            width: 20px;
+            height: 20px;
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes gradient {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
     </style>
 </head>
 <body>
     <header class="header">
-        <h1>Chat App</h1>
+        <h1 id="chat-title">Chat App</h1>
         <div class="user-info">
             <span id="user-email" class="tappable"></span>
             <div class="coin-display">
@@ -268,6 +491,7 @@
             <div class="dropdown">
                 <a href="#" id="change-username">Change Username</a>
                 <a href="#" id="logout">Log out</a>
+                <a href="#" id="open-settings">Settings</a>
             </div>
         </div>
     </header>
@@ -285,12 +509,43 @@
     <div class="sidebar" id="sidebar">
         <button class="close-btn" id="close-sidebar">×</button>
         <h2>Shop</h2>
-        <div class="shop-item">
+        <div class="shop-item" id="mod-item">
             <span class="item-name">Mod</span>
             <span class="item-price">1.5M Coins</span>
             <button class="shop-button" id="buy-mod">Buy</button>
             <div id="mod-status"></div>
         </div>
+        <div class="shop-item" id="rainbow-text-item">
+            <span class="item-name">Rainbow Text Effect</span>
+            <span class="item-price">100 Coins</span>
+            <button class="shop-button" id="buy-rainbow-text">Buy</button>
+            <div id="rainbow-text-status"></div>
+        </div>
+    </div>
+
+    <!-- User Info Frame -->
+    <div class="user-frame" id="user-frame">
+        <h2>Info</h2>
+        <p id="user-info"></p>
+        <button class="close-frame" id="close-frame">Close</button>
+    </div>
+
+    <!-- Settings Sidebar -->
+    <div class="settings-sidebar" id="settings-sidebar">
+        <button class="close-btn" id="close-settings-sidebar">×</button>
+        <h2>Settings</h2>
+        <div class="toggle-button" id="toggle-light-mode">
+            <input type="checkbox" id="light-mode-checkbox">
+            <span>Toggle Light Mode</span>
+        </div>
+        <div class="toggle-button" id="toggle-dark-mode">
+            <input type="checkbox" id="dark-mode-checkbox">
+            <span>Toggle Dark Mode</span>
+        </div>
+        <div class="section-divider"></div>
+        <h3>Profile Settings</h3>
+        <input type="text" id="profile-status" placeholder="Set your status...">
+        <button id="save-status">Save Status</button>
     </div>
 
     <!-- Firebase App (the core Firebase SDK) -->
@@ -328,7 +583,21 @@
         const sidebar = document.getElementById('sidebar');
         const closeSidebarButton = document.getElementById('close-sidebar');
         const buyModButton = document.getElementById('buy-mod');
+        const buyRainbowTextButton = document.getElementById('buy-rainbow-text');
         const modStatusElement = document.getElementById('mod-status');
+        const rainbowTextStatusElement = document.getElementById('rainbow-text-status');
+        const userFrame = document.getElementById('user-frame');
+        const closeFrameButton = document.getElementById('close-frame');
+        const userInfoElement = document.getElementById('user-info');
+        const openSettingsButton = document.getElementById('open-settings');
+        const settingsSidebar = document.getElementById('settings-sidebar');
+        const closeSettingsSidebarButton = document.getElementById('close-settings-sidebar');
+        const lightModeCheckbox = document.getElementById('light-mode-checkbox');
+        const darkModeCheckbox = document.getElementById('dark-mode-checkbox');
+        const profileStatusInput = document.getElementById('profile-status');
+        const saveStatusButton = document.getElementById('save-status');
+        const chatContainer = document.getElementById('chat-container');
+        const chatTitle = document.getElementById('chat-title');
 
         let currentUser = null;
         let users = {};
@@ -353,6 +622,7 @@
                 }
 
                 updateModStatus();
+                updateRainbowTextStatus();
                 startCoinIncrement();
             } else {
                 window.location.href = 'Index.html';
@@ -470,6 +740,7 @@
                     text: message,
                     timestamp: serverTimestamp(),
                     isAdmin: currentUser.email === 'admin@gmail.com',
+                    isMod: currentUser.isMod || false,
                     mentions: mentions.map(m => m.slice(1)),
                     read: {}
                 }).then(() => {
@@ -502,11 +773,17 @@
 
             const userSpan = document.createElement('span');
             userSpan.textContent = message.user;
+            userSpan.classList.add('tappable');
+            userSpan.setAttribute('data-username', message.user);
+            userSpan.setAttribute('data-uid', message.uid);
             if (message.isAdmin) {
                 userSpan.textContent += '🛠️';
             }
             if (message.isMod) {
-                userSpan.textContent += ' (Mod)';
+                const modSpan = document.createElement('span');
+                modSpan.textContent = ' (Mod)';
+                modSpan.classList.add('mod');
+                userSpan.appendChild(modSpan);
             }
 
             messageElement.appendChild(userSpan);
@@ -580,28 +857,154 @@
         });
 
         buyModButton.addEventListener('click', () => {
-            if (userCoins >= 1500000) {
-                runTransaction(ref(database, 'users/' + currentUser.uid + '/coins'), coins => {
-                    if (coins >= 1500000) {
-                        return coins - 1500000;
-                    } else {
-                        alert('You don\'t have enough coins!');
-                        return; // Abort the transaction
-                    }
-                });
-                updateModStatus();
+            if (currentUser.email === 'admin@gmail.com' || userCoins >= 1500000) {
+                if (currentUser.email !== 'admin@gmail.com') {
+                    runTransaction(ref(database, 'users/' + currentUser.uid + '/coins'), coins => {
+                        if (coins >= 1500000) {
+                            return coins - 1500000;
+                        } else {
+                            alert('You don\'t have enough coins!');
+                            return; // Abort the transaction
+                        }
+                    }).then(() => {
+                        update(ref(database, 'users/' + currentUser.uid), { isMod: true });
+                        updateModStatus();
+                    });
+                } else {
+                    update(ref(database, 'users/' + currentUser.uid), { isMod: true });
+                    updateModStatus();
+                }
             } else {
                 alert('You don\'t have enough coins!');
             }
         });
 
+        buyRainbowTextButton.addEventListener('click', () => {
+            buyRainbowTextButton.classList.add('loading');
+            setTimeout(() => {
+                if (currentUser.email === 'admin@gmail.com' || userCoins >= 100) {
+                    if (currentUser.email !== 'admin@gmail.com') {
+                        runTransaction(ref(database, 'users/' + currentUser.uid + '/coins'), coins => {
+                            if (coins >= 100) {
+                                return coins - 100;
+                            } else {
+                                alert('You don\'t have enough coins!');
+                                buyRainbowTextButton.classList.remove('loading');
+                                return; // Abort the transaction
+                            }
+                        }).then(() => {
+                            update(ref(database, 'users/' + currentUser.uid), { hasRainbowText: true });
+                            buyRainbowTextButton.classList.remove('loading');
+                            buyRainbowTextButton.textContent = 'Owned';
+                            applyRainbowText();
+                        });
+                    } else {
+                        update(ref(database, 'users/' + currentUser.uid), { hasRainbowText: true });
+                        buyRainbowTextButton.classList.remove('loading');
+                        buyRainbowTextButton.textContent = 'Owned';
+                        applyRainbowText();
+                    }
+                } else {
+                    alert('You don\'t have enough coins!');
+                    buyRainbowTextButton.classList.remove('loading');
+                }
+            }, 5000); // Simulate a loading delay of 5 seconds
+        });
+
         function updateModStatus() {
             get(ref(database, 'users/' + currentUser.uid + '/isMod')).then(snapshot => {
                 const isMod = snapshot.val() || false;
+                buyModButton.textContent = isMod ? 'Owned' : 'Buy';
                 buyModButton.classList.toggle('disabled', isMod);
                 modStatusElement.textContent = isMod ? 'You are a mod!' : '';
+                currentUser.isMod = isMod;
             });
         }
+
+        function updateRainbowTextStatus() {
+            get(ref(database, 'users/' + currentUser.uid + '/hasRainbowText')).then(snapshot => {
+                const hasRainbowText = snapshot.val() || false;
+                buyRainbowTextButton.textContent = hasRainbowText ? 'Owned' : 'Buy';
+                buyRainbowTextButton.classList.toggle('disabled', hasRainbowText);
+                if (hasRainbowText) applyRainbowText();
+            });
+        }
+
+        function applyRainbowText() {
+            document.querySelectorAll('.message').forEach(el => el.classList.add('rainbow-text'));
+        }
+
+        // User frame functions
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('tappable') && event.target.hasAttribute('data-username')) {
+                const username = event.target.getAttribute('data-username');
+                const uid = event.target.getAttribute('data-uid');
+                get(ref(database, 'users/' + uid)).then(snapshot => {
+                    const userInfo = snapshot.val();
+                    let infoText = `Username: ${username}\n`;
+                    if (userInfo.status) {
+                        infoText += `Status: ${userInfo.status}\n`;
+                    }
+                    if (userInfo.isMod) {
+                        infoText += 'Role: Mod\n';
+                    }
+                    userInfoElement.textContent = infoText;
+                    userFrame.style.display = 'block';
+                });
+            }
+        });
+
+        closeFrameButton.addEventListener('click', () => {
+            userFrame.style.display = 'none';
+        });
+
+        // Settings sidebar functions
+        openSettingsButton.addEventListener('click', () => {
+            settingsSidebar.classList.add('open');
+        });
+
+        closeSettingsSidebarButton.addEventListener('click', () => {
+            settingsSidebar.classList.remove('open');
+        });
+
+        lightModeCheckbox.addEventListener('change', () => {
+            if (lightModeCheckbox.checked) {
+                document.body.classList.remove('dark-mode');
+                document.querySelector('.header').classList.remove('dark-mode');
+                document.querySelector('.dropdown').classList.remove('dark-mode');
+                document.querySelector('#chat-container').classList.remove('dark-mode');
+                document.querySelectorAll('.message.received').forEach(el => el.classList.remove('dark-mode'));
+                document.querySelectorAll('.message.sent').forEach(el => el.classList.remove('dark-mode'));
+                document.querySelector('#message-form').classList.remove('dark-mode');
+                document.querySelector('#message-input').classList.remove('dark-mode');
+                darkModeCheckbox.checked = false;
+            }
+        });
+
+        darkModeCheckbox.addEventListener('change', () => {
+            if (darkModeCheckbox.checked) {
+                document.body.classList.add('dark-mode');
+                document.querySelector('.header').classList.add('dark-mode');
+                document.querySelector('.dropdown').classList.add('dark-mode');
+                document.querySelector('#chat-container').classList.add('dark-mode');
+                document.querySelectorAll('.message.received').forEach(el => el.classList.add('dark-mode'));
+                document.querySelectorAll('.message.sent').forEach(el => el.classList.add('dark-mode'));
+                document.querySelector('#message-form').classList.add('dark-mode');
+                document.querySelector('#message-input').classList.add('dark-mode');
+                lightModeCheckbox.checked = false;
+            }
+        });
+
+        saveStatusButton.addEventListener('click', () => {
+            const status = profileStatusInput.value.trim();
+            if (status) {
+                update(ref(database, 'users/' + currentUser.uid), { status: status });
+                alert('Status updated');
+            } else {
+                alert('Please enter a status');
+            }
+        });
     </script>
 </body>
 </html>
+
