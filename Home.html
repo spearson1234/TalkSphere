@@ -326,6 +326,7 @@
             color: #888;
             font-size: 12px;
             margin-left: 5px;
+            opacity: 0.6;
         }
 
         /* Settings Sidebar Styles */
@@ -496,6 +497,9 @@
             <input type="text" id="owner-action-username" placeholder="Enter username">
             <button id="promote-mod">Promote to Mod</button>
             <button id="ban-user">Ban User</button>
+            <input type="number" id="money-amount" placeholder="Enter amount">
+            <button id="give-money">Give Money</button>
+            <button id="take-money">Take Away Money</button>
         </div>
     </div>
 
@@ -545,7 +549,10 @@
         const chatTitle = document.getElementById('chat-title');
         const promoteModButton = document.getElementById('promote-mod');
         const banUserButton = document.getElementById('ban-user');
+        const giveMoneyButton = document.getElementById('give-money');
+        const takeMoneyButton = document.getElementById('take-money');
         const ownerActionUsernameInput = document.getElementById('owner-action-username');
+        const moneyAmountInput = document.getElementById('money-amount');
 
         let currentUser = null;
         let users = {};
@@ -1022,6 +1029,50 @@
                             }
                         }).catch(error => {
                             console.error('Error banning user:', error);
+                        });
+                    } else {
+                        alert('User not found');
+                    }
+                });
+            }
+        });
+
+        giveMoneyButton.addEventListener('click', () => {
+            const username = ownerActionUsernameInput.value.trim();
+            const amount = parseInt(moneyAmountInput.value.trim());
+            if (username && amount && amount > 0) {
+                get(ref(database, 'users')).then(snapshot => {
+                    const users = snapshot.val() || {};
+                    const userUid = Object.keys(users).find(uid => users[uid].displayName === username || users[uid].email === username);
+                    if (userUid) {
+                        runTransaction(ref(database, 'users/' + userUid + '/coins'), coins => {
+                            return (coins || 0) + amount;
+                        }).then(() => {
+                            alert(`Gave ${amount} coins to ${username}`);
+                        }).catch(error => {
+                            console.error('Error giving money:', error);
+                        });
+                    } else {
+                        alert('User not found');
+                    }
+                });
+            }
+        });
+
+        takeMoneyButton.addEventListener('click', () => {
+            const username = ownerActionUsernameInput.value.trim();
+            const amount = parseInt(moneyAmountInput.value.trim());
+            if (username && amount && amount > 0) {
+                get(ref(database, 'users')).then(snapshot => {
+                    const users = snapshot.val() || {};
+                    const userUid = Object.keys(users).find(uid => users[uid].displayName === username || users[uid].email === username);
+                    if (userUid) {
+                        runTransaction(ref(database, 'users/' + userUid + '/coins'), coins => {
+                            return Math.max((coins || 0) - amount, 0);
+                        }).then(() => {
+                            alert(`Took away ${amount} coins from ${username}`);
+                        }).catch(error => {
+                            console.error('Error taking away money:', error);
                         });
                     } else {
                         alert('User not found');
