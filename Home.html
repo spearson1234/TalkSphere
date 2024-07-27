@@ -402,22 +402,6 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-        .owner-tools {
-            display: none;
-        }
-        .owner-tools button {
-            background-color: #ff006e;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            padding: 10px;
-            margin: 5px 0;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .owner-tools button:hover {
-            background-color: #d4005c;
-        }
 
         @keyframes gradient {
             0% {background-position: 0% 50%;}
@@ -492,15 +476,6 @@
             <span>Toggle Dark Mode</span>
         </div>
         <div class="section-divider"></div>
-        <div class="owner-tools">
-            <h2>Owner Tools</h2>
-            <input type="text" id="owner-action-username" placeholder="Enter username">
-            <button id="promote-mod">Promote to Mod</button>
-            <button id="ban-user">Ban User</button>
-            <input type="number" id="money-amount" placeholder="Enter amount">
-            <button id="give-money">Give Money</button>
-            <button id="take-money">Take Away Money</button>
-        </div>
     </div>
 
     <!-- Firebase App (the core Firebase SDK) -->
@@ -547,18 +522,14 @@
         const darkModeCheckbox = document.getElementById('dark-mode-checkbox');
         const chatContainer = document.getElementById('chat-container');
         const chatTitle = document.getElementById('chat-title');
-        const promoteModButton = document.getElementById('promote-mod');
-        const banUserButton = document.getElementById('ban-user');
-        const giveMoneyButton = document.getElementById('give-money');
-        const takeMoneyButton = document.getElementById('take-money');
-        const ownerActionUsernameInput = document.getElementById('owner-action-username');
-        const moneyAmountInput = document.getElementById('money-amount');
 
         let currentUser = null;
         let users = {};
         let userCoins = 0;
         let coinsOutcome = 0;
         let displayedMessages = new Set();
+
+        const restrictedUsernames = ["admin", "ceo"];
 
         // Load theme from localStorage
         function loadTheme() {
@@ -603,7 +574,6 @@
                 loadTheme();
 
                 if (currentUser.email === 'admin@gmail.com') {
-                    document.querySelector('.owner-tools').style.display = 'block';
                     coinBalanceElement.textContent = '∞';
                 } else {
                     get(ref(database, 'users/' + currentUser.uid + '/coins')).then(snapshot => {
@@ -646,7 +616,7 @@
 
         changeUsernameButton.addEventListener('click', () => {
             const newUsername = prompt('Enter your new username:');
-            if (newUsername) {
+            if (newUsername && !restrictedUsernames.includes(newUsername.toLowerCase()) && newUsername !== currentUser.email) {
                 updateProfile(currentUser, {
                     displayName: newUsername
                 }).then(() => {
@@ -656,6 +626,8 @@
                 }).catch(error => {
                     console.error('Error updating username:', error);
                 });
+            } else {
+                alert('This username is not allowed.');
             }
         });
 
@@ -922,7 +894,7 @@
 
         function updateCoinsOutcome(amount) {
             coinsOutcome -= amount;
-            coinsOutcomeElement.textContent = `-${coinsOutcome}`;
+            coinsOutcomeElement.textContent = coinsOutcome;
         }
 
         function setupDailyDeduction() {
@@ -982,104 +954,6 @@
                 el.classList.toggle('dark-mode', theme === 'dark');
             });
         }
-
-        // Owner tools functions
-        promoteModButton.addEventListener('click', () => {
-            const username = ownerActionUsernameInput.value.trim();
-            if (username) {
-                get(ref(database, 'users')).then(snapshot => {
-                    const users = snapshot.val() || {};
-                    const userUid = Object.keys(users).find(uid => users[uid].displayName === username || users[uid].email === username);
-                    if (userUid) {
-                        update(ref(database, 'users/' + userUid), { isMod: true }).then(() => {
-                            alert('User promoted to Mod');
-                            document.querySelectorAll(`[data-uid="${userUid}"]`).forEach(el => {
-                                if (!el.querySelector('.mod')) {
-                                    const modSpan = document.createElement('span');
-                                    modSpan.textContent = ' (Mod)';
-                                    modSpan.classList.add('mod');
-                                    el.appendChild(modSpan);
-                                }
-                            });
-                        }).catch(error => {
-                            console.error('Error promoting user to Mod:', error);
-                        });
-                    } else {
-                        alert('User not found');
-                    }
-                });
-            }
-        });
-
-        banUserButton.addEventListener('click', () => {
-            const username = ownerActionUsernameInput.value.trim();
-            if (username) {
-                get(ref(database, 'users')).then(snapshot => {
-                    const users = snapshot.val() || {};
-                    const userUid = Object.keys(users).find(uid => users[uid].displayName === username || users[uid].email === username);
-                    if (userUid) {
-                        update(ref(database, 'users/' + userUid), { banned: true }).then(() => {
-                            alert('User banned');
-                            if (userUid === currentUser.uid) {
-                                signOut(auth).then(() => {
-                                    window.location.href = 'Index.html';
-                                }).catch(error => {
-                                    console.error('Sign out error:', error);
-                                });
-                            }
-                        }).catch(error => {
-                            console.error('Error banning user:', error);
-                        });
-                    } else {
-                        alert('User not found');
-                    }
-                });
-            }
-        });
-
-        giveMoneyButton.addEventListener('click', () => {
-            const username = ownerActionUsernameInput.value.trim();
-            const amount = parseInt(moneyAmountInput.value.trim());
-            if (username && amount && amount > 0) {
-                get(ref(database, 'users')).then(snapshot => {
-                    const users = snapshot.val() || {};
-                    const userUid = Object.keys(users).find(uid => users[uid].displayName === username || users[uid].email === username);
-                    if (userUid) {
-                        runTransaction(ref(database, 'users/' + userUid + '/coins'), coins => {
-                            return (coins || 0) + amount;
-                        }).then(() => {
-                            alert(`Gave ${amount} coins to ${username}`);
-                        }).catch(error => {
-                            console.error('Error giving money:', error);
-                        });
-                    } else {
-                        alert('User not found');
-                    }
-                });
-            }
-        });
-
-        takeMoneyButton.addEventListener('click', () => {
-            const username = ownerActionUsernameInput.value.trim();
-            const amount = parseInt(moneyAmountInput.value.trim());
-            if (username && amount && amount > 0) {
-                get(ref(database, 'users')).then(snapshot => {
-                    const users = snapshot.val() || {};
-                    const userUid = Object.keys(users).find(uid => users[uid].displayName === username || users[uid].email === username);
-                    if (userUid) {
-                        runTransaction(ref(database, 'users/' + userUid + '/coins'), coins => {
-                            return Math.max((coins || 0) - amount, 0);
-                        }).then(() => {
-                            alert(`Took away ${amount} coins from ${username}`);
-                        }).catch(error => {
-                            console.error('Error taking away money:', error);
-                        });
-                    } else {
-                        alert('User not found');
-                    }
-                });
-            }
-        });
 
         // Load theme on page load
         document.addEventListener('DOMContentLoaded', loadTheme);
