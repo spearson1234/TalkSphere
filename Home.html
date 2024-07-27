@@ -134,7 +134,7 @@
             color: #e0e0e0;
         }
         .message.sent.dark-mode {
-            background-color: #0084ff;
+            background-color: #0056b3;
         }
         #message-form {
             display: flex;
@@ -551,25 +551,27 @@
                 document.querySelector('.header').classList.add('dark-mode');
                 document.querySelector('.dropdown').classList.add('dark-mode');
                 document.querySelector('#chat-container').classList.add('dark-mode');
-                document.querySelectorAll('.message.received').forEach(el => el.classList.add('dark-mode'));
-                document.querySelectorAll('.message.sent').forEach(el => el.classList.add('dark-mode'));
                 document.querySelector('#message-form').classList.add('dark-mode');
                 document.querySelector('#message-input').classList.add('dark-mode');
                 document.querySelector('.sidebar').classList.add('dark-mode');
                 document.querySelector('.settings-sidebar').classList.add('dark-mode');
+                document.querySelectorAll('.message.received').forEach(el => el.classList.add('dark-mode'));
+                document.querySelectorAll('.message.sent').forEach(el => el.classList.add('dark-mode'));
                 darkModeCheckbox.checked = true;
+                lightModeCheckbox.checked = false;
             } else {
                 document.body.classList.remove('dark-mode');
                 document.querySelector('.header').classList.remove('dark-mode');
                 document.querySelector('.dropdown').classList.remove('dark-mode');
                 document.querySelector('#chat-container').classList.remove('dark-mode');
-                document.querySelectorAll('.message.received').forEach(el => el.classList.remove('dark-mode'));
-                document.querySelectorAll('.message.sent').forEach(el => el.classList.remove('dark-mode'));
                 document.querySelector('#message-form').classList.remove('dark-mode');
                 document.querySelector('#message-input').classList.remove('dark-mode');
                 document.querySelector('.sidebar').classList.remove('dark-mode');
                 document.querySelector('.settings-sidebar').classList.remove('dark-mode');
+                document.querySelectorAll('.message.received').forEach(el => el.classList.remove('dark-mode'));
+                document.querySelectorAll('.message.sent').forEach(el => el.classList.remove('dark-mode'));
                 lightModeCheckbox.checked = true;
+                darkModeCheckbox.checked = false;
             }
         }
 
@@ -737,6 +739,7 @@
                     }
                 }
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                applyThemeToMessages();
             });
         }
 
@@ -951,6 +954,17 @@
                 loadTheme();
             }
         });
+
+        // Apply theme to messages
+        function applyThemeToMessages() {
+            const theme = localStorage.getItem('theme');
+            document.querySelectorAll('.message.received').forEach(el => {
+                el.classList.toggle('dark-mode', theme === 'dark');
+            });
+            document.querySelectorAll('.message.sent').forEach(el => {
+                el.classList.toggle('dark-mode', theme === 'dark');
+            });
+        }
 
         // Owner tools functions
         promoteModButton.addEventListener('click', () => {
