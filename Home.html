@@ -77,10 +77,6 @@
         .dropdown.dark-mode a:hover {
             background-color: #383838;
         }
-        .coins-outcome {
-            color: red;
-            padding: 10px 15px;
-        }
         @media (max-width: 768px) {
             .dropdown {
                 right: auto;
@@ -432,7 +428,6 @@
                 <a href="#" id="change-username">Change Username</a>
                 <a href="#" id="logout">Log out</a>
                 <a href="#" id="open-settings">Settings</a>
-                <div class="coins-outcome">Coins Outcome: <span id="coins-outcome">0</span></div>
             </div>
         </div>
     </header>
@@ -509,7 +504,6 @@
         const messagesDiv = document.getElementById('messages');
         const typingIndicator = document.getElementById('typing-indicator');
         const coinBalanceElement = document.getElementById('coin-balance');
-        const coinsOutcomeElement = document.getElementById('coins-outcome');
         const basketButton = document.getElementById('basket-button');
         const sidebar = document.getElementById('sidebar');
         const closeSidebarButton = document.getElementById('close-sidebar');
@@ -526,7 +520,6 @@
         let currentUser = null;
         let users = {};
         let userCoins = 0;
-        let coinsOutcome = 0;
         let displayedMessages = new Set();
 
         const restrictedUsernames = ["admin", "ceo"];
@@ -842,12 +835,10 @@
                     }).then(() => {
                         update(ref(database, 'users/' + currentUser.uid), { isMod: true });
                         updateModStatus();
-                        updateCoinsOutcome(1500000); // Update outcome when buying
                     });
                 } else {
                     update(ref(database, 'users/' + currentUser.uid), { isMod: true });
                     updateModStatus();
-                    updateCoinsOutcome(1500000); // Update outcome when buying
                 }
             } else {
                 alert('You don\'t have enough coins!');
@@ -872,12 +863,10 @@
                     }).then(() => {
                         update(ref(database, 'users/' + currentUser.uid), { hasChatterPlus: true, chatterPlusStartDate: now.toISOString() });
                         updateChatterPlusStatus();
-                        updateCoinsOutcome(35); // Update outcome when buying
                     });
                 } else {
                     update(ref(database, 'users/' + currentUser.uid), { hasChatterPlus: true, chatterPlusStartDate: now.toISOString() });
                     updateChatterPlusStatus();
-                    updateCoinsOutcome(35); // Update outcome when buying
                 }
             } else {
                 alert('You don\'t have enough coins!');
@@ -902,11 +891,6 @@
             });
         }
 
-        function updateCoinsOutcome(amount) {
-            coinsOutcome -= amount;
-            coinsOutcomeElement.textContent = coinsOutcome;
-        }
-
         function setupDailyDeduction() {
             setInterval(() => {
                 if (currentUser && currentUser.hasChatterPlus) {
@@ -916,7 +900,6 @@
                         if (startDate && now.getHours() === startDate.getHours() && now.getMinutes() === startDate.getMinutes()) {
                             runTransaction(ref(database, 'users/' + currentUser.uid + '/coins'), coins => {
                                 if (coins >= 35) {
-                                    updateCoinsOutcome(35);
                                     return coins - 35;
                                 } else {
                                     alert('You don\'t have enough coins for Chatter Plus!');
