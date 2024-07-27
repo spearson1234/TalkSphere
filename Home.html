@@ -423,6 +423,16 @@
             50% {background-position: 100% 50%;}
             100% {background-position: 0% 50%;}
         }
+
+        @media (max-width: 768px) {
+            .settings-sidebar .toggle-button {
+                flex-direction: column;
+            }
+            .settings-sidebar .toggle-button span {
+                margin-left: 0;
+                margin-top: 5px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -976,6 +986,14 @@
                     if (userUid) {
                         update(ref(database, 'users/' + userUid), { isMod: true }).then(() => {
                             alert('User promoted to Mod');
+                            document.querySelectorAll(`[data-uid="${userUid}"]`).forEach(el => {
+                                if (!el.querySelector('.mod')) {
+                                    const modSpan = document.createElement('span');
+                                    modSpan.textContent = ' (Mod)';
+                                    modSpan.classList.add('mod');
+                                    el.appendChild(modSpan);
+                                }
+                            });
                         }).catch(error => {
                             console.error('Error promoting user to Mod:', error);
                         });
