@@ -554,6 +554,7 @@
         let users = {};
         let userCoins = 0;
         let coinsOutcome = 0;
+        let displayedMessages = new Set();
 
         // Load theme from localStorage
         function loadTheme() {
@@ -734,8 +735,6 @@
                 });
             }
         });
-
-        let displayedMessages = new Set();
 
         function loadMessages() {
             onValue(ref(database, 'messages'), snapshot => {
