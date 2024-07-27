@@ -735,13 +735,13 @@
             }
         });
 
-        let lastMessageKey = null;
+        let displayedMessages = new Set();
 
         function loadMessages() {
             onValue(ref(database, 'messages'), snapshot => {
                 const messages = snapshot.val();
                 for (let key in messages) {
-                    if (!lastMessageKey || key > lastMessageKey) {
+                    if (!displayedMessages.has(key)) {
                         const message = messages[key];
                         const messageElement = createMessageElement(message, key);
                         messagesDiv.appendChild(messageElement);
@@ -750,10 +750,8 @@
                         if (message.user !== (currentUser.displayName || currentUser.email)) {
                             markAsRead(key);
                         }
+                        displayedMessages.add(key);
                     }
-                }
-                if (messages) {
-                    lastMessageKey = Object.keys(messages).pop();
                 }
             });
         }
@@ -767,7 +765,7 @@
             userSpan.textContent = message.user;
             userSpan.classList.add('tappable');
             userSpan.setAttribute('data-username', message.user);
-            userSpan.setAttribute('data-uid', message.uid);
+            userSpan.setAttribute('data-uid', message.uid || '');
             if (message.isAdmin) {
                 userSpan.textContent += '🛠️';
             }
@@ -809,8 +807,8 @@
 
         function updateReadReceipt(messageId, readStatus) {
             const readReceipt = document.getElementById(`read-${messageId}`);
-            if (readReceipt) {
-                const readCount = Object.values(readStatus || {}).filter(Boolean).length;
+            if (readReceipt && readStatus) {
+                const readCount = Object.values(readStatus).filter(Boolean).length;
                 readReceipt.textContent = readCount > 0 ? `Seen by ${readCount}` : '';
             }
         }
@@ -929,7 +927,7 @@
                     const now = new Date();
                     get(ref(database, 'users/' + currentUser.uid + '/chatterPlusStartDate')).then(snapshot => {
                         const startDate = new Date(snapshot.val());
-                        if (now.getHours() === startDate.getHours() && now.getMinutes() === startDate.getMinutes()) {
+                        if (startDate && now.getHours() === startDate.getHours() && now.getMinutes() === startDate.getMinutes()) {
                             runTransaction(ref(database, 'users/' + currentUser.uid + '/coins'), coins => {
                                 if (coins >= 35) {
                                     updateCoinsOutcome(35);
