@@ -119,19 +119,6 @@
             border-radius: 18px;
             line-height: 1.4;
             word-wrap: break-word;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: messageAppear 0.5s forwards;
-        }
-        @keyframes messageAppear {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
         .message.received {
             background-color: #e9e9eb;
@@ -739,19 +726,17 @@
         function loadMessages() {
             onValue(ref(database, 'messages'), snapshot => {
                 const messages = snapshot.val();
+                messagesDiv.innerHTML = ''; // Clear existing messages before reloading
+                displayedMessages.clear(); // Clear the set of displayed messages
                 for (let key in messages) {
                     if (!displayedMessages.has(key)) {
                         const message = messages[key];
                         const messageElement = createMessageElement(message, key);
                         messagesDiv.appendChild(messageElement);
-                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-                        if (message.user !== (currentUser.displayName || currentUser.email)) {
-                            markAsRead(key);
-                        }
                         displayedMessages.add(key);
                     }
                 }
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
             });
         }
 
