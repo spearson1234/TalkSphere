@@ -842,10 +842,12 @@
                     }).then(() => {
                         update(ref(database, 'users/' + currentUser.uid), { isMod: true });
                         updateModStatus();
+                        updateCoinsOutcome(1500000); // Update outcome when buying
                     });
                 } else {
                     update(ref(database, 'users/' + currentUser.uid), { isMod: true });
                     updateModStatus();
+                    updateCoinsOutcome(1500000); // Update outcome when buying
                 }
             } else {
                 alert('You don\'t have enough coins!');
@@ -870,12 +872,12 @@
                     }).then(() => {
                         update(ref(database, 'users/' + currentUser.uid), { hasChatterPlus: true, chatterPlusStartDate: now.toISOString() });
                         updateChatterPlusStatus();
-                        updateCoinsOutcome(35);
+                        updateCoinsOutcome(35); // Update outcome when buying
                     });
                 } else {
                     update(ref(database, 'users/' + currentUser.uid), { hasChatterPlus: true, chatterPlusStartDate: now.toISOString() });
                     updateChatterPlusStatus();
-                    updateCoinsOutcome(35);
+                    updateCoinsOutcome(35); // Update outcome when buying
                 }
             } else {
                 alert('You don\'t have enough coins!');
