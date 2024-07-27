@@ -77,6 +77,10 @@
         .dropdown.dark-mode a:hover {
             background-color: #383838;
         }
+        .coins-outcome {
+            color: red;
+            padding: 10px 15px;
+        }
         @media (max-width: 768px) {
             .dropdown {
                 right: auto;
@@ -120,7 +124,11 @@
             animation: messageAppear 0.5s forwards;
         }
         @keyframes messageAppear {
-            to {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
                 opacity: 1;
                 transform: translateY(0);
             }
@@ -140,21 +148,6 @@
         }
         .message.sent.dark-mode {
             background-color: #0084ff;
-        }
-        .message.rainbow-text p {
-            background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff);
-            -webkit-background-clip: text;
-            color: transparent;
-            animation: rainbow 2s linear infinite;
-            background-size: 400%;
-        }
-        @keyframes rainbow {
-            0% {
-                background-position: 0%;
-            }
-            100% {
-                background-position: 100%;
-            }
         }
         #message-form {
             display: flex;
@@ -245,6 +238,10 @@
             padding: 20px;
             z-index: 1000;
         }
+        .sidebar.dark-mode {
+            background-color: #282828;
+            color: #e0e0e0;
+        }
         .sidebar.open {
             right: 0;
         }
@@ -258,10 +255,12 @@
             top: 10px;
             right: 10px;
         }
+        .sidebar.dark-mode .close-btn {
+            color: #e0e0e0;
+        }
         .shop-item {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
             padding: 10px;
             margin-bottom: 10px;
             border: 1px solid #ddd;
@@ -283,17 +282,32 @@
         .shop-item .item-price {
             color: #888;
         }
+        .shop-item .item-notice {
+            font-size: 12px;
+            color: #999;
+            font-style: italic;
+            margin-top: 5px;
+        }
+        .shop-item.dark-mode .item-notice {
+            color: #bbb;
+        }
         .shop-button {
-            background-color: #0084ff;
-            color: #fff;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
+            background: linear-gradient(45deg, #ff006e, #ffaf40, #00ff87, #009fff, #ff00e0);
+            background-size: 400% 400%;
+            border: 2px solid #ffffff;
             border-radius: 5px;
-            transition: background-color 0.3s;
+            padding: 5px 10px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            justify-content: center;
         }
         .shop-button:hover {
-            background-color: #0056b3;
+            animation: gradient 3s ease infinite;
+            transform: scale(1.05);
         }
         .shop-button.disabled {
             background-color: #ccc;
@@ -327,46 +341,6 @@
             margin-left: 5px;
         }
 
-        /* User Info Frame Styles */
-        .user-frame {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 300px;
-            background-color: white;
-            border: 1px solid #ccc;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 2000;
-            padding: 20px;
-            border-radius: 8px;
-        }
-        .user-frame h2 {
-            font-size: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .user-frame p {
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-        .user-frame .close-frame {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            margin-top: 20px;
-            cursor: pointer;
-            border: none;
-            border-radius: 4px;
-            background-color: #ccc;
-            color: white;
-        }
-        .user-frame .close-frame:hover {
-            background-color: #999;
-        }
-
         /* Settings Sidebar Styles */
         .settings-sidebar {
             position: fixed;
@@ -379,6 +353,10 @@
             transition: left 0.3s;
             padding: 20px;
             z-index: 1000;
+        }
+        .settings-sidebar.dark-mode {
+            background-color: #282828;
+            color: #e0e0e0;
         }
         .settings-sidebar.open {
             left: 0;
@@ -393,6 +371,9 @@
             top: 10px;
             right: 10px;
         }
+        .settings-sidebar.dark-mode .close-btn {
+            color: #e0e0e0;
+        }
         .settings-sidebar h2 {
             font-size: 20px;
             margin-bottom: 20px;
@@ -401,16 +382,21 @@
             display: flex;
             align-items: center;
             padding: 10px;
-            background-color: #f0f2f5;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: none;
+            border-radius: 50px;
             margin-bottom: 10px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.3s;
+            background: linear-gradient(45deg, #ff006e, #ffaf40, #00ff87, #009fff, #ff00e0);
+            background-size: 400% 400%;
+            color: #fff;
+            font-size: 16px;
+            text-align: center;
+            justify-content: center;
         }
-        .settings-sidebar .toggle-button.dark-mode {
-            background-color: #383838;
-            border: 1px solid #555;
+        .settings-sidebar .toggle-button:hover {
+            transform: scale(1.05);
+            animation: gradient 3s ease infinite;
         }
         .settings-sidebar .toggle-button span {
             margin-left: 10px;
@@ -428,51 +414,23 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-
-        /* Modern Button Styles */
-        .modern-button {
-            background: linear-gradient(90deg, #ff006e, #ffaf40, #00ff87, #009fff, #ff00e0);
-            background-size: 400% 400%;
-            border: 2px solid #ffffff;
-            border-radius: 5px;
-            padding: 10px 15px;
+        .owner-tools {
+            display: none;
+        }
+        .owner-tools button {
+            background-color: #ff006e;
             color: #fff;
-            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px 0;
             cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            text-align: center;
-            position: relative;
+            transition: background-color 0.3s;
         }
-        .modern-button:hover {
-            animation: gradient 3s ease infinite;
+        .owner-tools button:hover {
+            background-color: #d4005c;
         }
-        .modern-button.loading .loading-circle {
-            display: block;
-        }
-        .modern-button.loading .initial {
-            display: none;
-        }
-        .modern-button.complete .complete {
-            display: block;
-        }
-        .modern-button.complete .initial,
-        .modern-button.complete .loading-circle {
-            display: none;
-        }
-        .loading-circle {
-            border: 3px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 3px solid #3498db;
-            width: 20px;
-            height: 20px;
-            animation: spin 2s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+
         @keyframes gradient {
             0% {background-position: 0% 50%;}
             50% {background-position: 100% 50%;}
@@ -492,6 +450,7 @@
                 <a href="#" id="change-username">Change Username</a>
                 <a href="#" id="logout">Log out</a>
                 <a href="#" id="open-settings">Settings</a>
+                <div class="coins-outcome">Coins Outcome: <span id="coins-outcome">0</span></div>
             </div>
         </div>
     </header>
@@ -513,21 +472,13 @@
             <span class="item-name">Mod</span>
             <span class="item-price">1.5M Coins</span>
             <button class="shop-button" id="buy-mod">Buy</button>
-            <div id="mod-status"></div>
         </div>
-        <div class="shop-item" id="rainbow-text-item">
-            <span class="item-name">Rainbow Text Effect</span>
-            <span class="item-price">100 Coins</span>
-            <button class="shop-button" id="buy-rainbow-text">Buy</button>
-            <div id="rainbow-text-status"></div>
+        <div class="shop-item" id="chatter-plus-item">
+            <span class="item-name">Chatter Plus</span>
+            <span class="item-price">35 Coins</span>
+            <div class="item-notice">Notice: 35 Coins will be taken out of your balance every day at the time you bought it.</div>
+            <button class="shop-button" id="buy-chatter-plus">Buy</button>
         </div>
-    </div>
-
-    <!-- User Info Frame -->
-    <div class="user-frame" id="user-frame">
-        <h2>Info</h2>
-        <p id="user-info"></p>
-        <button class="close-frame" id="close-frame">Close</button>
     </div>
 
     <!-- Settings Sidebar -->
@@ -543,9 +494,12 @@
             <span>Toggle Dark Mode</span>
         </div>
         <div class="section-divider"></div>
-        <h3>Profile Settings</h3>
-        <input type="text" id="profile-status" placeholder="Set your status...">
-        <button id="save-status">Save Status</button>
+        <div class="owner-tools">
+            <h2>Owner Tools</h2>
+            <input type="text" id="owner-action-username" placeholder="Enter username">
+            <button id="promote-mod">Promote to Mod</button>
+            <button id="ban-user">Ban User</button>
+        </div>
     </div>
 
     <!-- Firebase App (the core Firebase SDK) -->
@@ -579,29 +533,57 @@
         const messagesDiv = document.getElementById('messages');
         const typingIndicator = document.getElementById('typing-indicator');
         const coinBalanceElement = document.getElementById('coin-balance');
+        const coinsOutcomeElement = document.getElementById('coins-outcome');
         const basketButton = document.getElementById('basket-button');
         const sidebar = document.getElementById('sidebar');
         const closeSidebarButton = document.getElementById('close-sidebar');
         const buyModButton = document.getElementById('buy-mod');
-        const buyRainbowTextButton = document.getElementById('buy-rainbow-text');
-        const modStatusElement = document.getElementById('mod-status');
-        const rainbowTextStatusElement = document.getElementById('rainbow-text-status');
-        const userFrame = document.getElementById('user-frame');
-        const closeFrameButton = document.getElementById('close-frame');
-        const userInfoElement = document.getElementById('user-info');
+        const buyChatterPlusButton = document.getElementById('buy-chatter-plus');
         const openSettingsButton = document.getElementById('open-settings');
         const settingsSidebar = document.getElementById('settings-sidebar');
         const closeSettingsSidebarButton = document.getElementById('close-settings-sidebar');
         const lightModeCheckbox = document.getElementById('light-mode-checkbox');
         const darkModeCheckbox = document.getElementById('dark-mode-checkbox');
-        const profileStatusInput = document.getElementById('profile-status');
-        const saveStatusButton = document.getElementById('save-status');
         const chatContainer = document.getElementById('chat-container');
         const chatTitle = document.getElementById('chat-title');
+        const promoteModButton = document.getElementById('promote-mod');
+        const banUserButton = document.getElementById('ban-user');
+        const ownerActionUsernameInput = document.getElementById('owner-action-username');
 
         let currentUser = null;
         let users = {};
         let userCoins = 0;
+        let coinsOutcome = 0;
+
+        // Load theme from localStorage
+        function loadTheme() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.querySelector('.header').classList.add('dark-mode');
+                document.querySelector('.dropdown').classList.add('dark-mode');
+                document.querySelector('#chat-container').classList.add('dark-mode');
+                document.querySelectorAll('.message.received').forEach(el => el.classList.add('dark-mode'));
+                document.querySelectorAll('.message.sent').forEach(el => el.classList.add('dark-mode'));
+                document.querySelector('#message-form').classList.add('dark-mode');
+                document.querySelector('#message-input').classList.add('dark-mode');
+                document.querySelector('.sidebar').classList.add('dark-mode');
+                document.querySelector('.settings-sidebar').classList.add('dark-mode');
+                darkModeCheckbox.checked = true;
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.querySelector('.header').classList.remove('dark-mode');
+                document.querySelector('.dropdown').classList.remove('dark-mode');
+                document.querySelector('#chat-container').classList.remove('dark-mode');
+                document.querySelectorAll('.message.received').forEach(el => el.classList.remove('dark-mode'));
+                document.querySelectorAll('.message.sent').forEach(el => el.classList.remove('dark-mode'));
+                document.querySelector('#message-form').classList.remove('dark-mode');
+                document.querySelector('#message-input').classList.remove('dark-mode');
+                document.querySelector('.sidebar').classList.remove('dark-mode');
+                document.querySelector('.settings-sidebar').classList.remove('dark-mode');
+                lightModeCheckbox.checked = true;
+            }
+        }
 
         onAuthStateChanged(auth, user => {
             if (user) {
@@ -611,8 +593,10 @@
                 loadUsers();
                 setupPresence();
                 updateCoinBalance();
+                loadTheme();
 
                 if (currentUser.email === 'admin@gmail.com') {
+                    document.querySelector('.owner-tools').style.display = 'block';
                     coinBalanceElement.textContent = '∞';
                 } else {
                     get(ref(database, 'users/' + currentUser.uid + '/coins')).then(snapshot => {
@@ -622,8 +606,9 @@
                 }
 
                 updateModStatus();
-                updateRainbowTextStatus();
+                updateChatterPlusStatus();
                 startCoinIncrement();
+                setupDailyDeduction();
             } else {
                 window.location.href = 'Index.html';
             }
@@ -661,7 +646,6 @@
                     update(ref(database, 'users/' + currentUser.uid), {
                         displayName: newUsername
                     });
-                    loadMessages(); // Reload messages to update display names
                 }).catch(error => {
                     console.error('Error updating username:', error);
                 });
@@ -741,6 +725,7 @@
                     timestamp: serverTimestamp(),
                     isAdmin: currentUser.email === 'admin@gmail.com',
                     isMod: currentUser.isMod || false,
+                    hasChatterPlus: currentUser.hasChatterPlus || false,
                     mentions: mentions.map(m => m.slice(1)),
                     read: {}
                 }).then(() => {
@@ -750,19 +735,26 @@
             }
         });
 
+        let lastMessageKey = null;
+
         function loadMessages() {
             onValue(ref(database, 'messages'), snapshot => {
-                messagesDiv.innerHTML = ''; // Clear the messages container to avoid duplicates
-                snapshot.forEach(childSnapshot => {
-                    const message = childSnapshot.val();
-                    const messageElement = createMessageElement(message, childSnapshot.key);
-                    messagesDiv.appendChild(messageElement);
-                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                const messages = snapshot.val();
+                for (let key in messages) {
+                    if (!lastMessageKey || key > lastMessageKey) {
+                        const message = messages[key];
+                        const messageElement = createMessageElement(message, key);
+                        messagesDiv.appendChild(messageElement);
+                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
-                    if (message.user !== (currentUser.displayName || currentUser.email)) {
-                        markAsRead(childSnapshot.key);
+                        if (message.user !== (currentUser.displayName || currentUser.email)) {
+                            markAsRead(key);
+                        }
                     }
-                });
+                }
+                if (messages) {
+                    lastMessageKey = Object.keys(messages).pop();
+                }
             });
         }
 
@@ -784,6 +776,9 @@
                 modSpan.textContent = ' (Mod)';
                 modSpan.classList.add('mod');
                 userSpan.appendChild(modSpan);
+            }
+            if (message.hasChatterPlus) {
+                userSpan.textContent += ' ✨';
             }
 
             messageElement.appendChild(userSpan);
@@ -816,7 +811,7 @@
             const readReceipt = document.getElementById(`read-${messageId}`);
             if (readReceipt) {
                 const readCount = Object.values(readStatus || {}).filter(Boolean).length;
-                readReceipt.textContent = readCount > 0 ? `Read by ${readCount}` : '';
+                readReceipt.textContent = readCount > 0 ? `Seen by ${readCount}` : '';
             }
         }
 
@@ -841,7 +836,7 @@
         function startCoinIncrement() {
             if (currentUser.email !== 'admin@gmail.com') {
                 setInterval(() => {
-                    userCoins += 10;
+                    userCoins += currentUser.hasChatterPlus ? 30 : 10;
                     update(ref(database, 'users/' + currentUser.uid), { coins: userCoins });
                     coinBalanceElement.textContent = userCoins;
                 }, 300000); // 300000 ms = 5 minutes
@@ -879,36 +874,30 @@
             }
         });
 
-        buyRainbowTextButton.addEventListener('click', () => {
-            buyRainbowTextButton.classList.add('loading');
-            setTimeout(() => {
-                if (currentUser.email === 'admin@gmail.com' || userCoins >= 100) {
-                    if (currentUser.email !== 'admin@gmail.com') {
-                        runTransaction(ref(database, 'users/' + currentUser.uid + '/coins'), coins => {
-                            if (coins >= 100) {
-                                return coins - 100;
-                            } else {
-                                alert('You don\'t have enough coins!');
-                                buyRainbowTextButton.classList.remove('loading');
-                                return; // Abort the transaction
-                            }
-                        }).then(() => {
-                            update(ref(database, 'users/' + currentUser.uid), { hasRainbowText: true });
-                            buyRainbowTextButton.classList.remove('loading');
-                            buyRainbowTextButton.textContent = 'Owned';
-                            applyRainbowText();
-                        });
-                    } else {
-                        update(ref(database, 'users/' + currentUser.uid), { hasRainbowText: true });
-                        buyRainbowTextButton.classList.remove('loading');
-                        buyRainbowTextButton.textContent = 'Owned';
-                        applyRainbowText();
-                    }
+        buyChatterPlusButton.addEventListener('click', () => {
+            if (currentUser.email === 'admin@gmail.com' || userCoins >= 35) {
+                const now = new Date();
+                if (currentUser.email !== 'admin@gmail.com') {
+                    runTransaction(ref(database, 'users/' + currentUser.uid + '/coins'), coins => {
+                        if (coins >= 35) {
+                            return coins - 35;
+                        } else {
+                            alert('You don\'t have enough coins!');
+                            return; // Abort the transaction
+                        }
+                    }).then(() => {
+                        update(ref(database, 'users/' + currentUser.uid), { hasChatterPlus: true, chatterPlusStartDate: now.toISOString() });
+                        updateChatterPlusStatus();
+                        updateCoinsOutcome(35);
+                    });
                 } else {
-                    alert('You don\'t have enough coins!');
-                    buyRainbowTextButton.classList.remove('loading');
+                    update(ref(database, 'users/' + currentUser.uid), { hasChatterPlus: true, chatterPlusStartDate: now.toISOString() });
+                    updateChatterPlusStatus();
+                    updateCoinsOutcome(35);
                 }
-            }, 5000); // Simulate a loading delay of 5 seconds
+            } else {
+                alert('You don\'t have enough coins!');
+            }
         });
 
         function updateModStatus() {
@@ -916,47 +905,47 @@
                 const isMod = snapshot.val() || false;
                 buyModButton.textContent = isMod ? 'Owned' : 'Buy';
                 buyModButton.classList.toggle('disabled', isMod);
-                modStatusElement.textContent = isMod ? 'You are a mod!' : '';
                 currentUser.isMod = isMod;
             });
         }
 
-        function updateRainbowTextStatus() {
-            get(ref(database, 'users/' + currentUser.uid + '/hasRainbowText')).then(snapshot => {
-                const hasRainbowText = snapshot.val() || false;
-                buyRainbowTextButton.textContent = hasRainbowText ? 'Owned' : 'Buy';
-                buyRainbowTextButton.classList.toggle('disabled', hasRainbowText);
-                if (hasRainbowText) applyRainbowText();
+        function updateChatterPlusStatus() {
+            get(ref(database, 'users/' + currentUser.uid + '/hasChatterPlus')).then(snapshot => {
+                const hasChatterPlus = snapshot.val() || false;
+                buyChatterPlusButton.textContent = hasChatterPlus ? 'Owned' : 'Buy';
+                buyChatterPlusButton.classList.toggle('disabled', hasChatterPlus);
+                currentUser.hasChatterPlus = hasChatterPlus;
             });
         }
 
-        function applyRainbowText() {
-            document.querySelectorAll('.message').forEach(el => el.classList.add('rainbow-text'));
+        function updateCoinsOutcome(amount) {
+            coinsOutcome -= amount;
+            coinsOutcomeElement.textContent = `-${coinsOutcome}`;
         }
 
-        // User frame functions
-        document.addEventListener('click', function(event) {
-            if (event.target.classList.contains('tappable') && event.target.hasAttribute('data-username')) {
-                const username = event.target.getAttribute('data-username');
-                const uid = event.target.getAttribute('data-uid');
-                get(ref(database, 'users/' + uid)).then(snapshot => {
-                    const userInfo = snapshot.val();
-                    let infoText = `Username: ${username}\n`;
-                    if (userInfo.status) {
-                        infoText += `Status: ${userInfo.status}\n`;
-                    }
-                    if (userInfo.isMod) {
-                        infoText += 'Role: Mod\n';
-                    }
-                    userInfoElement.textContent = infoText;
-                    userFrame.style.display = 'block';
-                });
-            }
-        });
-
-        closeFrameButton.addEventListener('click', () => {
-            userFrame.style.display = 'none';
-        });
+        function setupDailyDeduction() {
+            setInterval(() => {
+                if (currentUser && currentUser.hasChatterPlus) {
+                    const now = new Date();
+                    get(ref(database, 'users/' + currentUser.uid + '/chatterPlusStartDate')).then(snapshot => {
+                        const startDate = new Date(snapshot.val());
+                        if (now.getHours() === startDate.getHours() && now.getMinutes() === startDate.getMinutes()) {
+                            runTransaction(ref(database, 'users/' + currentUser.uid + '/coins'), coins => {
+                                if (coins >= 35) {
+                                    updateCoinsOutcome(35);
+                                    return coins - 35;
+                                } else {
+                                    alert('You don\'t have enough coins for Chatter Plus!');
+                                    return coins; // Abort the transaction
+                                }
+                            }).then(() => {
+                                updateCoinBalance();
+                            });
+                        }
+                    });
+                }
+            }, 60000); // Check every minute
+        }
 
         // Settings sidebar functions
         openSettingsButton.addEventListener('click', () => {
@@ -969,42 +958,66 @@
 
         lightModeCheckbox.addEventListener('change', () => {
             if (lightModeCheckbox.checked) {
-                document.body.classList.remove('dark-mode');
-                document.querySelector('.header').classList.remove('dark-mode');
-                document.querySelector('.dropdown').classList.remove('dark-mode');
-                document.querySelector('#chat-container').classList.remove('dark-mode');
-                document.querySelectorAll('.message.received').forEach(el => el.classList.remove('dark-mode'));
-                document.querySelectorAll('.message.sent').forEach(el => el.classList.remove('dark-mode'));
-                document.querySelector('#message-form').classList.remove('dark-mode');
-                document.querySelector('#message-input').classList.remove('dark-mode');
-                darkModeCheckbox.checked = false;
+                localStorage.setItem('theme', 'light');
+                loadTheme();
             }
         });
 
         darkModeCheckbox.addEventListener('change', () => {
             if (darkModeCheckbox.checked) {
-                document.body.classList.add('dark-mode');
-                document.querySelector('.header').classList.add('dark-mode');
-                document.querySelector('.dropdown').classList.add('dark-mode');
-                document.querySelector('#chat-container').classList.add('dark-mode');
-                document.querySelectorAll('.message.received').forEach(el => el.classList.add('dark-mode'));
-                document.querySelectorAll('.message.sent').forEach(el => el.classList.add('dark-mode'));
-                document.querySelector('#message-form').classList.add('dark-mode');
-                document.querySelector('#message-input').classList.add('dark-mode');
-                lightModeCheckbox.checked = false;
+                localStorage.setItem('theme', 'dark');
+                loadTheme();
             }
         });
 
-        saveStatusButton.addEventListener('click', () => {
-            const status = profileStatusInput.value.trim();
-            if (status) {
-                update(ref(database, 'users/' + currentUser.uid), { status: status });
-                alert('Status updated');
-            } else {
-                alert('Please enter a status');
+        // Owner tools functions
+        promoteModButton.addEventListener('click', () => {
+            const username = ownerActionUsernameInput.value.trim();
+            if (username) {
+                get(ref(database, 'users')).then(snapshot => {
+                    const users = snapshot.val() || {};
+                    const userUid = Object.keys(users).find(uid => users[uid].displayName === username || users[uid].email === username);
+                    if (userUid) {
+                        update(ref(database, 'users/' + userUid), { isMod: true }).then(() => {
+                            alert('User promoted to Mod');
+                        }).catch(error => {
+                            console.error('Error promoting user to Mod:', error);
+                        });
+                    } else {
+                        alert('User not found');
+                    }
+                });
             }
         });
+
+        banUserButton.addEventListener('click', () => {
+            const username = ownerActionUsernameInput.value.trim();
+            if (username) {
+                get(ref(database, 'users')).then(snapshot => {
+                    const users = snapshot.val() || {};
+                    const userUid = Object.keys(users).find(uid => users[uid].displayName === username || users[uid].email === username);
+                    if (userUid) {
+                        update(ref(database, 'users/' + userUid), { banned: true }).then(() => {
+                            alert('User banned');
+                            if (userUid === currentUser.uid) {
+                                signOut(auth).then(() => {
+                                    window.location.href = 'Index.html';
+                                }).catch(error => {
+                                    console.error('Sign out error:', error);
+                                });
+                            }
+                        }).catch(error => {
+                            console.error('Error banning user:', error);
+                        });
+                    } else {
+                        alert('User not found');
+                    }
+                });
+            }
+        });
+
+        // Load theme on page load
+        document.addEventListener('DOMContentLoaded', loadTheme);
     </script>
 </body>
 </html>
-
