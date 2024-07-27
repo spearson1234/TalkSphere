@@ -889,6 +889,10 @@
                 buyChatterPlusButton.textContent = hasChatterPlus ? 'Owned' : 'Buy';
                 buyChatterPlusButton.classList.toggle('disabled', hasChatterPlus);
                 currentUser.hasChatterPlus = hasChatterPlus;
+
+                if (hasChatterPlus) {
+                    updateCoinsOutcome(35);
+                }
             });
         }
 
