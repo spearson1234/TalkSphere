@@ -826,6 +826,10 @@
         });
 
         buyModButton.addEventListener('click', () => {
+            if (currentUser.isMod) {
+                alert('You already own this item.');
+                return;
+            }
             if (currentUser.email === 'admin@gmail.com' || userCoins >= 1500000) {
                 if (currentUser.email !== 'admin@gmail.com') {
                     runTransaction(ref(database, 'users/' + currentUser.uid + '/coins'), coins => {
@@ -849,6 +853,10 @@
         });
 
         buyChatterPlusButton.addEventListener('click', () => {
+            if (currentUser.hasChatterPlus) {
+                alert('You already own this item.');
+                return;
+            }
             if (currentUser.email === 'admin@gmail.com' || userCoins >= 35) {
                 const now = new Date();
                 if (currentUser.email !== 'admin@gmail.com') {
@@ -889,10 +897,6 @@
                 buyChatterPlusButton.textContent = hasChatterPlus ? 'Owned' : 'Buy';
                 buyChatterPlusButton.classList.toggle('disabled', hasChatterPlus);
                 currentUser.hasChatterPlus = hasChatterPlus;
-
-                if (hasChatterPlus) {
-                    updateCoinsOutcome(35);
-                }
             });
         }
 
