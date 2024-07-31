@@ -136,6 +136,10 @@
             display: flex;
             padding: 15px;
             background-color: #f0f2f5;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 800px;
         }
         #message-form.dark-mode {
             background-color: #383838;
@@ -435,12 +439,13 @@
     <div id="chat-container">
         <div id="messages"></div>
         <div id="typing-indicator"></div>
-        <form id="message-form">
-            <input type="text" id="message-input" placeholder="Type a message...">
-            <button type="submit">➤</button>
-            <button type="button" id="basket-button">🛒</button>
-        </form>
     </div>
+
+    <form id="message-form">
+        <input type="text" id="message-input" placeholder="Type a message...">
+        <button type="submit">➤</button>
+        <button type="button" id="basket-button">🛒</button>
+    </form>
 
     <div class="sidebar" id="sidebar">
         <button class="close-btn" id="close-sidebar">×</button>
