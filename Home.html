@@ -77,6 +77,13 @@
         .dropdown.dark-mode a:hover {
             background-color: #383838;
         }
+        .dropdown #coins-outcome {
+            padding: 10px 15px;
+            color: #333;
+        }
+        .dropdown.dark-mode #coins-outcome {
+            color: #e0e0e0;
+        }
         @media (max-width: 768px) {
             .dropdown {
                 right: auto;
@@ -136,10 +143,6 @@
             display: flex;
             padding: 15px;
             background-color: #f0f2f5;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            max-width: 800px;
         }
         #message-form.dark-mode {
             background-color: #383838;
@@ -432,6 +435,7 @@
                 <a href="#" id="change-username">Change Username</a>
                 <a href="#" id="logout">Log out</a>
                 <a href="#" id="open-settings">Settings</a>
+                <div id="coins-outcome">Coins Outcome: 0</div>
             </div>
         </div>
     </header>
@@ -439,13 +443,12 @@
     <div id="chat-container">
         <div id="messages"></div>
         <div id="typing-indicator"></div>
+        <form id="message-form">
+            <input type="text" id="message-input" placeholder="Type a message...">
+            <button type="submit">➤</button>
+            <button type="button" id="basket-button">🛒</button>
+        </form>
     </div>
-
-    <form id="message-form">
-        <input type="text" id="message-input" placeholder="Type a message...">
-        <button type="submit">➤</button>
-        <button type="button" id="basket-button">🛒</button>
-    </form>
 
     <div class="sidebar" id="sidebar">
         <button class="close-btn" id="close-sidebar">×</button>
@@ -521,11 +524,13 @@
         const darkModeCheckbox = document.getElementById('dark-mode-checkbox');
         const chatContainer = document.getElementById('chat-container');
         const chatTitle = document.getElementById('chat-title');
+        const coinsOutcomeElement = document.getElementById('coins-outcome');
 
         let currentUser = null;
         let users = {};
         let userCoins = 0;
         let displayedMessages = new Set();
+        let totalCoinsSpent = 0;
 
         const restrictedUsernames = ["admin", "ceo"];
 
@@ -580,8 +585,8 @@
                     });
                 }
 
-                updateModStatus();
-                updateChatterPlusStatus();
+                updateModStatus(true);
+                updateChatterPlusStatus(true);
                 startCoinIncrement();
                 setupDailyDeduction();
             } else {
@@ -839,11 +844,15 @@
                         }
                     }).then(() => {
                         update(ref(database, 'users/' + currentUser.uid), { isMod: true });
-                        updateModStatus();
+                        totalCoinsSpent += 1500000;
+                        updateCoinsOutcome();
+                        updateModStatus(false);
                     });
                 } else {
                     update(ref(database, 'users/' + currentUser.uid), { isMod: true });
-                    updateModStatus();
+                    totalCoinsSpent += 1500000;
+                    updateCoinsOutcome();
+                    updateModStatus(false);
                 }
             } else {
                 alert('You don\'t have enough coins!');
@@ -867,32 +876,44 @@
                         }
                     }).then(() => {
                         update(ref(database, 'users/' + currentUser.uid), { hasChatterPlus: true, chatterPlusStartDate: now.toISOString() });
-                        updateChatterPlusStatus();
+                        totalCoinsSpent += 35;
+                        updateCoinsOutcome();
+                        updateChatterPlusStatus(false);
                     });
                 } else {
                     update(ref(database, 'users/' + currentUser.uid), { hasChatterPlus: true, chatterPlusStartDate: now.toISOString() });
-                    updateChatterPlusStatus();
+                    totalCoinsSpent += 35;
+                    updateCoinsOutcome();
+                    updateChatterPlusStatus(false);
                 }
             } else {
                 alert('You don\'t have enough coins!');
             }
         });
 
-        function updateModStatus() {
+        function updateModStatus(onLoad) {
             get(ref(database, 'users/' + currentUser.uid + '/isMod')).then(snapshot => {
                 const isMod = snapshot.val() || false;
                 buyModButton.textContent = isMod ? 'Owned' : 'Buy';
                 buyModButton.classList.toggle('disabled', isMod);
                 currentUser.isMod = isMod;
+                if (isMod && onLoad) {
+                    totalCoinsSpent += 1500000;
+                    updateCoinsOutcome();
+                }
             });
         }
 
-        function updateChatterPlusStatus() {
+        function updateChatterPlusStatus(onLoad) {
             get(ref(database, 'users/' + currentUser.uid + '/hasChatterPlus')).then(snapshot => {
                 const hasChatterPlus = snapshot.val() || false;
                 buyChatterPlusButton.textContent = hasChatterPlus ? 'Owned' : 'Buy';
                 buyChatterPlusButton.classList.toggle('disabled', hasChatterPlus);
                 currentUser.hasChatterPlus = hasChatterPlus;
+                if (hasChatterPlus && onLoad) {
+                    totalCoinsSpent += 35;
+                    updateCoinsOutcome();
+                }
             });
         }
 
@@ -911,6 +932,8 @@
                                     return coins; // Abort the transaction
                                 }
                             }).then(() => {
+                                totalCoinsSpent += 35;
+                                updateCoinsOutcome();
                                 updateCoinBalance();
                             });
                         }
@@ -955,6 +978,11 @@
 
         // Load theme on page load
         document.addEventListener('DOMContentLoaded', loadTheme);
+
+        // Update the coins outcome display
+        function updateCoinsOutcome() {
+            coinsOutcomeElement.textContent = `Coins Outcome: ${totalCoinsSpent}`;
+        }
     </script>
 </body>
 </html>
