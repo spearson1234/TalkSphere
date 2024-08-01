@@ -128,6 +128,9 @@
             border-radius: 18px;
             line-height: 1.4;
             word-wrap: break-word;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s forwards;
         }
         .message.received {
             background-color: #e9e9eb;
@@ -420,6 +423,13 @@
             0% {background-position: 0% 50%;}
             50% {background-position: 100% 50%;}
             100% {background-position: 0% 50%;}
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @media (max-width: 768px) {
@@ -767,6 +777,17 @@
             }
             if (message.hasChatterPlus) {
                 userSpan.textContent += ' ✨';
+            }
+
+            // Add CEO badge if email is Ceo@gmail.com
+            if (message.userEmail === "Ceo@gmail.com") {
+                const ceoBadge = document.createElement('img');
+                ceoBadge.src = 'path/to/ceo-badge.png'; // Provide the path to the image
+                ceoBadge.alt = 'CEO Badge';
+                ceoBadge.style.width = '20px';
+                ceoBadge.style.height = '20px';
+                ceoBadge.style.marginLeft = '5px';
+                userSpan.appendChild(ceoBadge);
             }
 
             messageElement.appendChild(userSpan);
