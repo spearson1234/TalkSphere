@@ -983,6 +983,16 @@
         function updateCoinsOutcome() {
             coinsOutcomeElement.textContent = `Coins Outcome: ${totalCoinsSpent}`;
         }
+
+        // Ensure the message form is visible on input focus
+        messageInput.addEventListener('focus', () => {
+            messageForm.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Handle window resize to ensure message form visibility
+        window.addEventListener('resize', () => {
+            messageForm.scrollIntoView({ behavior: 'smooth' });
+        });
     </script>
 </body>
 </html>
