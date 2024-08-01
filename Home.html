@@ -30,6 +30,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
         }
         .header.dark-mode {
             background-color: #282828;
@@ -104,8 +108,10 @@
             margin: 0 auto;
             background-color: #fff;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            overflow-y: auto;
             transition: transform 0.3s ease-in-out;
+            padding-top: 80px; /* Height of the header */
+            padding-bottom: 80px; /* Height of the message form */
         }
         #chat-container.dark-mode {
             background-color: #282828;
@@ -143,6 +149,10 @@
             display: flex;
             padding: 15px;
             background-color: #f0f2f5;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 100;
         }
         #message-form.dark-mode {
             background-color: #383838;
@@ -713,6 +723,7 @@
                 }).then(() => {
                     messageInput.value = '';
                     set(ref(database, 'typing/' + currentUser.uid), null);
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to the bottom when a message is sent
                 });
             }
         });
@@ -993,6 +1004,17 @@
         window.addEventListener('resize', () => {
             messageForm.scrollIntoView({ behavior: 'smooth' });
         });
+
+        // Ensure the user can scroll to the top of the chat container
+        chatTitle.addEventListener('click', () => {
+            chatContainer.scrollTop = 0;
+        });
+
+        // Ensure the user can scroll to the message input
+        basketButton.addEventListener('click', () => {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        });
+
     </script>
 </body>
 </html>
