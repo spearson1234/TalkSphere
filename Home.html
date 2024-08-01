@@ -111,7 +111,7 @@
             overflow-y: auto;
             transition: transform 0.3s ease-in-out;
             padding-top: 80px; /* Height of the header */
-            padding-bottom: 80px; /* Height of the message form */
+            padding-bottom: 120px; /* Height of the message form */
         }
         #chat-container.dark-mode {
             background-color: #282828;
@@ -128,9 +128,7 @@
             border-radius: 18px;
             line-height: 1.4;
             word-wrap: break-word;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeIn 0.5s forwards;
+            animation: messageSend 0.6s ease forwards;
         }
         .message.received {
             background-color: #e9e9eb;
@@ -148,6 +146,16 @@
         .message.sent.dark-mode {
             background-color: #0056b3;
         }
+        @keyframes messageSend {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
         #message-form {
             display: flex;
             padding: 15px;
@@ -156,9 +164,19 @@
             bottom: 0;
             width: 100%;
             z-index: 100;
+            flex-direction: column;
         }
         #message-form.dark-mode {
             background-color: #383838;
+        }
+        #message-preview {
+            margin-bottom: 10px;
+            font-style: italic;
+            color: #999;
+        }
+        #message-input-container {
+            display: flex;
+            align-items: center;
         }
         #message-input {
             flex-grow: 1;
@@ -425,13 +443,6 @@
             100% {background-position: 0% 50%;}
         }
 
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         @media (max-width: 768px) {
             .settings-sidebar .toggle-button {
                 flex-direction: column;
@@ -464,9 +475,12 @@
         <div id="messages"></div>
         <div id="typing-indicator"></div>
         <form id="message-form">
-            <input type="text" id="message-input" placeholder="Type a message...">
-            <button type="submit">➤</button>
-            <button type="button" id="basket-button">🛒</button>
+            <div id="message-preview"></div>
+            <div id="message-input-container">
+                <input type="text" id="message-input" placeholder="Type a message...">
+                <button type="submit">➤</button>
+                <button type="button" id="basket-button">🛒</button>
+            </div>
         </form>
     </div>
 
@@ -545,6 +559,7 @@
         const chatContainer = document.getElementById('chat-container');
         const chatTitle = document.getElementById('chat-title');
         const coinsOutcomeElement = document.getElementById('coins-outcome');
+        const messagePreview = document.getElementById('message-preview');
 
         let currentUser = null;
         let users = {};
@@ -704,6 +719,7 @@
                 user: currentUser.displayName || currentUser.email,
                 isTyping: messageInput.value.length > 0
             });
+            messagePreview.textContent = messageInput.value;
         });
 
         onValue(ref(database, 'typing'), snapshot => {
@@ -732,6 +748,7 @@
                     read: {}
                 }).then(() => {
                     messageInput.value = '';
+                    messagePreview.textContent = '';
                     set(ref(database, 'typing/' + currentUser.uid), null);
                     messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to the bottom when a message is sent
                 });
