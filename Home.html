@@ -791,7 +791,7 @@
                 userSpan.appendChild(modSpan);
             }
             if (message.hasChatterPlus) {
-                userSpan.textContent += '🍀';
+                userSpan.textContent += ' ✨';
             }
 
             // Add CEO badge if email is Ceo@gmail.com
@@ -1014,7 +1014,7 @@
 
         rainbowEffectCheckbox.addEventListener('change', () => {
             if (rainbowEffectCheckbox.checked) {
-                if (currentUser.hasChatterPlus) {
+                if (currentUser && currentUser.hasChatterPlus) {
                     chatContainer.classList.add('rainbow-effect');
                     localStorage.setItem('rainbowEffect', 'enabled');
                 } else {
@@ -1041,7 +1041,7 @@
         // Apply rainbow effect if enabled
         function applyRainbowEffect() {
             const rainbowEffect = localStorage.getItem('rainbowEffect');
-            if (rainbowEffect === 'enabled' && currentUser.hasChatterPlus) {
+            if (rainbowEffect === 'enabled' && currentUser && currentUser.hasChatterPlus) {
                 chatContainer.classList.add('rainbow-effect');
                 rainbowEffectCheckbox.checked = true;
             } else {
@@ -1053,7 +1053,9 @@
         // Load theme and rainbow effect on page load
         document.addEventListener('DOMContentLoaded', () => {
             loadTheme();
-            applyRainbowEffect();
+            if (currentUser) {
+                applyRainbowEffect();
+            }
         });
 
         // Update the coins outcome display
