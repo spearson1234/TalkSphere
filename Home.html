@@ -111,7 +111,7 @@
             overflow-y: auto;
             transition: transform 0.3s ease-in-out;
             padding-top: 80px; /* Height of the header */
-            padding-bottom: 80px; /* Height of the message form */
+            padding-bottom: 100px; /* Height of the message form */
         }
         #chat-container.dark-mode {
             background-color: #282828;
@@ -416,10 +416,30 @@
             border-radius: 4px;
         }
 
+        /* Rainbow Effect */
+        .rainbow-effect .message {
+            animation: rainbow 5s linear infinite;
+        }
+
         @keyframes gradient {
             0% {background-position: 0% 50%;}
             50% {background-position: 100% 50%;}
             100% {background-position: 0% 50%;}
+        }
+
+        @keyframes rainbow {
+            0% { color: #ff006e; }
+            20% { color: #ffaf40; }
+            40% { color: #00ff87; }
+            60% { color: #009fff; }
+            80% { color: #ff00e0; }
+            100% { color: #ff006e; }
+        }
+
+        .chatter-plus-only .red-dot {
+            color: red;
+            font-size: 12px;
+            vertical-align: super;
         }
 
         @media (max-width: 768px) {
@@ -488,6 +508,10 @@
             <input type="checkbox" id="dark-mode-checkbox">
             <span>Toggle Dark Mode</span>
         </div>
+        <div class="toggle-button chatter-plus-only" id="toggle-rainbow-effect">
+            <input type="checkbox" id="rainbow-effect-checkbox">
+            <span>Rainbow Effect <span class="red-dot">•</span></span>
+        </div>
         <div class="section-divider"></div>
     </div>
 
@@ -532,6 +556,7 @@
         const closeSettingsSidebarButton = document.getElementById('close-settings-sidebar');
         const lightModeCheckbox = document.getElementById('light-mode-checkbox');
         const darkModeCheckbox = document.getElementById('dark-mode-checkbox');
+        const rainbowEffectCheckbox = document.getElementById('rainbow-effect-checkbox');
         const chatContainer = document.getElementById('chat-container');
         const chatTitle = document.getElementById('chat-title');
         const coinsOutcomeElement = document.getElementById('coins-outcome');
@@ -987,6 +1012,21 @@
             }
         });
 
+        rainbowEffectCheckbox.addEventListener('change', () => {
+            if (rainbowEffectCheckbox.checked) {
+                if (currentUser.hasChatterPlus) {
+                    chatContainer.classList.add('rainbow-effect');
+                    localStorage.setItem('rainbowEffect', 'enabled');
+                } else {
+                    alert('This feature is available only for Chatter Plus users.');
+                    rainbowEffectCheckbox.checked = false;
+                }
+            } else {
+                chatContainer.classList.remove('rainbow-effect');
+                localStorage.setItem('rainbowEffect', 'disabled');
+            }
+        });
+
         // Apply theme to messages
         function applyThemeToMessages() {
             const theme = localStorage.getItem('theme');
@@ -998,8 +1038,23 @@
             });
         }
 
-        // Load theme on page load
-        document.addEventListener('DOMContentLoaded', loadTheme);
+        // Apply rainbow effect if enabled
+        function applyRainbowEffect() {
+            const rainbowEffect = localStorage.getItem('rainbowEffect');
+            if (rainbowEffect === 'enabled' && currentUser.hasChatterPlus) {
+                chatContainer.classList.add('rainbow-effect');
+                rainbowEffectCheckbox.checked = true;
+            } else {
+                chatContainer.classList.remove('rainbow-effect');
+                rainbowEffectCheckbox.checked = false;
+            }
+        }
+
+        // Load theme and rainbow effect on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            applyRainbowEffect();
+        });
 
         // Update the coins outcome display
         function updateCoinsOutcome() {
