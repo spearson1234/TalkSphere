@@ -362,7 +362,6 @@
             margin-left: 5px;
             opacity: 0.6;
         }
-
         /* Settings Sidebar Styles */
         .settings-sidebar {
             position: fixed;
@@ -436,13 +435,11 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-
         @keyframes gradient {
             0% {background-position: 0% 50%;}
             50% {background-position: 100% 50%;}
             100% {background-position: 0% 50%;}
         }
-
         @media (max-width: 768px) {
             .settings-sidebar .toggle-button {
                 flex-direction: column;
@@ -470,7 +467,6 @@
             </div>
         </div>
     </header>
-
     <div id="chat-container">
         <div id="messages"></div>
         <div id="typing-indicator"></div>
@@ -483,7 +479,6 @@
             </div>
         </form>
     </div>
-
     <div class="sidebar" id="sidebar">
         <button class="close-btn" id="close-sidebar">×</button>
         <h2>Shop</h2>
@@ -499,8 +494,6 @@
             <button class="shop-button" id="buy-chatter-plus">Buy</button>
         </div>
     </div>
-
-    <!-- Settings Sidebar -->
     <div class="settings-sidebar" id="settings-sidebar">
         <button class="close-btn" id="close-settings-sidebar">×</button>
         <h2>Settings</h2>
@@ -514,15 +507,11 @@
         </div>
         <div class="section-divider"></div>
     </div>
-
-    <!-- Firebase App (the core Firebase SDK) -->
     <script type="module">
-        // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-        import { getDatabase, ref, set, onValue, onDisconnect, update, serverTimestamp, push, child, get, runTransaction } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+        import { getDatabase, ref, set, onValue, onDisconnect, update, serverTimestamp, push, runTransaction } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
-        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
             authDomain: "login-71866.firebaseapp.com",
@@ -533,7 +522,6 @@
             appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
@@ -569,7 +557,6 @@
 
         const restrictedUsernames = ["admin", "ceo"];
 
-        // Load theme from localStorage
         function loadTheme() {
             const theme = localStorage.getItem('theme');
             if (theme === 'dark') {
@@ -629,7 +616,6 @@
             }
         });
 
-        // Mobile-friendly dropdown toggle
         document.addEventListener('DOMContentLoaded', function() {
             userEmailElement.addEventListener('click', function() {
                 const dropdown = document.querySelector('.dropdown');
@@ -819,6 +805,9 @@
             messageElement.appendChild(readReceipt);
 
             updateReadReceipt(messageId, message.read);
+
+            // Apply animation to the new message
+            messageElement.style.animation = 'messageSend 0.6s ease forwards';
 
             return messageElement;
         }
@@ -1014,7 +1003,6 @@
             }
         });
 
-        // Apply theme to messages
         function applyThemeToMessages() {
             const theme = localStorage.getItem('theme');
             document.querySelectorAll('.message.received').forEach(el => {
@@ -1025,30 +1013,24 @@
             });
         }
 
-        // Load theme on page load
         document.addEventListener('DOMContentLoaded', loadTheme);
 
-        // Update the coins outcome display
         function updateCoinsOutcome() {
             coinsOutcomeElement.textContent = `Coins Outcome: ${totalCoinsSpent}`;
         }
 
-        // Ensure the message form is visible on input focus
         messageInput.addEventListener('focus', () => {
             messageForm.scrollIntoView({ behavior: 'smooth' });
         });
 
-        // Handle window resize to ensure message form visibility
         window.addEventListener('resize', () => {
             messageForm.scrollIntoView({ behavior: 'smooth' });
         });
 
-        // Ensure the user can scroll to the top of the chat container
         chatTitle.addEventListener('click', () => {
             chatContainer.scrollTop = 0;
         });
 
-        // Ensure the user can scroll to the message input
         basketButton.addEventListener('click', () => {
             chatContainer.scrollTop = chatContainer.scrollHeight;
         });
