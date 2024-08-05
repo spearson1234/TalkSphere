@@ -302,6 +302,10 @@
         .shop-item .item-price {
             color: #888;
         }
+        .shop-item .item-price .line-through {
+            text-decoration: line-through;
+            margin-right: 5px;
+        }
         .shop-item .item-notice {
             font-size: 12px;
             color: #999;
@@ -578,7 +582,6 @@
             cursor: pointer;
             border: none;
             border-radius: 5px;
-            width: 48%; /* Adjust the width to prevent squeezing */
         }
         #pause-account-modal .modal-buttons .yes-button {
             background-color: #d9534f;
@@ -587,20 +590,6 @@
         #pause-account-modal .modal-buttons .no-button {
             background-color: #5bc0de;
             color: #fff;
-        }
-
-        @media (max-width: 768px) {
-            #pause-account-modal .modal-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            #pause-account-modal .modal-buttons button {
-                width: 100%;
-                margin-bottom: 10px;
-            }
-            #pause-account-modal .modal-buttons button:last-child {
-                margin-bottom: 0;
-            }
         }
     </style>
 </head>
@@ -642,8 +631,8 @@
         </div>
         <div class="shop-item" id="chatter-plus-item">
             <span class="item-name">Chatter Plus</span>
-            <span class="item-price"><del>35 Coins</del> 70 Coins</span>
-            <div class="item-notice">Notice: 35 Coins will be taken out of your balance every day at the time you bought it.</div>
+            <span class="item-price"><span class="line-through">35 Coins</span>70 Coins</span>
+            <div class="item-notice">Notice: 70 Coins will be taken out of your balance every day at the time you bought it.</div>
             <button class="shop-button" id="buy-chatter-plus">Buy</button>
         </div>
     </div>
@@ -1099,25 +1088,25 @@
                 alert('You already own this item.');
                 return;
             }
-            if (currentUser.email === 'admin@gmail.com' || userCoins >= 35) {
+            if (currentUser.email === 'admin@gmail.com' || userCoins >= 70) {
                 const now = new Date();
                 if (currentUser.email !== 'admin@gmail.com') {
                     runTransaction(ref(database, 'users/' + currentUser.uid + '/coins'), coins => {
-                        if (coins >= 35) {
-                            return coins - 35;
+                        if (coins >= 70) {
+                            return coins - 70;
                         } else {
                             alert('You don\'t have enough coins!');
                             return; // Abort the transaction
                         }
                     }).then(() => {
                         update(ref(database, 'users/' + currentUser.uid), { hasChatterPlus: true, chatterPlusStartDate: now.toISOString() });
-                        totalCoinsSpent += 35;
+                        totalCoinsSpent += 70;
                         updateCoinsOutcome();
                         updateChatterPlusStatus(false);
                     });
                 } else {
                     update(ref(database, 'users/' + currentUser.uid), { hasChatterPlus: true, chatterPlusStartDate: now.toISOString() });
-                    totalCoinsSpent += 35;
+                    totalCoinsSpent += 70;
                     updateCoinsOutcome();
                     updateChatterPlusStatus(false);
                 }
@@ -1146,7 +1135,7 @@
                 buyChatterPlusButton.classList.toggle('disabled', hasChatterPlus);
                 currentUser.hasChatterPlus = hasChatterPlus;
                 if (hasChatterPlus && onLoad) {
-                    totalCoinsSpent += 35;
+                    totalCoinsSpent += 70;
                     updateCoinsOutcome();
                 }
                 clockButton.style.display = hasChatterPlus ? 'inline-block' : 'none';
@@ -1161,14 +1150,14 @@
                         const startDate = new Date(snapshot.val());
                         if (startDate && now.getHours() === startDate.getHours() && now.getMinutes() === startDate.getMinutes()) {
                             runTransaction(ref(database, 'users/' + currentUser.uid + '/coins'), coins => {
-                                if (coins >= 35) {
-                                    return coins - 35;
+                                if (coins >= 70) {
+                                    return coins - 70;
                                 } else {
                                     alert('You don\'t have enough coins for Chatter Plus!');
                                     return coins; // Abort the transaction
                                 }
                             }).then(() => {
-                                totalCoinsSpent += 35;
+                                totalCoinsSpent += 70;
                                 updateCoinsOutcome();
                                 updateCoinBalance();
                             });
