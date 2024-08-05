@@ -85,10 +85,10 @@
         }
         .dropdown #coins-outcome {
             padding: 10px 15px;
-            color: #333;
+            color: red;
         }
         .dropdown.dark-mode #coins-outcome {
-            color: #e0e0e0;
+            color: red;
         }
         @media (max-width: 768px) {
             .dropdown {
@@ -145,6 +145,9 @@
         }
         .message.sent.dark-mode {
             background-color: #0056b3;
+        }
+        .message.scheduled {
+            opacity: 0.5;
         }
         #message-form {
             display: flex;
@@ -203,6 +206,22 @@
         }
         #basket-button:hover {
             background-color: #e0b800;
+        }
+        #clock-button {
+            background-color: #ff006e;
+            margin-left: 10px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #clock-button:hover {
+            background-color: #d40052;
         }
         .online-indicator {
             width: 10px;
@@ -389,8 +408,7 @@
             margin-bottom: 10px;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.3s;
-            background: linear-gradient(45deg, #ff006e, #ffaf40, #00ff87, #009fff, #ff00e0);
-            background-size: 400% 400%;
+            background-color: #0084ff;
             color: #fff;
             font-size: 16px;
             text-align: center;
@@ -398,7 +416,6 @@
         }
         .settings-sidebar .toggle-button:hover {
             transform: scale(1.05);
-            animation: gradient 3s ease infinite;
         }
         .settings-sidebar .toggle-button span {
             margin-left: 10px;
@@ -422,9 +439,11 @@
             transition: background-color 0.3s, transform 0.3s;
             font-size: 16px;
             font-weight: bold;
+            background-color: #0084ff;
+            color: #fff;
         }
         .settings-sidebar label:hover {
-            background-color: #e0e0e0;
+            transform: scale(1.05);
         }
         .settings-sidebar.dark-mode label:hover {
             background-color: #484848;
@@ -478,6 +497,96 @@
                 margin-top: 5px;
             }
         }
+
+        /* Chat Statistics Modal */
+        #chat-stats-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 600px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 2000;
+            display: none;
+        }
+        #chat-stats-modal.dark-mode {
+            background-color: #282828;
+            color: #e0e0e0;
+        }
+        #chat-stats-modal h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        #chat-stats-modal ul {
+            list-style: none;
+            padding: 0;
+        }
+        #chat-stats-modal ul li {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        #close-chat-stats {
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: #333;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        #close-chat-stats.dark-mode {
+            color: #e0e0e0;
+        }
+
+        /* Pause Account Modal */
+        #pause-account-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 600px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 2000;
+            display: none;
+        }
+        #pause-account-modal.dark-mode {
+            background-color: #282828;
+            color: #e0e0e0;
+        }
+        #pause-account-modal h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        #pause-account-modal p {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        #pause-account-modal .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        #pause-account-modal .modal-buttons button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+        #pause-account-modal .modal-buttons .yes-button {
+            background-color: #d9534f;
+            color: #fff;
+        }
+        #pause-account-modal .modal-buttons .no-button {
+            background-color: #5bc0de;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -492,7 +601,7 @@
                 <a href="#" id="change-username">Change Username</a>
                 <a href="#" id="logout">Log out</a>
                 <a href="#" id="open-settings">Settings</a>
-                <div id="coins-outcome">Coins Outcome: 0</div>
+                <div id="coins-outcome">Coins Outcome: -0</div>
             </div>
         </div>
     </header>
@@ -504,6 +613,7 @@
             <input type="text" id="message-input" placeholder="Type a message...">
             <button type="submit">➤</button>
             <button type="button" id="basket-button">🛒</button>
+            <button type="button" id="clock-button" style="display: none;">🕒</button>
         </form>
     </div>
 
@@ -531,9 +641,39 @@
         <label for="light-mode-checkbox">Toggle Light Mode</label>
         <input type="checkbox" id="dark-mode-checkbox">
         <label for="dark-mode-checkbox">Toggle Dark Mode</label>
+        <div class="section-divider"></div>
+        <h2>Chatter+</h2>
         <input type="checkbox" id="rainbow-effect-checkbox">
         <label for="rainbow-effect-checkbox">Rainbow Effect <span class="red-dot">•</span></label>
+        <input type="checkbox" id="send-later-checkbox">
+        <label for="send-later-checkbox">Send Later <span class="red-dot">•</span></label>
+        <input type="checkbox" id="chat-stats-checkbox">
+        <label for="chat-stats-checkbox">Chat Statistics <span class="red-dot">•</span></label>
+        <input type="checkbox" id="pause-account-checkbox">
+        <label for="pause-account-checkbox">Pause Account <span class="red-dot">•</span></label>
         <div class="section-divider"></div>
+    </div>
+
+    <!-- Chat Statistics Modal -->
+    <div id="chat-stats-modal">
+        <button id="close-chat-stats">×</button>
+        <h2>Chat Statistics</h2>
+        <ul>
+            <li>People Joined: <span id="people-joined">0</span></li>
+            <li>Chatter+ Purchased: <span id="chatter-plus-purchased">0</span></li>
+            <li>Mod Purchased: <span id="mod-purchased">0</span></li>
+        </ul>
+    </div>
+
+    <!-- Pause Account Modal -->
+    <div id="pause-account-modal">
+        <button id="close-pause-account">×</button>
+        <h2>Pause Account</h2>
+        <p>Are you sure you want to pause your account? This will stop payment and log you out.</p>
+        <div class="modal-buttons">
+            <button class="yes-button">Yes</button>
+            <button class="no-button">No</button>
+        </div>
     </div>
 
     <!-- Firebase App (the core Firebase SDK) -->
@@ -578,9 +718,19 @@
         const lightModeCheckbox = document.getElementById('light-mode-checkbox');
         const darkModeCheckbox = document.getElementById('dark-mode-checkbox');
         const rainbowEffectCheckbox = document.getElementById('rainbow-effect-checkbox');
+        const sendLaterCheckbox = document.getElementById('send-later-checkbox');
+        const chatStatsCheckbox = document.getElementById('chat-stats-checkbox');
+        const pauseAccountCheckbox = document.getElementById('pause-account-checkbox');
         const chatContainer = document.getElementById('chat-container');
         const chatTitle = document.getElementById('chat-title');
         const coinsOutcomeElement = document.getElementById('coins-outcome');
+        const clockButton = document.getElementById('clock-button');
+        const chatStatsModal = document.getElementById('chat-stats-modal');
+        const pauseAccountModal = document.getElementById('pause-account-modal');
+        const closeChatStatsButton = document.getElementById('close-chat-stats');
+        const closePauseAccountButton = document.getElementById('close-pause-account');
+        const yesButton = document.querySelector('.yes-button');
+        const noButton = document.querySelector('.no-button');
 
         let currentUser = null;
         let users = {};
@@ -604,6 +754,8 @@
                 document.querySelector('.settings-sidebar').classList.add('dark-mode');
                 document.querySelectorAll('.message.received').forEach(el => el.classList.add('dark-mode'));
                 document.querySelectorAll('.message.sent').forEach(el => el.classList.add('dark-mode'));
+                chatStatsModal.classList.add('dark-mode');
+                pauseAccountModal.classList.add('dark-mode');
                 darkModeCheckbox.checked = true;
                 lightModeCheckbox.checked = false;
             } else {
@@ -617,6 +769,8 @@
                 document.querySelector('.settings-sidebar').classList.remove('dark-mode');
                 document.querySelectorAll('.message.received').forEach(el => el.classList.remove('dark-mode'));
                 document.querySelectorAll('.message.sent').forEach(el => el.classList.remove('dark-mode'));
+                chatStatsModal.classList.remove('dark-mode');
+                pauseAccountModal.classList.remove('dark-mode');
                 lightModeCheckbox.checked = true;
                 darkModeCheckbox.checked = false;
             }
@@ -626,6 +780,11 @@
             if (user) {
                 currentUser = user;
                 userEmailElement.textContent = user.email;
+                if (user.email === 'admin@gmail.com') {
+                    const adminBadge = document.createElement('span');
+                    adminBadge.textContent = '🛠️';
+                    userEmailElement.appendChild(adminBadge);
+                }
                 loadMessages();
                 loadUsers();
                 setupPresence();
@@ -797,6 +956,10 @@
             messageElement.classList.add('message');
             messageElement.classList.add(message.user === (currentUser.displayName || currentUser.email) ? 'sent' : 'received');
 
+            if (message.scheduled && message.user === (currentUser.displayName || currentUser.email)) {
+                messageElement.classList.add('scheduled');
+            }
+
             const userSpan = document.createElement('span');
             userSpan.textContent = message.user;
             userSpan.classList.add('tappable');
@@ -813,17 +976,6 @@
             }
             if (message.hasChatterPlus) {
                 userSpan.textContent += ' 🍀';
-            }
-
-            // Add CEO badge if email is Ceo@gmail.com
-            if (message.userEmail === "Ceo@gmail.com") {
-                const ceoBadge = document.createElement('img');
-                ceoBadge.src = 'path/to/ceo-badge.png'; // Provide the path to the image
-                ceoBadge.alt = 'CEO Badge';
-                ceoBadge.style.width = '20px';
-                ceoBadge.style.height = '20px';
-                ceoBadge.style.marginLeft = '5px';
-                userSpan.appendChild(ceoBadge);
             }
 
             messageElement.appendChild(userSpan);
@@ -982,6 +1134,7 @@
                     totalCoinsSpent += 35;
                     updateCoinsOutcome();
                 }
+                clockButton.style.display = hasChatterPlus ? 'inline-block' : 'none';
             });
         }
 
@@ -1048,6 +1201,121 @@
             }
         });
 
+        sendLaterCheckbox.addEventListener('change', () => {
+            if (sendLaterCheckbox.checked) {
+                if (currentUser && currentUser.hasChatterPlus) {
+                    clockButton.style.display = 'inline-block';
+                } else {
+                    alert('This feature is available only for Chatter Plus users.');
+                    sendLaterCheckbox.checked = false;
+                    clockButton.style.display = 'none';
+                }
+            } else {
+                clockButton.style.display = 'none';
+            }
+        });
+
+        clockButton.addEventListener('click', () => {
+            if (messageInput.value.trim() === '') {
+                alert('Please enter a message in the box.');
+                return;
+            }
+
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.top = '50%';
+            modal.style.left = '50%';
+            modal.style.transform = 'translate(-50%, -50%)';
+            modal.style.padding = '30px';
+            modal.style.backgroundColor = '#fff';
+            modal.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+            modal.style.zIndex = '2000';
+            modal.style.width = '300px'; // Increase the width of the modal
+            modal.style.height = '200px'; // Increase the height of the modal
+
+            const dateInput = document.createElement('input');
+            dateInput.type = 'datetime-local';
+            dateInput.style.width = '100%';
+            dateInput.style.marginBottom = '20px'; // Increase the margin-bottom
+            dateInput.style.height = '40px'; // Increase the height of the input
+            dateInput.style.fontSize = '16px'; // Increase the font size
+            modal.appendChild(dateInput);
+
+            const saveButton = document.createElement('button');
+            saveButton.textContent = 'Save';
+            saveButton.style.padding = '10px 20px';
+            saveButton.style.backgroundColor = '#0084ff';
+            saveButton.style.color = '#fff';
+            saveButton.style.border = 'none';
+            saveButton.style.cursor = 'pointer';
+            saveButton.style.display = 'block';
+            saveButton.style.margin = '0 auto';
+            saveButton.style.fontSize = '16px'; // Increase the font size
+            saveButton.addEventListener('click', () => {
+                const selectedDate = new Date(dateInput.value);
+                if (isNaN(selectedDate.getTime())) {
+                    alert('Please select a valid date and time.');
+                    return;
+                }
+
+                const currentTime = new Date().getTime();
+                const delay = selectedDate.getTime() - currentTime;
+
+                if (delay <= 0) {
+                    alert('Please select a future date and time.');
+                    return;
+                }
+
+                const message = messageInput.value.trim();
+                const tempMessageId = 'temp-' + Date.now();
+                displayScheduledMessage(message, tempMessageId);
+
+                setTimeout(() => {
+                    push(ref(database, 'messages'), {
+                        user: currentUser.displayName || currentUser.email,
+                        text: message,
+                        timestamp: serverTimestamp(),
+                        isAdmin: currentUser.email === 'admin@gmail.com',
+                        isMod: currentUser.isMod || false,
+                        hasChatterPlus: currentUser.hasChatterPlus || false,
+                        read: {}
+                    });
+                    const tempMessage = document.getElementById(tempMessageId);
+                    if (tempMessage) {
+                        tempMessage.classList.remove('scheduled');
+                    }
+                    set(ref(database, 'typing/' + currentUser.uid), null);
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to the bottom when a message is sent
+                }, delay);
+
+                document.body.removeChild(modal);
+            });
+
+            modal.appendChild(saveButton);
+
+            document.body.appendChild(modal);
+        });
+
+        function displayScheduledMessage(message, messageId) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', 'sent', 'scheduled');
+            messageElement.id = messageId;
+
+            const userSpan = document.createElement('span');
+            userSpan.textContent = currentUser.displayName || currentUser.email;
+            userSpan.classList.add('tappable');
+            userSpan.setAttribute('data-username', currentUser.displayName || currentUser.email);
+            userSpan.setAttribute('data-uid', currentUser.uid);
+            messageElement.appendChild(userSpan);
+
+            const messageText = document.createElement('p');
+            messageText.textContent = message;
+            messageElement.appendChild(messageText);
+
+            messagesDiv.appendChild(messageElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
         // Apply theme to messages
         function applyThemeToMessages() {
             const theme = localStorage.getItem('theme');
@@ -1081,7 +1349,7 @@
 
         // Update the coins outcome display
         function updateCoinsOutcome() {
-            coinsOutcomeElement.textContent = `Coins Outcome: ${totalCoinsSpent}`;
+            coinsOutcomeElement.textContent = `Coins Outcome: -${totalCoinsSpent}`;
         }
 
         // Ensure the message form is visible on input focus
@@ -1102,6 +1370,77 @@
         // Ensure the user can scroll to the message input
         basketButton.addEventListener('click', () => {
             chatContainer.scrollTop = chatContainer.scrollHeight;
+        });
+
+        // Chat Statistics
+        chatStatsCheckbox.addEventListener('change', () => {
+            if (chatStatsCheckbox.checked) {
+                if (currentUser && currentUser.hasChatterPlus) {
+                    updateChatStats();
+                    chatStatsModal.style.display = 'block';
+                } else {
+                    alert('This feature is available only for Chatter Plus users.');
+                    chatStatsCheckbox.checked = false;
+                }
+            } else {
+                chatStatsModal.style.display = 'none';
+            }
+        });
+
+        closeChatStatsButton.addEventListener('click', () => {
+            chatStatsCheckbox.checked = false;
+            chatStatsModal.style.display = 'none';
+        });
+
+        function updateChatStats() {
+            const peopleJoined = Object.keys(users).length;
+            let chatterPlusPurchased = 0;
+            let modPurchased = 0;
+
+            Object.values(users).forEach(user => {
+                if (user.hasChatterPlus) {
+                    chatterPlusPurchased += 1;
+                }
+                if (user.isMod) {
+                    modPurchased += 1;
+                }
+            });
+
+            document.getElementById('people-joined').textContent = peopleJoined;
+            document.getElementById('chatter-plus-purchased').textContent = chatterPlusPurchased;
+            document.getElementById('mod-purchased').textContent = modPurchased;
+        }
+
+        // Pause Account
+        pauseAccountCheckbox.addEventListener('change', () => {
+            if (pauseAccountCheckbox.checked) {
+                if (currentUser && currentUser.hasChatterPlus) {
+                    pauseAccountModal.style.display = 'block';
+                } else {
+                    alert('This feature is available only for Chatter Plus users.');
+                    pauseAccountCheckbox.checked = false;
+                }
+            } else {
+                pauseAccountModal.style.display = 'none';
+            }
+        });
+
+        closePauseAccountButton.addEventListener('click', () => {
+            pauseAccountCheckbox.checked = false;
+            pauseAccountModal.style.display = 'none';
+        });
+
+        yesButton.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = 'Index.html';
+            }).catch(error => {
+                console.error('Sign out error:', error);
+            });
+        });
+
+        noButton.addEventListener('click', () => {
+            pauseAccountCheckbox.checked = false;
+            pauseAccountModal.style.display = 'none';
         });
 
     </script>
