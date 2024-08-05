@@ -578,6 +578,7 @@
             cursor: pointer;
             border: none;
             border-radius: 5px;
+            width: 48%; /* Adjust the width to prevent squeezing */
         }
         #pause-account-modal .modal-buttons .yes-button {
             background-color: #d9534f;
@@ -586,6 +587,20 @@
         #pause-account-modal .modal-buttons .no-button {
             background-color: #5bc0de;
             color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            #pause-account-modal .modal-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            #pause-account-modal .modal-buttons button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            #pause-account-modal .modal-buttons button:last-child {
+                margin-bottom: 0;
+            }
         }
     </style>
 </head>
@@ -627,7 +642,7 @@
         </div>
         <div class="shop-item" id="chatter-plus-item">
             <span class="item-name">Chatter Plus</span>
-            <span class="item-price">35 Coins</span>
+            <span class="item-price"><del>35 Coins</del> 70 Coins</span>
             <div class="item-notice">Notice: 35 Coins will be taken out of your balance every day at the time you bought it.</div>
             <button class="shop-button" id="buy-chatter-plus">Buy</button>
         </div>
