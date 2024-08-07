@@ -90,6 +90,21 @@
         .dropdown.dark-mode #coins-outcome {
             color: red;
         }
+        .dropdown #incoming-coins {
+            padding: 10px 15px;
+            color: green;
+            opacity: 0.6; /* Faded text */
+        }
+        .dropdown.dark-mode #incoming-coins {
+            color: green;
+        }
+        .dropdown #events-menu {
+            padding: 10px 15px;
+            color: black;
+        }
+        .dropdown.dark-mode #events-menu {
+            color: white;
+        }
         @media (max-width: 768px) {
             .dropdown {
                 right: auto;
@@ -152,10 +167,10 @@
         }
         .olympics-logo {
             display: none;
-            width: 40px;
+            width: 60px;
             height: auto;
             position: absolute;
-            bottom: 5px;
+            top: 5px;
             right: 5px;
         }
         #message-form {
@@ -683,7 +698,9 @@
                 <a href="#" id="change-username">Change Username</a>
                 <a href="#" id="logout">Log out</a>
                 <a href="#" id="open-settings">Settings</a>
+                <a href="#" id="events-menu">Events</a>
                 <div id="coins-outcome">Coins Outcome: -0</div>
+                <div id="incoming-coins">Incoming Coins: 0 (Coming soon)</div>
             </div>
         </div>
     </header>
@@ -831,6 +848,7 @@
         const chatContainer = document.getElementById('chat-container');
         const chatTitle = document.getElementById('chat-title');
         const coinsOutcomeElement = document.getElementById('coins-outcome');
+        const incomingCoinsElement = document.getElementById('incoming-coins');
         const clockButton = document.getElementById('clock-button');
         const chatStatsModal = document.getElementById('chat-stats-modal');
         const pauseAccountModal = document.getElementById('pause-account-modal');
@@ -890,8 +908,10 @@
                 currentUser = user;
                 userEmailElement.textContent = user.email;
                 if (user.email === 'admin@gmail.com') {
-                    const adminBadge = document.createElement('span');
-                    adminBadge.textContent = '🛠️';
+                    const adminBadge = document.createElement('img');
+                    adminBadge.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Olympic_rings_without_rims.svg/512px-Olympic_rings_without_rims.svg.png";
+                    adminBadge.classList.add('admin-badge');
+                    adminBadge.style.width = '30px'; // Adjust the size
                     userEmailElement.appendChild(adminBadge);
                 }
                 loadMessages();
@@ -1078,7 +1098,11 @@
             userSpan.setAttribute('data-username', message.user);
             userSpan.setAttribute('data-uid', message.uid || '');
             if (message.isAdmin) {
-                userSpan.textContent += '🛠️';
+                const adminBadge = document.createElement('img');
+                adminBadge.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Olympic_rings_without_rims.svg/512px-Olympic_rings_without_rims.svg.png";
+                adminBadge.classList.add('admin-badge');
+                adminBadge.style.width = '30px'; // Adjust the size
+                userSpan.appendChild(adminBadge);
             }
             if (message.isMod) {
                 const modSpan = document.createElement('span');
@@ -1636,6 +1660,11 @@
             }, 1000);
         }
 
+        // Event menu function
+        const eventsMenu = document.getElementById('events-menu');
+        eventsMenu.addEventListener('click', () => {
+            alert('Events are still in development 🚧 Coming soon!');
+        });
     </script>
 </body>
 </html>
