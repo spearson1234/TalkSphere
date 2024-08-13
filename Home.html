@@ -13,8 +13,7 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            justify-content: space-between;
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
         .banner {
@@ -25,11 +24,21 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            position: relative;
         }
 
         .banner h1 {
             margin: 0;
             font-size: 28px;
+        }
+
+        .countdown {
+            position: absolute;
+            top: 0;
+            right: 20px;
+            font-size: 16px;
+            color: yellow;
         }
 
         .user-email {
@@ -101,7 +110,6 @@
             background-color: #5d3fd3;
         }
 
-        /* Styling for non-button elements */
         .dropdown-menu p {
             margin: 5px 0;
             padding: 0;
@@ -120,6 +128,57 @@
             color: green;
         }
 
+        .chat-frame {
+            padding: 10px;
+            background-color: #34234a;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .chat-message {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #8a2be2;
+            color: white;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            animation: glitch 1.5s infinite;
+        }
+
+        .mod-tag, .chatterplus-tag {
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.5);
+            margin-left: 5px;
+        }
+
+        @keyframes glitch {
+            0% {
+                transform: translate(0);
+                opacity: 1;
+            }
+            20% {
+                transform: translate(-2px, 2px);
+                opacity: 0.8;
+            }
+            40% {
+                transform: translate(2px, -2px);
+                opacity: 1;
+            }
+            60% {
+                transform: translate(-1px, 1px);
+                opacity: 0.9;
+            }
+            80% {
+                transform: translate(1px, -1px);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(0);
+                opacity: 1;
+            }
+        }
+
         .input-container {
             position: relative;
             padding: 10px;
@@ -128,6 +187,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            z-index: 1000;
         }
 
         .input-container input[type="text"] {
@@ -139,7 +199,7 @@
         }
 
         .input-container button {
-            padding: 10px 20px;
+            padding: 10px 40px; /* Increased padding for longer button */
             margin-left: 10px;
             border: none;
             background-color: #8a2be2;
@@ -176,7 +236,7 @@
 
         .expanded-banner {
             position: fixed;
-            bottom: 60px; /* Above the input box */
+            bottom: 0;
             left: 0;
             right: 0;
             background-color: #6a0dad;
@@ -197,63 +257,12 @@
         .expanded-banner a {
             color: rgba(255, 255, 255, 0.5);
             text-decoration: none;
-            font-size: 14px; /* Smaller font size for 'Coming Soon' text */
+            font-size: 14px;
             cursor: default;
         }
 
         .expanded-banner a:hover {
             text-decoration: none;
-        }
-
-        .chat-frame {
-            padding: 10px;
-            background-color: #34234a;
-            flex-grow: 1;
-            overflow-y: auto;
-        }
-
-        .chat-message {
-            margin: 10px 0;
-            padding: 10px;
-            background-color: #8a2be2;
-            color: white;
-            border-radius: 4px;
-            position: relative;
-            overflow: hidden;
-            animation: glitch 1.5s infinite;
-        }
-
-        .mod-tag {
-            font-style: italic;
-            color: rgba(255, 255, 255, 0.5);
-            margin-left: 5px;
-        }
-
-        @keyframes glitch {
-            0% {
-                transform: translate(0);
-                opacity: 1;
-            }
-            20% {
-                transform: translate(-2px, 2px);
-                opacity: 0.8;
-            }
-            40% {
-                transform: translate(2px, -2px);
-                opacity: 1;
-            }
-            60% {
-                transform: translate(-1px, 1px);
-                opacity: 0.9;
-            }
-            80% {
-                transform: translate(1px, -1px);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(0);
-                opacity: 1;
-            }
         }
 
         .shop-frame {
@@ -305,8 +314,19 @@
             font-size: 16px;
         }
 
+        .original-price {
+            text-decoration: line-through;
+            color: #ff0000;
+        }
+
+        .discounted-price {
+            color: gold;
+            font-weight: bold;
+        }
+
         .shop-frame .item-card button {
             padding: 8px 16px;
+            width: 100%; /* Make button full-width */
             border: none;
             background-color: #8a2be2;
             color: white;
@@ -434,11 +454,70 @@
             font-size: 24px;
             font-weight: bold;
         }
+
+        /* Secret message styles */
+        .announcement {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            z-index: 1005;
+            width: 300px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .announcement h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .announcement p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .announcement button {
+            padding: 10px 20px;
+            background-color: #8a2be2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .announcement button:hover {
+            background-color: #5d3fd3;
+        }
+
+        .secret-message {
+            display: none;
+            margin-top: 20px;
+            font-size: 16px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .close-btn {
+            margin-top: 20px;
+            cursor: pointer;
+            color: #ff4d4d;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
     </style>
 </head>
 <body>
     <div class="banner">
         <h1>Chatter</h1>
+        <div class="countdown" id="countdown-timer">Event starts in: 0D 0H 0M 0S</div>
         <div class="user-email">
             <span id="user-email">Email@gmail.com</span>
             <div class="user-coins">
@@ -479,12 +558,20 @@
         <div class="item-card">
             <h3>Mod</h3>
             <p>5.2M Coins</p>
-            <button id="buy-button">Buy</button>
+            <button id="buy-mod-button">Buy</button>
+        </div>
+        <div class="item-card">
+            <h3>Chatter+</h3>
+            <p>
+                <span class="original-price">70 Coins</span>
+                <span class="discounted-price">35 Coins (50% Off)</span>
+            </p>
+            <button id="buy-chatterplus-button">Buy</button>
         </div>
     </div>
 
     <div class="payment-frame" id="payment-frame">
-        <h2>Are you sure you want to buy Mod for 5.2M Coins?</h2>
+        <h2 id="payment-message">Are you sure you want to buy Mod for 5.2M Coins?</h2>
         <p>Total: <span id="total-coins">5.2M Coins</span></p>
         <div class="payment-buttons">
             <button id="yes-button">Yes</button>
@@ -498,6 +585,16 @@
 
     <div class="rent-page" id="rent-page">
         Rent (Coming Soon)
+    </div>
+
+    <!-- Secret Announcement -->
+    <div class="announcement" id="announcement">
+        <h2>Alert! Daniel has a Secret Special message from Megan.</h2>
+        <button id="open-message">Open</button>
+        <div class="secret-message" id="secret-message">
+            <p>To my hubby, Happy 2 month Anniversary, I love you so much and you are my world, my universe, and my life. You are amazing, cute, handsome, mine—you are everything and mean everything to me. Words can't describe how much I love you, and you have no idea how excited or happy I get when I receive a notification from you. I used to be really depressed, but now my mental health is improving because of you. I love you more than everything, and I really don't deserve you, but I am so happy to be with you. You are the best, and I hope you like this. xxxx</p>
+            <div class="close-btn" id="close-message">X</div>
+        </div>
     </div>
 
     <!-- Firebase SDKs -->
@@ -537,18 +634,59 @@
             const basketIcon = document.getElementById('basket-icon');
             const shopFrame = document.getElementById('shop-frame');
             const backArrow = document.getElementById('back-arrow');
-            const buyButton = document.getElementById('buy-button');
+            const buyModButton = document.getElementById('buy-mod-button');
+            const buyChatterPlusButton = document.getElementById('buy-chatterplus-button');
             const paymentFrame = document.getElementById('payment-frame');
+            const paymentMessage = document.getElementById('payment-message');
+            const totalCoins = document.getElementById('total-coins');
             const yesButton = document.getElementById('yes-button');
             const noButton = document.getElementById('no-button');
             const settingsSidebar = document.getElementById('settings-sidebar');
             const rentPage = document.getElementById('rent-page');
+            const countdownTimer = document.getElementById('countdown-timer');
+            const announcement = document.getElementById('announcement');
+            const openMessageButton = document.getElementById('open-message');
+            const secretMessage = document.getElementById('secret-message');
+            const closeMessageButton = document.getElementById('close-message');
 
             let coins = 0;
             let coinsSpent = 0;
             let coinsPending = 0;
             let isAdmin = false;
             let ownsMod = false;
+            let ownsChatterPlus = false;
+
+            // Countdown to August 16th
+            function updateCountdown() {
+                const eventDate = new Date('August 16, 2024 00:00:00').getTime();
+                const now = new Date().getTime();
+                const distance = eventDate - now;
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                countdownTimer.textContent = `Event starts in: ${days}D ${hours}H ${minutes}M ${seconds}S`;
+
+                if (distance < 0) {
+                    clearInterval(countdownInterval);
+                    countdownTimer.style.display = 'none';
+                    announcement.style.display = 'block';
+                }
+            }
+
+            const countdownInterval = setInterval(updateCountdown, 1000);
+
+            // Reveal secret message
+            openMessageButton.addEventListener('click', function() {
+                secretMessage.style.display = 'block';
+                openMessageButton.style.display = 'none';
+            });
+
+            closeMessageButton.addEventListener('click', function() {
+                announcement.style.display = 'none';
+            });
 
             // Function to update the coin count every 5 minutes
             function updateCoins() {
@@ -573,12 +711,12 @@
                 const messagesRef = firebase.database().ref("messages");
                 messagesRef.on("child_added", function(snapshot) {
                     const messageData = snapshot.val();
-                    displayMessage(messageData.username, messageData.message, messageData.isMod);
+                    displayMessage(messageData.username, messageData.message, messageData.isMod, messageData.isChatterPlus);
                 });
             }
 
             // Display a message in the chat frame
-            function displayMessage(username, message, isMod) {
+            function displayMessage(username, message, isMod, isChatterPlus) {
                 const chatMessage = document.createElement('div');
                 chatMessage.className = 'chat-message';
                 chatMessage.textContent = `${username}: ${message}`;
@@ -588,6 +726,13 @@
                     modTag.className = 'mod-tag';
                     modTag.textContent = '(Mod)';
                     chatMessage.appendChild(modTag);
+                }
+
+                if (isChatterPlus) {
+                    const chatterPlusTag = document.createElement('span');
+                    chatterPlusTag.className = 'chatterplus-tag';
+                    chatterPlusTag.textContent = '(Chatter+)';
+                    chatMessage.appendChild(chatterPlusTag);
                 }
 
                 chatFrame.appendChild(chatMessage);
@@ -606,7 +751,7 @@
 
             logoutButton.addEventListener('click', function() {
                 firebase.auth().signOut().then(function() {
-                    window.location.href = "Index.html"; // Redirect to login page
+                    window.location.href = "login.html"; // Redirect to login page
                 }).catch(function(error) {
                     console.error('Sign Out Error', error);
                 });
@@ -632,13 +777,14 @@
                 rentPage.classList.add('show');
             });
 
-            // Check if the user owns the Mod item
-            function checkModOwnership() {
+            // Check if the user owns the Mod or Chatter+ items
+            function checkOwnership() {
                 const user = firebase.auth().currentUser;
                 if (user) {
-                    firebase.database().ref(`users/${user.uid}/ownsMod`).once('value').then(function(snapshot) {
-                        ownsMod = snapshot.val() === true;
-                        updateBuyButton();
+                    firebase.database().ref(`users/${user.uid}`).once('value').then(function(snapshot) {
+                        ownsMod = snapshot.val().ownsMod === true;
+                        ownsChatterPlus = snapshot.val().ownsChatterPlus === true;
+                        updateBuyButtons();
                     });
 
                     // Load Coins Spent and Coins Pending
@@ -651,40 +797,66 @@
                 }
             }
 
-            function updateBuyButton() {
+            function updateBuyButtons() {
                 if (ownsMod) {
-                    buyButton.textContent = "Owned";
-                    buyButton.disabled = true;
+                    buyModButton.textContent = "Owned";
+                    buyModButton.disabled = true;
+                }
+                if (ownsChatterPlus) {
+                    buyChatterPlusButton.textContent = "Owned";
+                    buyChatterPlusButton.disabled = true;
                 }
             }
 
-            // Buy button functionality
-            buyButton.addEventListener('click', function() {
-                buyButton.innerHTML = 'Processing... <div class="loading-circle"></div>'; // Show loading animation
+            // Buy Mod functionality
+            buyModButton.addEventListener('click', function() {
+                buyModButton.innerHTML = 'Processing... <div class="loading-circle"></div>'; // Show loading animation
 
                 setTimeout(function() {
-                    paymentFrame.style.display = 'block'; // Show payment confirmation
+                    paymentMessage.textContent = "Are you sure you want to buy Mod for 5.2M Coins?";
+                    totalCoins.textContent = "5.2M Coins";
+                    paymentFrame.style.display = 'block';
+                }, 2000); // Simulate a 2-second delay for checking balance
+            });
+
+            // Buy Chatter+ functionality
+            buyChatterPlusButton.addEventListener('click', function() {
+                buyChatterPlusButton.innerHTML = 'Processing... <div class="loading-circle"></div>'; // Show loading animation
+
+                setTimeout(function() {
+                    paymentMessage.textContent = "Are you sure you want to buy Chatter+ for 35 Coins?";
+                    totalCoins.textContent = "35 Coins";
+                    paymentFrame.style.display = 'block';
                 }, 2000); // Simulate a 2-second delay for checking balance
             });
 
             yesButton.addEventListener('click', function() {
-                // Deduct the amount of coins
-                if (coins >= 5200000 || isAdmin) { // 5.2M Coins
-                    coins -= 5200000;
-                    coinsSpent += 5200000;
+                const isModPurchase = paymentMessage.textContent.includes('Mod');
+                const cost = isModPurchase ? 5200000 : 35;
+
+                if (coins >= cost || isAdmin) {
+                    coins -= cost;
+                    coinsSpent += cost;
                     coinsDisplay.textContent = `Coins: ${coins}`;
                     paymentFrame.style.display = 'none';
                     updateCoinsSpentDisplay();
 
                     const user = firebase.auth().currentUser;
                     if (user) {
-                        // Mark the item as owned in the database
-                        firebase.database().ref(`users/${user.uid}`).update({
-                            ownsMod: true,
-                            coinsSpent: coinsSpent
-                        });
-                        ownsMod = true;
-                        updateBuyButton();
+                        if (isModPurchase) {
+                            firebase.database().ref(`users/${user.uid}`).update({
+                                ownsMod: true,
+                                coinsSpent: coinsSpent
+                            });
+                            ownsMod = true;
+                        } else {
+                            firebase.database().ref(`users/${user.uid}`).update({
+                                ownsChatterPlus: true,
+                                coinsSpent: coinsSpent
+                            });
+                            ownsChatterPlus = true;
+                        }
+                        updateBuyButtons();
                     }
                 } else {
                     alert("Not enough coins!");
@@ -694,6 +866,11 @@
 
             noButton.addEventListener('click', function() {
                 paymentFrame.style.display = 'none';
+                if (paymentMessage.textContent.includes('Mod')) {
+                    buyModButton.innerHTML = 'Buy'; // Reset the button
+                } else {
+                    buyChatterPlusButton.innerHTML = 'Buy'; // Reset the button
+                }
             });
 
             // Send button functionality
@@ -707,7 +884,8 @@
                         firebase.database().ref("messages").push({
                             username: username,
                             message: message,
-                            isMod: ownsMod
+                            isMod: ownsMod,
+                            isChatterPlus: ownsChatterPlus
                         });
                         messageInput.value = "";  // Clear the input after sending
                     }
@@ -727,7 +905,7 @@
                     // Load existing messages
                     loadMessages();
                     // Check ownership status
-                    checkModOwnership();
+                    checkOwnership();
                 }
             });
         });
