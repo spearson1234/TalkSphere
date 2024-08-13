@@ -33,14 +33,6 @@
             font-size: 28px;
         }
 
-        .countdown {
-            position: absolute;
-            top: 0;
-            right: 20px;
-            font-size: 16px;
-            color: yellow;
-        }
-
         .user-email {
             position: relative;
             cursor: pointer;
@@ -418,9 +410,47 @@
             left: 0; /* Slide into view */
         }
 
-        .settings-sidebar h2 {
+        .admin-frame {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            padding: 20px;
+            background-color: #34234a;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            color: white;
+            text-align: center;
+            z-index: 1006;
+        }
+
+        .admin-frame h2 {
             margin-top: 0;
-            font-size: 24px;
+        }
+
+        .admin-frame input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+        }
+
+        .admin-frame button {
+            padding: 10px 20px;
+            background-color: #8a2be2;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .admin-frame button:hover {
+            background-color: #5d3fd3;
         }
 
         .rent-page {
@@ -517,7 +547,6 @@
 <body>
     <div class="banner">
         <h1>Chatter</h1>
-        <div class="countdown" id="countdown-timer">Event starts in: 0D 0H 0M 0S</div>
         <div class="user-email">
             <span id="user-email">Email@gmail.com</span>
             <div class="user-coins">
@@ -526,6 +555,7 @@
             </div>
             <div class="dropdown-menu" id="dropdown-menu">
                 <a href="#" id="settings-link">Settings</a>
+                <a href="#" id="admin-link">Admin</a>
                 <a href="#" id="rent-link" class="disabled">Rent (Coming Soon)</a>
                 <a href="#">Change Username</a>
                 <a href="#" id="logout-button">Log Out</a>
@@ -579,22 +609,19 @@
         </div>
     </div>
 
+    <div class="admin-frame" id="admin-frame">
+        <h2>Admin Panel</h2>
+        <input type="text" id="admin-username" placeholder="Username">
+        <input type="number" id="admin-amount" placeholder="Amount">
+        <button id="save-admin">Save</button>
+    </div>
+
     <div class="settings-sidebar" id="settings-sidebar">
         <h2>Settings</h2>
     </div>
 
     <div class="rent-page" id="rent-page">
         Rent (Coming Soon)
-    </div>
-
-    <!-- Secret Announcement -->
-    <div class="announcement" id="announcement">
-        <h2>Alert! Daniel has a Secret Special message from Megan.</h2>
-        <button id="open-message">Open</button>
-        <div class="secret-message" id="secret-message">
-            <p>To my hubby, Happy 2 month Anniversary, I love you so much and you are my world, my universe, and my life. You are amazing, cute, handsome, mine—you are everything and mean everything to me. Words can't describe how much I love you, and you have no idea how excited or happy I get when I receive a notification from you. I used to be really depressed, but now my mental health is improving because of you. I love you more than everything, and I really don't deserve you, but I am so happy to be with you. You are the best, and I hope you like this. xxxx</p>
-            <div class="close-btn" id="close-message">X</div>
-        </div>
     </div>
 
     <!-- Firebase SDKs -->
@@ -624,6 +651,7 @@
             const coinsPendingDisplay = document.querySelector('.coins-pending');
             const dropdownMenu = document.getElementById('dropdown-menu');
             const settingsLink = document.getElementById('settings-link');
+            const adminLink = document.getElementById('admin-link');
             const rentLink = document.getElementById('rent-link');
             const logoutButton = document.getElementById('logout-button');
             const expandArrow = document.getElementById('expand-arrow');
@@ -642,12 +670,11 @@
             const yesButton = document.getElementById('yes-button');
             const noButton = document.getElementById('no-button');
             const settingsSidebar = document.getElementById('settings-sidebar');
+            const adminFrame = document.getElementById('admin-frame');
+            const saveAdminButton = document.getElementById('save-admin');
+            const adminUsernameInput = document.getElementById('admin-username');
+            const adminAmountInput = document.getElementById('admin-amount');
             const rentPage = document.getElementById('rent-page');
-            const countdownTimer = document.getElementById('countdown-timer');
-            const announcement = document.getElementById('announcement');
-            const openMessageButton = document.getElementById('open-message');
-            const secretMessage = document.getElementById('secret-message');
-            const closeMessageButton = document.getElementById('close-message');
 
             let coins = 0;
             let coinsSpent = 0;
@@ -655,47 +682,7 @@
             let isAdmin = false;
             let ownsMod = false;
             let ownsChatterPlus = false;
-
-            // Countdown to August 16th
-            function updateCountdown() {
-                const eventDate = new Date('August 16, 2024 00:00:00').getTime();
-                const now = new Date().getTime();
-                const distance = eventDate - now;
-
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                countdownTimer.textContent = `Event starts in: ${days}D ${hours}H ${minutes}M ${seconds}S`;
-
-                if (distance < 0) {
-                    clearInterval(countdownInterval);
-                    countdownTimer.style.display = 'none';
-                    announcement.style.display = 'block';
-                }
-            }
-
-            const countdownInterval = setInterval(updateCountdown, 1000);
-
-            // Reveal secret message
-            openMessageButton.addEventListener('click', function() {
-                secretMessage.style.display = 'block';
-                openMessageButton.style.display = 'none';
-            });
-
-            closeMessageButton.addEventListener('click', function() {
-                announcement.style.display = 'none';
-            });
-
-            // Function to update the coin count every 5 minutes
-            function updateCoins() {
-                if (!isAdmin) {
-                    coins += 10;
-                    coinsDisplay.textContent = `Coins: ${coins}`;
-                }
-            }
-
+            
             // Update the Coins Spent display
             function updateCoinsSpentDisplay() {
                 coinsSpentDisplay.textContent = `Coins Spent: ${coinsSpent}`;
@@ -777,6 +764,39 @@
                 rentPage.classList.add('show');
             });
 
+            // Admin password prompt
+            adminLink.addEventListener('click', function() {
+                const password = prompt("Enter Admin Password:");
+                if (password === "Admin") {
+                    adminFrame.style.display = 'block';
+                } else {
+                    alert("Incorrect password!");
+                }
+            });
+
+            // Save admin settings
+            saveAdminButton.addEventListener('click', function() {
+                const username = adminUsernameInput.value.trim();
+                const amount = parseInt(adminAmountInput.value.trim());
+
+                if (username && amount) {
+                    firebase.database().ref(`users/${username}`).update({
+                        coinsPending: amount
+                    });
+
+                    if (emailElement.textContent === username) {
+                        coinsPending = amount;
+                        coinsPendingDisplay.textContent = `Coins Pending: ${coinsPending}`;
+                    }
+
+                    adminFrame.style.display = 'none';
+
+                    alert(`Coins pending for ${username} updated to ${amount}.`);
+                } else {
+                    alert("Please fill in all fields.");
+                }
+            });
+
             // Check if the user owns the Mod or Chatter+ items
             function checkOwnership() {
                 const user = firebase.auth().currentUser;
@@ -784,15 +804,15 @@
                     firebase.database().ref(`users/${user.uid}`).once('value').then(function(snapshot) {
                         ownsMod = snapshot.val().ownsMod === true;
                         ownsChatterPlus = snapshot.val().ownsChatterPlus === true;
+                        coinsPending = snapshot.val().coinsPending || 0;
                         updateBuyButtons();
+                        updateCoinsPendingDisplay();
                     });
 
                     // Load Coins Spent and Coins Pending
                     firebase.database().ref(`users/${user.uid}`).once('value').then(function(snapshot) {
                         coinsSpent = snapshot.val().coinsSpent || 0;
-                        coinsPending = snapshot.val().coinsPending || 0;
                         updateCoinsSpentDisplay();
-                        updateCoinsPendingDisplay();
                     });
                 }
             }
