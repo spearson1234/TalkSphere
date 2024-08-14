@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -146,43 +145,19 @@
             animation: glitch 1.5s infinite;
         }
 
-        .mod-tag,
-        .chatterplus-tag {
+        .mod-tag, .chatterplus-tag {
             font-style: italic;
             color: rgba(255, 255, 255, 0.5);
             margin-left: 5px;
         }
 
         @keyframes glitch {
-            0% {
-                transform: translate(0);
-                opacity: 1;
-            }
-
-            20% {
-                transform: translate(-2px, 2px);
-                opacity: 0.8;
-            }
-
-            40% {
-                transform: translate(2px, -2px);
-                opacity: 1;
-            }
-
-            60% {
-                transform: translate(-1px, 1px);
-                opacity: 0.9;
-            }
-
-            80% {
-                transform: translate(1px, -1px);
-                opacity: 1;
-            }
-
-            100% {
-                transform: translate(0);
-                opacity: 1;
-            }
+            0% { transform: translate(0); opacity: 1; }
+            20% { transform: translate(-2px, 2px); opacity: 0.8; }
+            40% { transform: translate(2px, -2px); opacity: 1; }
+            60% { transform: translate(-1px, 1px); opacity: 0.9; }
+            80% { transform: translate(1px, -1px); opacity: 1; }
+            100% { transform: translate(0); opacity: 1; }
         }
 
         .input-container {
@@ -194,14 +169,13 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            transition: bottom 0.3s ease;
         }
 
         .input-container.fixed {
             position: fixed;
             bottom: 0;
             left: 0;
-            right: 0;
+            width: 100%;
         }
 
         .input-container input[type="text"] {
@@ -248,15 +222,6 @@
             border-bottom: 10px solid white;
         }
 
-        .typing-indicator {
-            position: absolute;
-            top: -25px;
-            left: 20px;
-            font-size: 14px;
-            color: white;
-            display: none;
-        }
-
         .expanded-banner {
             position: fixed;
             bottom: 0;
@@ -278,18 +243,18 @@
         }
 
         .expanded-banner a {
-            color: rgba(255, 255, 255, 0.5);
+            color: white;
             text-decoration: none;
             font-size: 14px;
+            margin-right: 20px;
+        }
+
+        .expanded-banner a:last-child {
+            margin-right: 0;
         }
 
         .expanded-banner a:hover {
-            color: white;
-        }
-
-        .expanded-banner #home-link {
-            font-weight: bold;
-            color: white;
+            color: gold;
         }
 
         .shop-frame {
@@ -378,13 +343,8 @@
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .payment-frame {
@@ -486,11 +446,11 @@
             border-radius: 50%;
         }
 
-        input:checked+.slider {
+        input:checked + .slider {
             background-color: #8a2be2;
         }
 
-        input:checked+.slider:before {
+        input:checked + .slider:before {
             transform: translateX(22px);
         }
 
@@ -596,13 +556,8 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .slide-back {
@@ -616,6 +571,15 @@
 
         .slide-back:hover {
             color: #8a2be2;
+        }
+
+        .typing-indicator {
+            position: absolute;
+            bottom: 60px;
+            left: 20px;
+            font-size: 14px;
+            color: white;
+            display: none;
         }
     </style>
 </head>
@@ -632,7 +596,8 @@
             </div>
             <div class="dropdown-menu" id="dropdown-menu">
                 <a href="#" id="settings-link">Settings</a>
-                <a href="#" id="rent-link" class="disabled">Rent (Coming Soon)</a>
+                <a href="#">Search</a>
+                <a href="#">Credits</a>
                 <a href="#">Change Username</a>
                 <a href="#" id="logout-button">Log Out</a>
                 <p class="coins-spent">Coins Spent: 0</p>
@@ -643,31 +608,25 @@
     <div class="chat-frame" id="chat-frame">
         <!-- Chat messages will appear here -->
         <div class="chat-message">
-            Ceo: Hello Chatter Community,
-            I would lke to Introduce u to This app called Chatter. Chatter is a app where u can discorver new Features
-            and make friends. it also will have some Secuirty Features in settings soon. We do not tollirate..
-            .online Bullying
-            .Rude and Disrespectful
-            .Spamming
-            .Scams
-            .Fake Identity
-            .And more!
-            please do follow these rules Carfully Bc we will Disable ur account and u will not able to get it back until u email us.
-
-            Thank You for using Chatter,
-
-            Sincerly, CEO
-            <span class="mod-tag">(official CEO)</span>
+            User1: This is a test message.
+            <span class="mod-tag">(Mod)</span>
+        </div>
+        <div class="chat-message">
+            User2: This is another message.
+            <span class="chatterplus-tag">(Chatter+)</span>
+        </div>
+        <div class="chat-message">
+            User3: Hello everyone!
         </div>
     </div>
 
+    <div class="typing-indicator" id="typing-indicator"></div>
+
     <div class="input-container" id="input-container">
-        <div class="typing-indicator" id="typing-indicator"></div>
         <div class="arrow" id="expand-arrow"></div>
         <input type="text" placeholder="Type a message..." id="message-input">
         <button id="send-button">Send</button>
-        <img src="https://img.icons8.com/ios-filled/50/ffffff/shopping-basket-2.png" class="basket-icon" id="basket-icon"
-            alt="Basket">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/shopping-basket-2.png" class="basket-icon" id="basket-icon" alt="Basket">
     </div>
 
     <div class="expanded-banner" id="expanded-banner">
@@ -734,13 +693,13 @@
     <!-- Firebase Initialization -->
     <script>
         var firebaseConfig = {
-            apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
-            authDomain: "login-71866.firebaseapp.com",
-            databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
-            projectId: "login-71866",
-            storageBucket: "login-71866.appspot.com",
-            messagingSenderId: "434042354282",
-            appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
         firebase.initializeApp(firebaseConfig);
 
@@ -785,15 +744,26 @@
             let ownsChatterPlus = false;
             let shakeAnimationEnabled = true;
 
-            // Slide back the shop frame
-            slideBackShop.addEventListener('click', function () {
-                shopFrame.classList.remove('show');
-            });
+            // Load coins from Firebase
+            function loadCoins() {
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    firebase.database().ref(`users/${user.uid}/coins`).once('value').then(function (snapshot) {
+                        coins = snapshot.val() || 0;
+                        coinsDisplay.textContent = `Coins: ${coins}`;
+                    });
+                }
+            }
 
-            // Slide back the settings sidebar
-            slideBackSettings.addEventListener('click', function () {
-                settingsSidebar.classList.remove('show');
-            });
+            // Save coins to Firebase
+            function saveCoins() {
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    firebase.database().ref(`users/${user.uid}`).update({
+                        coins: coins
+                    });
+                }
+            }
 
             // Update the Coins Spent display
             function updateCoinsSpentDisplay() {
@@ -837,45 +807,7 @@
                 chatFrame.scrollTop = chatFrame.scrollHeight; // Auto-scroll to the bottom
             }
 
-            emailElement.addEventListener('click', function () {
-                dropdownMenu.classList.toggle('show');
-            });
-
-            window.addEventListener('click', function (event) {
-                if (!emailElement.contains(event.target)) {
-                    dropdownMenu.classList.remove('show');
-                }
-            });
-
-            logoutButton.addEventListener('click', function () {
-                firebase.auth().signOut().then(function () {
-                    window.location.href = "login.html"; // Redirect to login page
-                }).catch(function (error) {
-                    console.error('Sign Out Error', error);
-                });
-            });
-
-            expandArrow.addEventListener('click', function () {
-                expandedBanner.classList.toggle('show');
-            });
-
-            basketIcon.addEventListener('click', function () {
-                shopFrame.classList.add('show');
-            });
-
-            settingsLink.addEventListener('click', function () {
-                settingsSidebar.classList.add('show');
-            });
-
-            rentLink.addEventListener('click', function () {
-                rentPage.classList.add('show');
-            });
-
-            homeLink.addEventListener('click', function () {
-                expandedBanner.classList.remove('show'); // Close the banner when Home is clicked
-            });
-
-            // Typing indicator logic
+            // Typing Indicator
             messageInput.addEventListener('input', function () {
                 const user = firebase.auth().currentUser;
                 if (user) {
@@ -890,7 +822,8 @@
 
             firebase.database().ref('typing').on('value', function (snapshot) {
                 const typingUser = snapshot.val();
-                if (typingUser && typingUser !== firebase.auth().currentUser.email) {
+                const currentUser = firebase.auth().currentUser.email;
+                if (typingUser && typingUser !== currentUser) {
                     typingIndicator.textContent = `${typingUser} is typing...`;
                     typingIndicator.style.display = 'block';
                 } else {
@@ -919,12 +852,6 @@
                         ownsMod = snapshot.val().ownsMod === true;
                         ownsChatterPlus = snapshot.val().ownsChatterPlus === true;
                         updateBuyButtons();
-                    });
-
-                    // Load Coins Spent
-                    firebase.database().ref(`users/${user.uid}`).once('value').then(function (snapshot) {
-                        coinsSpent = snapshot.val().coinsSpent || 0;
-                        updateCoinsSpentDisplay();
                     });
                 }
             }
@@ -972,6 +899,7 @@
                     coinsDisplay.textContent = `Coins: ${coins}`;
                     paymentFrame.style.display = 'none';
                     updateCoinsSpentDisplay();
+                    saveCoins();
 
                     const user = firebase.auth().currentUser;
                     if (user) {
@@ -1011,7 +939,7 @@
                 if (message.trim() !== "") {
                     const user = firebase.auth().currentUser;
                     if (user) {
-                        const username = isAdmin ? "Admin" : (user.displayName || user.email.split('@')[0]);
+                        const username = user.displayName || user.email.split('@')[0];
                         // Save message to Firebase
                         firebase.database().ref("messages").push({
                             username: username,
@@ -1067,6 +995,7 @@
                     emailElement.textContent = email; // Update the displayed email
                     isAdmin = (email === "admin@gmail.com");
                     coinsDisplay.textContent = isAdmin ? `Coins: 98T` : `Coins: ${coins}`;
+                    loadCoins();
                     // Load existing messages
                     loadMessages();
                     // Check ownership status
@@ -1077,6 +1006,7 @@
                         setInterval(function () {
                             coins += 10;
                             coinsDisplay.textContent = `Coins: ${coins}`;
+                            saveCoins();
                         }, 60000);
                     }
                 }
@@ -1084,5 +1014,4 @@
         });
     </script>
 </body>
-
 </html>
