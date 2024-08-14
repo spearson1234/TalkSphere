@@ -194,15 +194,14 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            transition: bottom 0.3s ease;
         }
 
-        .typing-indicator {
-            position: absolute;
-            top: -25px;
-            left: 20px;
-            color: white;
-            font-size: 14px;
-            display: none;
+        .input-container.fixed {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
         }
 
         .input-container input[type="text"] {
@@ -247,6 +246,15 @@
             border-left: 10px solid transparent;
             border-right: 10px solid transparent;
             border-bottom: 10px solid white;
+        }
+
+        .typing-indicator {
+            position: absolute;
+            top: -25px;
+            left: 20px;
+            font-size: 14px;
+            color: white;
+            display: none;
         }
 
         .expanded-banner {
@@ -649,14 +657,12 @@
             Thank You for using Chatter,
 
             Sincerly, CEO
-
-
             <span class="mod-tag">(official CEO)</span>
         </div>
     </div>
 
-    <div class="input-container">
-        <div class="typing-indicator" id="typing-indicator">User is typing...</div>
+    <div class="input-container" id="input-container">
+        <div class="typing-indicator" id="typing-indicator"></div>
         <div class="arrow" id="expand-arrow"></div>
         <input type="text" placeholder="Type a message..." id="message-input">
         <button id="send-button">Send</button>
@@ -666,8 +672,8 @@
 
     <div class="expanded-banner" id="expanded-banner">
         <a href="#" id="home-link">Home</a>
-        <a href="#" class="disabled">Search</a>
-        <a href="#" class="disabled">Credits</a>
+        <a href="#">Search</a>
+        <a href="#">Credits</a>
     </div>
 
     <div class="shop-frame" id="shop-frame">
@@ -770,6 +776,7 @@
             const slideBackShop = document.getElementById('slide-back-shop');
             const slideBackSettings = document.getElementById('slide-back-settings');
             const typingIndicator = document.getElementById('typing-indicator');
+            const inputContainer = document.getElementById('input-container');
 
             let coins = 0;
             let coinsSpent = 0;
@@ -867,6 +874,42 @@
             homeLink.addEventListener('click', function () {
                 expandedBanner.classList.remove('show'); // Close the banner when Home is clicked
             });
+
+            // Typing indicator logic
+            messageInput.addEventListener('input', function () {
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    const username = user.displayName || user.email.split('@')[0];
+                    firebase.database().ref('typing').set(username);
+
+                    setTimeout(function () {
+                        firebase.database().ref('typing').set(null);
+                    }, 3000); // Clear after 3 seconds of inactivity
+                }
+            });
+
+            firebase.database().ref('typing').on('value', function (snapshot) {
+                const typingUser = snapshot.val();
+                if (typingUser && typingUser !== firebase.auth().currentUser.email) {
+                    typingIndicator.textContent = `${typingUser} is typing...`;
+                    typingIndicator.style.display = 'block';
+                } else {
+                    typingIndicator.style.display = 'none';
+                }
+            });
+
+            // Adjust input container when keyboard opens
+            function adjustForKeyboard() {
+                if (window.innerHeight < 500) { // Detect if keyboard is likely open
+                    inputContainer.classList.add('fixed');
+                } else {
+                    inputContainer.classList.remove('fixed');
+                }
+            }
+
+            window.addEventListener('resize', adjustForKeyboard);
+            window.addEventListener('focusin', adjustForKeyboard); // On input focus
+            window.addEventListener('focusout', adjustForKeyboard); // On input blur
 
             // Check if the user owns the Mod or Chatter+ items
             function checkOwnership() {
@@ -988,41 +1031,6 @@
                 chatMessages.forEach(function (chatMessage) {
                     chatMessage.style.animation = shakeAnimationEnabled ? '' : 'none';
                 });
-            });
-
-            // Typing indicator logic
-            messageInput.addEventListener('input', function () {
-                const user = firebase.auth().currentUser;
-                if (user && messageInput.value.trim() !== "") {
-                    firebase.database().ref("typing").set({
-                        username: user.displayName || user.email.split('@')[0],
-                        typing: true
-                    });
-                } else {
-                    firebase.database().ref("typing").set({
-                        username: user.displayName || user.email.split('@')[0],
-                        typing: false
-                    });
-                }
-            });
-
-            firebase.database().ref("typing").on("value", function (snapshot) {
-                const data = snapshot.val();
-                if (data && data.typing) {
-                    typingIndicator.textContent = `${data.username} is typing...`;
-                    typingIndicator.style.display = "block";
-                } else {
-                    typingIndicator.style.display = "none";
-                }
-            });
-
-            // Adjust layout for mobile to keep input visible
-            window.addEventListener('resize', function () {
-                if (window.innerHeight < 500) { // Detects keyboard opening
-                    chatFrame.style.flexGrow = "0.5";
-                } else {
-                    chatFrame.style.flexGrow = "1";
-                }
             });
 
             // Countdown Timer Logic
