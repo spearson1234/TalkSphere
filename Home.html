@@ -144,12 +144,6 @@
             position: relative;
             overflow: hidden;
             animation: glitch 1.5s infinite;
-            user-select: none; /* Prevent text selection */
-        }
-
-        .chat-message:hover {
-            background-color: #6a0dad;
-            cursor: pointer;
         }
 
         .mod-tag,
@@ -191,35 +185,6 @@
             }
         }
 
-        .typing-indicator {
-            margin: 10px;
-            font-style: italic;
-            color: rgba(255, 255, 255, 0.5);
-            display: none;
-        }
-
-        .reaction-menu {
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            justify-content: space-around;
-            background-color: #6a0dad;
-            border-radius: 5px;
-            padding: 5px;
-            visibility: hidden;
-        }
-
-        .reaction-menu span {
-            cursor: pointer;
-            font-size: 20px;
-        }
-
-        .reaction-menu span:hover {
-            transform: scale(1.3);
-        }
-
         .input-container {
             position: relative;
             padding: 10px;
@@ -229,6 +194,15 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+        }
+
+        .typing-indicator {
+            position: absolute;
+            top: -20px;
+            left: 10px;
+            color: white;
+            font-size: 14px;
+            display: none;
         }
 
         .input-container input[type="text"] {
@@ -660,7 +634,7 @@
 
     <div class="chat-frame" id="chat-frame">
         <!-- Chat messages will appear here -->
-        <div class="chat-message" id="message-1">
+        <div class="chat-message">
             Ceo: Hello Chatter Community,
             I would lke to Introduce u to This app called Chatter. Chatter is a app where u can discorver new Features
             and make friends. it also will have some Secuirty Features in settings soon. We do not tollirate..
@@ -678,19 +652,12 @@
 
 
             <span class="mod-tag">(official CEO)</span>
-            <div class="reaction-menu" id="reaction-menu-1">
-                <span>👍</span>
-                <span>❤️</span>
-                <span>😂</span>
-                <span>😮</span>
-                <span>😢</span>
-            </div>
         </div>
-        <div class="typing-indicator" id="typing-indicator">User is typing...</div>
     </div>
 
     <div class="input-container">
         <div class="arrow" id="expand-arrow"></div>
+        <div class="typing-indicator" id="typing-indicator"></div>
         <input type="text" placeholder="Type a message..." id="message-input">
         <button id="send-button">Send</button>
         <img src="https://img.icons8.com/ios-filled/50/ffffff/shopping-basket-2.png" class="basket-icon" id="basket-icon"
@@ -699,8 +666,8 @@
 
     <div class="expanded-banner" id="expanded-banner">
         <a href="#" id="home-link">Home</a>
-        <a href="#" class="disabled">Search (Coming Soon)</a>
-        <a href="#" class="disabled">Credits (Coming Soon)</a>
+        <a href="#" id="search-link">Search</a>
+        <a href="#" id="credits-link">Credits</a>
     </div>
 
     <div class="shop-frame" id="shop-frame">
@@ -785,11 +752,14 @@
             const expandArrow = document.getElementById('expand-arrow');
             const expandedBanner = document.getElementById('expanded-banner');
             const homeLink = document.getElementById('home-link');
+            const searchLink = document.getElementById('search-link');
+            const creditsLink = document.getElementById('credits-link');
             const messageInput = document.getElementById('message-input');
             const sendButton = document.getElementById('send-button');
             const chatFrame = document.getElementById('chat-frame');
             const basketIcon = document.getElementById('basket-icon');
             const shopFrame = document.getElementById('shop-frame');
+            const backArrow = document.getElementById('back-arrow');
             const buyModButton = document.getElementById('buy-mod-button');
             const buyChatterPlusButton = document.getElementById('buy-chatterplus-button');
             const paymentFrame = document.getElementById('payment-frame');
@@ -814,26 +784,30 @@
 
             // Typing indicator logic
             messageInput.addEventListener('input', function () {
-                typingIndicator.style.display = 'block';
-                clearTimeout(typingTimeout);
-
-                typingTimeout = setTimeout(function () {
-                    typingIndicator.style.display = 'none';
-                }, 2000);
+                if (messageInput.value.trim() !== "") {
+                    const user = firebase.auth().currentUser;
+                    if (user) {
+                        const username = user.displayName || user.email.split('@')[0];
+                        firebase.database().ref("typing").set({ username });
+                    }
+                } else {
+                    firebase.database().ref("typing").remove();
+                }
             });
 
-            // Message reaction logic
-            document.querySelectorAll('.chat-message').forEach(message => {
-                message.addEventListener('click', function (event) {
-                    const reactionMenu = message.querySelector('.reaction-menu');
-                    reactionMenu.style.visibility = reactionMenu.style.visibility === 'visible' ? 'hidden' : 'visible';
+            firebase.database().ref("typing").on("value", function (snapshot) {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    typingIndicator.textContent = `${data.username} is typing...`;
+                    typingIndicator.style.display = 'block';
 
-                    reactionMenu.addEventListener('click', function (event) {
-                        const selectedEmoji = event.target.textContent;
-                        message.textContent += ` ${selectedEmoji}`;
-                        reactionMenu.style.visibility = 'hidden';
-                    });
-                });
+                    clearTimeout(typingTimeout);
+                    typingTimeout = setTimeout(() => {
+                        typingIndicator.style.display = 'none';
+                    }, 3000);
+                } else {
+                    typingIndicator.style.display = 'none';
+                }
             });
 
             // Slide back the shop frame
@@ -936,7 +910,7 @@
                         updateBuyButtons();
                     });
 
-                    // Load Coins Spent and Coins Pending
+                    // Load Coins Spent
                     firebase.database().ref(`users/${user.uid}`).once('value').then(function (snapshot) {
                         coinsSpent = snapshot.val().coinsSpent || 0;
                         updateCoinsSpentDisplay();
@@ -1035,6 +1009,7 @@
                             isChatterPlus: ownsChatterPlus
                         });
                         messageInput.value = ""; // Clear the input after sending
+                        firebase.database().ref("typing").remove(); // Remove typing status after sending
                     }
                 }
             });
@@ -1047,14 +1022,6 @@
                     chatMessage.style.animation = shakeAnimationEnabled ? '' : 'none';
                 });
             });
-
-            // Increment coins by 10 every minute for non-admin users
-            if (!isAdmin) {
-                setInterval(function () {
-                    coins += 10;
-                    coinsDisplay.textContent = `Coins: ${coins}`;
-                }, 60000);
-            }
 
             // Countdown Timer Logic
             const eventStartDate = new Date("August 16, 2024 00:00:00").getTime();
@@ -1094,6 +1061,14 @@
                     loadMessages();
                     // Check ownership status
                     checkOwnership();
+
+                    // Increment coins by 10 every minute, only for non-admin users
+                    if (!isAdmin) {
+                        setInterval(function () {
+                            coins += 10;
+                            coinsDisplay.textContent = `Coins: ${coins}`;
+                        }, 60000);
+                    }
                 }
             });
         });
