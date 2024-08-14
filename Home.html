@@ -186,7 +186,10 @@
         }
 
         .input-container {
-            position: relative;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
             padding: 10px;
             background-color: #6a0dad;
             box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2);
@@ -194,15 +197,6 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
-        }
-
-        .typing-indicator {
-            position: absolute;
-            top: -20px;
-            left: 10px;
-            color: white;
-            font-size: 14px;
-            display: none;
         }
 
         .input-container input[type="text"] {
@@ -230,23 +224,26 @@
             background-color: #5d3fd3;
         }
 
+        .typing-indicator {
+            position: absolute;
+            bottom: 100%;
+            left: 10px;
+            right: 10px;
+            margin: 0 auto;
+            padding: 5px 10px;
+            background-color: #6a0dad;
+            color: white;
+            font-size: 14px;
+            border-radius: 4px;
+            text-align: center;
+            display: none;
+        }
+
         .basket-icon {
             width: 24px;
             height: 24px;
             margin-left: 10px;
             cursor: pointer;
-        }
-
-        .arrow {
-            position: absolute;
-            top: -30px;
-            left: 10px;
-            cursor: pointer;
-            width: 0;
-            height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-bottom: 10px solid white;
         }
 
         .expanded-banner {
@@ -624,7 +621,7 @@
             </div>
             <div class="dropdown-menu" id="dropdown-menu">
                 <a href="#" id="settings-link">Settings</a>
-                <a href="#" id="rent-link" class="disabled">Rent (Coming Soon)</a>
+                <a href="#" id="rent-link">Rent</a>
                 <a href="#">Change Username</a>
                 <a href="#" id="logout-button">Log Out</a>
                 <p class="coins-spent">Coins Spent: 0</p>
@@ -656,12 +653,10 @@
     </div>
 
     <div class="input-container">
-        <div class="arrow" id="expand-arrow"></div>
         <div class="typing-indicator" id="typing-indicator"></div>
         <input type="text" placeholder="Type a message..." id="message-input">
         <button id="send-button">Send</button>
-        <img src="https://img.icons8.com/ios-filled/50/ffffff/shopping-basket-2.png" class="basket-icon" id="basket-icon"
-            alt="Basket">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/shopping-basket-2.png" class="basket-icon" id="basket-icon" alt="Basket">
     </div>
 
     <div class="expanded-banner" id="expanded-banner">
@@ -752,10 +747,9 @@
             const expandArrow = document.getElementById('expand-arrow');
             const expandedBanner = document.getElementById('expanded-banner');
             const homeLink = document.getElementById('home-link');
-            const searchLink = document.getElementById('search-link');
-            const creditsLink = document.getElementById('credits-link');
             const messageInput = document.getElementById('message-input');
             const sendButton = document.getElementById('send-button');
+            const typingIndicator = document.getElementById('typing-indicator');
             const chatFrame = document.getElementById('chat-frame');
             const basketIcon = document.getElementById('basket-icon');
             const shopFrame = document.getElementById('shop-frame');
@@ -772,7 +766,6 @@
             const shakeToggle = document.getElementById('shake-toggle');
             const slideBackShop = document.getElementById('slide-back-shop');
             const slideBackSettings = document.getElementById('slide-back-settings');
-            const typingIndicator = document.getElementById('typing-indicator');
 
             let coins = 0;
             let coinsSpent = 0;
@@ -780,35 +773,6 @@
             let ownsMod = false;
             let ownsChatterPlus = false;
             let shakeAnimationEnabled = true;
-            let typingTimeout;
-
-            // Typing indicator logic
-            messageInput.addEventListener('input', function () {
-                if (messageInput.value.trim() !== "") {
-                    const user = firebase.auth().currentUser;
-                    if (user) {
-                        const username = user.displayName || user.email.split('@')[0];
-                        firebase.database().ref("typing").set({ username });
-                    }
-                } else {
-                    firebase.database().ref("typing").remove();
-                }
-            });
-
-            firebase.database().ref("typing").on("value", function (snapshot) {
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    typingIndicator.textContent = `${data.username} is typing...`;
-                    typingIndicator.style.display = 'block';
-
-                    clearTimeout(typingTimeout);
-                    typingTimeout = setTimeout(() => {
-                        typingIndicator.style.display = 'none';
-                    }, 3000);
-                } else {
-                    typingIndicator.style.display = 'none';
-                }
-            });
 
             // Slide back the shop frame
             slideBackShop.addEventListener('click', function () {
@@ -1009,8 +973,23 @@
                             isChatterPlus: ownsChatterPlus
                         });
                         messageInput.value = ""; // Clear the input after sending
-                        firebase.database().ref("typing").remove(); // Remove typing status after sending
                     }
+                }
+            });
+
+            // Typing indicator functionality
+            let typingTimeout;
+            messageInput.addEventListener('input', function () {
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    const username = isAdmin ? "Admin" : (user.displayName || user.email.split('@')[0]);
+                    typingIndicator.textContent = `${username} is typing...`;
+                    typingIndicator.style.display = 'block';
+
+                    clearTimeout(typingTimeout);
+                    typingTimeout = setTimeout(function () {
+                        typingIndicator.style.display = 'none';
+                    }, 1500);
                 }
             });
 
@@ -1071,6 +1050,17 @@
                     }
                 }
             });
+
+            // Adjust layout for mobile devices
+            function adjustLayoutForMobile() {
+                if (window.innerWidth <= 768) {
+                    chatFrame.style.paddingBottom = '60px'; // Ensure space for the input field
+                }
+            }
+
+            window.addEventListener('resize', adjustLayoutForMobile);
+            adjustLayoutForMobile(); // Run on load to ensure proper layout
+
         });
     </script>
 </body>
