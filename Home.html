@@ -113,6 +113,10 @@
             color: red;
             margin-top: auto;
         }
+        .coins-pending {
+            color: gold;
+            margin-top: 5px;
+        }
         .chat-frame {
             padding: 10px;
             background-color: #34234a;
@@ -129,7 +133,7 @@
             overflow: hidden;
             animation: glitch 1.5s infinite;
         }
-        .mod-tag, .chatterplus-tag {
+        .mod-tag, .chatterplus-tag, .vip-tag, .custom-theme-tag {
             font-style: italic;
             color: rgba(255, 255, 255, 0.5);
             margin-left: 5px;
@@ -218,9 +222,9 @@
         .expanded-banner a {
             color: white;
             text-decoration: none;
-            font-size: 24px; /* Increased font size */
+            font-size: 24px;
             margin-right: 20px;
-            font-weight: bold; /* Added bold font */
+            font-weight: bold;
         }
         .expanded-banner a:last-child {
             margin-right: 0;
@@ -243,6 +247,7 @@
             flex-direction: column;
             align-items: center;
             color: white;
+            overflow-y: auto;
         }
         .shop-frame.show {
             display: flex;
@@ -262,6 +267,7 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             text-align: center;
             color: white;
+            position: relative;
         }
         .shop-frame .item-card h3 {
             margin: 0;
@@ -271,11 +277,16 @@
             margin: 5px 0 10px;
             font-size: 16px;
         }
-        .original-price {
+        .shop-frame .item-card .made-by {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 10px;
+        }
+        .shop-frame .item-card .original-price {
             text-decoration: line-through;
             color: #ff0000;
         }
-        .discounted-price {
+        .shop-frame .item-card .discounted-price {
             color: gold;
             font-weight: bold;
         }
@@ -459,6 +470,74 @@
         .back-button:hover {
             color: #8a2be2;
         }
+        .create-item-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #8a2be2;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        .create-item-btn:hover {
+            background-color: #5d3fd3;
+        }
+        .create-item-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #34234a;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            color: white;
+            display: none;
+            z-index: 1004;
+            text-align: center;
+            width: 300px;
+        }
+        .create-item-popup h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .create-item-popup input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .create-item-popup select {
+            width: 80%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .create-item-popup button {
+            padding: 10px 20px;
+            background-color: #8a2be2;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .create-item-popup button:hover {
+            background-color: #5d3fd3;
+        }
+        .close-create-item-popup {
+            cursor: pointer;
+            margin-top: 20px;
+            color: #ff4d4d;
+        }
         .announcement {
             display: none;
             position: fixed;
@@ -546,6 +625,7 @@
                 <a href="#">Change Username</a>
                 <a href="#" id="logout-button">Log Out</a>
                 <p class="coins-spent">Coins Spent: 0</p>
+                <p class="coins-pending">Coins Pending: 0</p>
             </div>
         </div>
     </div>
@@ -572,20 +652,33 @@
     <div class="shop-frame" id="shop-frame">
         <span class="slide-back" id="slide-back-shop">&lt;</span>
         <h2>Shop</h2>
-        <div class="item-card">
+        <div class="item-card" id="mod-item">
             <h3>Mod</h3>
             <p>5.2M Coins</p>
             <button id="buy-mod-button">Buy</button>
         </div>
-        <div class="item-card">
+        <div class="item-card" id="chatterplus-item">
             <h3>Chatter+</h3>
             <p>
-                <span class="original-price" id="chatterplus-original-price">70 Coins</span>
-                <span class="discounted-price" id="chatterplus-discounted-price">35 Coins (50% Off)</span>
+                <span class="original-price">70 Coins</span>
+                <span class="discounted-price">35 Coins (50% Off)</span>
             </p>
             <div class="countdown" id="discount-countdown"></div>
             <button id="buy-chatterplus-button">Buy</button>
         </div>
+        <button class="create-item-btn" id="create-item-btn">Create Item</button>
+    </div>
+
+    <div class="create-item-popup" id="create-item-popup">
+        <h2>Creation</h2>
+        <input type="text" placeholder="Item Name" id="item-name-input">
+        <input type="text" placeholder="Price" id="item-price-input">
+        <select id="item-category-input">
+            <option value="vip">VIP</option>
+            <option value="custom-theme">Custom Theme</option>
+        </select>
+        <button id="save-item-btn">Save</button>
+        <span class="close-create-item-popup" id="close-create-item-popup">Close</span>
     </div>
 
     <div class="payment-frame" id="payment-frame">
@@ -651,9 +744,12 @@
         firebase.initializeApp(firebaseConfig);
 
         document.addEventListener("DOMContentLoaded", function () {
+            let shakeAnimationEnabled = true; // Default value for shake animation
+
             const emailElement = document.getElementById('user-email');
             const coinsDisplay = document.getElementById('coins-display');
             const coinsSpentDisplay = document.querySelector('.coins-spent');
+            const coinsPendingDisplay = document.querySelector('.coins-pending');
             const dropdownMenu = document.getElementById('dropdown-menu');
             const settingsLink = document.getElementById('settings-link');
             const logoutButton = document.getElementById('logout-button');
@@ -680,13 +776,23 @@
             const rentPage = document.getElementById('rent-page');
             const searchPage = document.getElementById('search-page');
             const creditsPage = document.getElementById('credits-page');
+            const createItemBtn = document.getElementById('create-item-btn');
+            const createItemPopup = document.getElementById('create-item-popup');
+            const closeCreateItemPopup = document.getElementById('close-create-item-popup');
+            const saveItemBtn = document.getElementById('save-item-btn');
+            const itemNameInput = document.getElementById('item-name-input');
+            const itemPriceInput = document.getElementById('item-price-input');
+            const itemCategoryInput = document.getElementById('item-category-input');
 
             let coins = 0;
             let coinsSpent = 0;
+            let coinsPending = 0;
             let isAdmin = false;
             let ownsMod = false;
             let ownsChatterPlus = false;
-            let shakeAnimationEnabled = true;
+            let ownsVip = false;
+            let ownsCustomTheme = false;
+            let customThemeColor = "";
 
             // Toggle dropdown menu
             document.getElementById('user-email-container').addEventListener('click', function () {
@@ -764,11 +870,17 @@
                     firebase.database().ref(`users/${user.uid}`).once('value').then(function (snapshot) {
                         coins = snapshot.val().coins || 0;
                         coinsSpent = snapshot.val().coinsSpent || 0;
+                        coinsPending = snapshot.val().coinsPending || 0;
+                        ownsVip = snapshot.val().ownsVip || false;
+                        ownsCustomTheme = snapshot.val().ownsCustomTheme || false;
+                        customThemeColor = snapshot.val().customThemeColor || "";
+
                         if (user.email === "admin@gmail.com") {
                             coins = "98T";
                         }
                         coinsDisplay.textContent = `Coins: ${coins}`;
                         coinsSpentDisplay.textContent = `Coins Spent: ${coinsSpent}`;
+                        coinsPendingDisplay.textContent = `Coins Pending: ${coinsPending}`;
                     });
                 }
             }
@@ -779,7 +891,8 @@
                 if (user && user.email !== "admin@gmail.com") {
                     firebase.database().ref(`users/${user.uid}`).update({
                         coins: coins,
-                        coinsSpent: coinsSpent
+                        coinsSpent: coinsSpent,
+                        coinsPending: coinsPending
                     });
                 }
             }
@@ -789,12 +902,20 @@
                 const messagesRef = firebase.database().ref("messages");
                 messagesRef.on("child_added", function (snapshot) {
                     const messageData = snapshot.val();
-                    displayMessage(messageData.username, messageData.message, messageData.isMod, messageData.isChatterPlus);
+                    displayMessage(
+                        messageData.username, 
+                        messageData.message, 
+                        messageData.isMod, 
+                        messageData.isChatterPlus, 
+                        messageData.isVIP, 
+                        messageData.isCustomTheme, 
+                        messageData.customThemeColor
+                    );
                 });
             }
 
             // Display a message in the chat frame
-            function displayMessage(username, message, isMod, isChatterPlus) {
+            function displayMessage(username, message, isMod, isChatterPlus, isVIP, isCustomTheme, customThemeColor) {
                 const chatMessage = document.createElement('div');
                 chatMessage.className = 'chat-message';
                 chatMessage.textContent = `${username}: ${message}`;
@@ -811,6 +932,22 @@
                     chatterPlusTag.className = 'chatterplus-tag';
                     chatterPlusTag.textContent = '(Chatter+)';
                     chatMessage.appendChild(chatterPlusTag);
+                }
+
+                if (isVIP) {
+                    chatMessage.style.color = "gold";
+                    const vipTag = document.createElement('span');
+                    vipTag.className = 'vip-tag';
+                    vipTag.textContent = '(VIP)';
+                    chatMessage.appendChild(vipTag);
+                }
+
+                if (isCustomTheme) {
+                    chatMessage.style.color = customThemeColor || "#ff69b4"; // Use saved color or default to pink
+                    const customThemeTag = document.createElement('span');
+                    customThemeTag.className = 'custom-theme-tag';
+                    customThemeTag.textContent = '(Custom Theme)';
+                    chatMessage.appendChild(customThemeTag);
                 }
 
                 if (!shakeAnimationEnabled) {
@@ -852,6 +989,9 @@
                     firebase.database().ref(`users/${user.uid}`).once('value').then(function (snapshot) {
                         ownsMod = snapshot.val().ownsMod === true;
                         ownsChatterPlus = snapshot.val().ownsChatterPlus === true;
+                        ownsVip = snapshot.val().ownsVip === true;
+                        ownsCustomTheme = snapshot.val().ownsCustomTheme === true;
+                        customThemeColor = snapshot.val().customThemeColor || "";
                         updateBuyButtons();
                     });
                 }
@@ -899,7 +1039,7 @@
                     coinsSpent += cost;
                     coinsDisplay.textContent = `Coins: ${coins}`;
                     paymentFrame.style.display = 'none';
-                    updateCoinsSpentDisplay();
+                    coinsSpentDisplay.textContent = `Coins Spent: ${coinsSpent}`; // Update Coins Spent Display
                     saveUserData();
 
                     const user = firebase.auth().currentUser;
@@ -973,7 +1113,10 @@
                             username: username,
                             message: message,
                             isMod: ownsMod,
-                            isChatterPlus: ownsChatterPlus
+                            isChatterPlus: ownsChatterPlus,
+                            isVIP: ownsVip,
+                            isCustomTheme: ownsCustomTheme,
+                            customThemeColor: customThemeColor
                         });
                         messageInput.value = ""; // Clear the input after sending
                     }
@@ -988,6 +1131,164 @@
                     chatMessage.style.animation = shakeAnimationEnabled ? '' : 'none';
                 });
             });
+
+            // Show Create Item Popup
+            createItemBtn.addEventListener('click', function () {
+                createItemPopup.style.display = 'block';
+            });
+
+            // Close Create Item Popup
+            closeCreateItemPopup.addEventListener('click', function () {
+                createItemPopup.style.display = 'none';
+            });
+
+            // Save Item Functionality
+            saveItemBtn.addEventListener('click', function () {
+                const itemName = itemNameInput.value.trim();
+                const itemPrice = itemPriceInput.value.trim();
+                const itemCategory = itemCategoryInput.value;
+
+                if (itemName && itemPrice && itemCategory) {
+                    const user = firebase.auth().currentUser;
+                    const itemCard = document.createElement('div');
+                    itemCard.className = 'item-card';
+
+                    itemCard.innerHTML = `
+                        <h3>${itemName}</h3>
+                        <p>${itemPrice} Coins</p>
+                        <p class="made-by">Made by ${user.email.split('@')[0]}</p>
+                        <button class="item-buy-btn">Owned</button>
+                    `;
+
+                    if (itemCategory === "vip") {
+                        itemCard.classList.add('vip-item');
+                        itemCard.querySelector('p.made-by').textContent += " (VIP)";
+                        ownsVip = true;
+                        firebase.database().ref(`users/${user.uid}`).update({
+                            ownsVip: true,
+                        });
+                    } else if (itemCategory === "custom-theme") {
+                        itemCard.classList.add('custom-theme-item');
+                        itemCard.querySelector('p.made-by').textContent += " (Custom Theme)";
+                        ownsCustomTheme = true;
+                        customThemeColor = "#ff69b4"; // Example color, can be set dynamically
+                        firebase.database().ref(`users/${user.uid}`).update({
+                            ownsCustomTheme: true,
+                            customThemeColor: customThemeColor
+                        });
+                    }
+
+                    // Add new item to the shop frame
+                    shopFrame.insertBefore(itemCard, createItemBtn);
+
+                    // Clear the input fields
+                    itemNameInput.value = '';
+                    itemPriceInput.value = '';
+                    itemCategoryInput.value = 'vip';
+
+                    // Close the popup
+                    createItemPopup.style.display = 'none';
+
+                    // Save item to Firebase
+                    firebase.database().ref(`items/${itemName}`).set({
+                        name: itemName,
+                        price: itemPrice,
+                        category: itemCategory,
+                        creator: user.email,
+                        owned: true // Creator owns the item by default
+                    });
+
+                    // Set the button to "Owned" for the creator
+                    itemCard.querySelector('.item-buy-btn').textContent = "Owned";
+                    itemCard.querySelector('.item-buy-btn').disabled = true;
+                } else {
+                    alert("Please fill in all fields.");
+                }
+            });
+
+            // Load created items from Firebase
+            function loadItems() {
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    firebase.database().ref('items').once('value').then(function (snapshot) {
+                        snapshot.forEach(function (childSnapshot) {
+                            const itemData = childSnapshot.val();
+                            const itemCard = document.createElement('div');
+                            itemCard.className = 'item-card';
+                            itemCard.innerHTML = `
+                                <h3>${itemData.name}</h3>
+                                <p>${itemData.price} Coins</p>
+                                <p class="made-by">Made by ${itemData.creator}</p>
+                                <button class="item-buy-btn">${itemData.creator === user.email ? 'Owned' : 'Buy'}</button>
+                            `;
+                            if (itemData.category === 'vip') {
+                                itemCard.classList.add('vip-item');
+                                itemCard.querySelector('.made-by').textContent += ' (VIP)';
+                            } else if (itemData.category === 'custom-theme') {
+                                itemCard.classList.add('custom-theme-item');
+                                itemCard.querySelector('.made-by').textContent += ' (Custom Theme)';
+                            }
+                            shopFrame.insertBefore(itemCard, createItemBtn);
+
+                            // Add click event to the buy button
+                            const buyButton = itemCard.querySelector('.item-buy-btn');
+                            if (itemData.creator !== user.email && !itemData.owned) {
+                                buyButton.addEventListener('click', function () {
+                                    purchaseItem(itemData, buyButton);
+                                });
+                            } else {
+                                buyButton.disabled = true;
+                            }
+                        });
+                    });
+                }
+            }
+
+            // Purchase item functionality
+            function purchaseItem(itemData, button) {
+                const cost = parseInt(itemData.price);
+
+                if (coins >= cost || isAdmin) {
+                    coins -= cost;
+                    coinsSpent += cost;
+                    coinsDisplay.textContent = `Coins: ${coins}`;
+                    coinsSpentDisplay.textContent = `Coins Spent: ${coinsSpent}`;
+                    saveUserData();
+
+                    const user = firebase.auth().currentUser;
+                    if (user) {
+                        button.textContent = "Owned";
+                        button.disabled = true;
+
+                        // Update item ownership in Firebase
+                        firebase.database().ref(`items/${itemData.name}`).update({
+                            owned: true
+                        });
+
+                        // Add coins to the creator's pending balance
+                        if (itemData.creator) {
+                            firebase.database().ref('users')
+                                .orderByChild('email')
+                                .equalTo(itemData.creator)
+                                .once('value')
+                                .then(function (snapshot) {
+                                    snapshot.forEach(function (childSnapshot) {
+                                        const creatorUid = childSnapshot.key;
+                                        const creatorData = childSnapshot.val();
+                                        const creatorCoinsPending = creatorData.coinsPending || 0;
+                                        firebase.database().ref(`users/${creatorUid}`).update({
+                                            coinsPending: creatorCoinsPending + cost
+                                        });
+                                    });
+                                });
+                        } else {
+                            console.error('Error: itemData.creator is undefined.');
+                        }
+                    }
+                } else {
+                    alert("Not enough coins!");
+                }
+            }
 
             // Countdown Timer Logic
             const eventStartDate = new Date("August 16, 2024 00:00:00").getTime();
@@ -1038,6 +1339,8 @@
                     loadMessages();
                     // Check ownership status
                     checkOwnership();
+                    // Load created items
+                    loadItems();
                 }
             });
         });
