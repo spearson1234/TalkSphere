@@ -19,37 +19,36 @@
         .banner {
             background-color: #6a0dad;
             color: white;
-            padding: 25px 20px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             z-index: 1000;
-            position: fixed; /* Make the banner fixed */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
+            height: 70px;
         }
         .banner h1 {
             margin: 0;
-            font-size: 28px;
+            font-size: 24px;
         }
         .event-timer {
             font-size: 14px;
             font-weight: bold;
-            position: absolute;
-            top: 10px;
-            left: 45%;
-            transform: translateX(-50%);
-            white-space: nowrap;
             color: gold;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
         }
         .user-email {
             position: relative;
             cursor: pointer;
         }
         .user-email span {
-            font-size: 18px;
+            font-size: 16px;
             display: block;
         }
         .user-coins {
@@ -59,7 +58,7 @@
         }
         .user-coins span {
             margin-left: 5px;
-            font-size: 22px;
+            font-size: 18px;
             font-weight: bold;
         }
         .yellow-dot {
@@ -107,7 +106,7 @@
         .dropdown-menu p {
             margin: 5px 0;
             padding: 0;
-            font-size: 18px;
+            font-size: 16px;
             background-color: transparent;
             border: none;
             cursor: default;
@@ -125,7 +124,9 @@
             background-color: #34234a;
             flex-grow: 1;
             overflow-y: auto;
-            margin-top: 80px; /* Adjust to ensure the banner doesn't overlap content */
+            margin-top: 70px; /* Space for the fixed banner */
+            margin-bottom: 60px; /* Space for the fixed input container */
+            max-height: calc(100vh - 130px); /* Ensure chat frame fits within viewport */
         }
         .chat-message {
             margin: 10px 0;
@@ -164,14 +165,14 @@
             z-index: 1000;
         }
         .input-container input[type="text"] {
-            width: 60%;
+            width: 70%;
             padding: 10px;
             border-radius: 4px;
             border: 1px solid #ccc;
             font-size: 16px;
         }
         .input-container button {
-            padding: 10px 40px;
+            padding: 10px 20px;
             margin-left: 10px;
             border: none;
             background-color: #8a2be2;
@@ -190,17 +191,6 @@
             height: 24px;
             margin-left: 10px;
             cursor: pointer;
-        }
-        .arrow {
-            position: absolute;
-            top: -30px;
-            left: 10px;
-            cursor: pointer;
-            width: 0;
-            height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-bottom: 10px solid white;
         }
         .expanded-banner {
             position: fixed;
@@ -431,7 +421,7 @@
             border: 1px solid #6a0dad;
             margin-top: 10px;
         }
-        .search-page, .credits-page {
+        .credits-page {
             position: fixed;
             left: 100%;
             top: 0;
@@ -449,7 +439,7 @@
             font-size: 24px;
             text-align: center;
         }
-        .search-page.show, .credits-page.show {
+        .credits-page.show {
             transform: translateX(-100%);
         }
         .back-button {
@@ -526,7 +516,7 @@
         }
         .typing-indicator {
             position: absolute;
-            bottom: 60px;
+            bottom: 70px; /* Positioned above the input container */
             left: 20px;
             font-size: 14px;
             color: white;
@@ -562,7 +552,6 @@
     <div class="typing-indicator" id="typing-indicator"></div>
 
     <div class="input-container" id="input-container">
-        <div class="arrow" id="expand-arrow"></div>
         <input type="text" placeholder="Type a message..." id="message-input">
         <button id="send-button">Send</button>
         <img src="https://img.icons8.com/ios-filled/50/ffffff/shopping-basket-2.png" class="basket-icon" id="basket-icon" alt="Basket">
