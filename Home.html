@@ -16,59 +16,52 @@
             height: 100vh;
             overflow: hidden;
         }
-
         .banner {
             background-color: #6a0dad;
             color: white;
-            padding: 15px 20px;
+            padding: 25px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             z-index: 1000;
-            position: fixed;
+            position: fixed; /* Make the banner fixed */
             top: 0;
+            left: 0;
             width: 100%;
         }
-
         .banner h1 {
             margin: 0;
-            font-size: 24px;
+            font-size: 28px;
         }
-
         .event-timer {
             font-size: 14px;
             font-weight: bold;
             position: absolute;
             top: 10px;
-            left: 50%;
+            left: 45%;
             transform: translateX(-50%);
             white-space: nowrap;
             color: gold;
         }
-
         .user-email {
             position: relative;
             cursor: pointer;
         }
-
         .user-email span {
             font-size: 18px;
             display: block;
         }
-
         .user-coins {
             display: flex;
             align-items: center;
             margin-top: 5px;
         }
-
         .user-coins span {
             margin-left: 5px;
-            font-size: 18px;
+            font-size: 22px;
             font-weight: bold;
         }
-
         .yellow-dot {
             width: 10px;
             height: 10px;
@@ -76,7 +69,6 @@
             border-radius: 50%;
             display: inline-block;
         }
-
         .dropdown-menu {
             display: none;
             position: absolute;
@@ -93,13 +85,11 @@
             transition: opacity 0.3s ease, transform 0.3s ease;
             flex-direction: column;
         }
-
         .dropdown-menu.show {
             display: flex;
             opacity: 1;
             transform: translateY(0);
         }
-
         .dropdown-menu a {
             display: block;
             padding: 12px 16px;
@@ -111,38 +101,32 @@
             background-color: #8a2be2;
             font-weight: bold;
         }
-
         .dropdown-menu a:hover {
             background-color: #5d3fd3;
         }
-
         .dropdown-menu p {
             margin: 5px 0;
             padding: 0;
-            font-size: 16px;
+            font-size: 18px;
             background-color: transparent;
             border: none;
             cursor: default;
         }
-
         .coins-spent {
             color: red;
             margin-top: auto;
         }
-
         .coins-pending {
             color: gold;
             margin-top: 5px;
         }
-
         .chat-frame {
             padding: 10px;
             background-color: #34234a;
             flex-grow: 1;
             overflow-y: auto;
-            margin-top: 70px; /* To ensure chat content is below the banner */
+            margin-top: 80px; /* Adjust to ensure the banner doesn't overlap content */
         }
-
         .chat-message {
             margin: 10px 0;
             padding: 10px;
@@ -153,13 +137,11 @@
             overflow: hidden;
             animation: glitch 1.5s infinite;
         }
-
         .mod-tag, .chatterplus-tag, .vip-tag, .custom-theme-tag {
             font-style: italic;
             color: rgba(255, 255, 255, 0.5);
             margin-left: 5px;
         }
-
         @keyframes glitch {
             0% { transform: translate(0); opacity: 1; }
             20% { transform: translate(-2px, 2px); opacity: 0.8; }
@@ -168,7 +150,6 @@
             80% { transform: translate(1px, -1px); opacity: 1; }
             100% { transform: translate(0); opacity: 1; }
         }
-
         .input-container {
             position: fixed;
             bottom: 0;
@@ -182,16 +163,13 @@
             align-items: center;
             z-index: 1000;
         }
-
         .input-container input[type="text"] {
             width: 60%;
             padding: 10px;
             border-radius: 4px;
             border: 1px solid #ccc;
             font-size: 16px;
-            max-width: 300px;
         }
-
         .input-container button {
             padding: 10px 40px;
             margin-left: 10px;
@@ -204,18 +182,26 @@
             display: flex;
             align-items: center;
         }
-
         .input-container button:hover {
             background-color: #5d3fd3;
         }
-
         .basket-icon {
             width: 24px;
             height: 24px;
             margin-left: 10px;
             cursor: pointer;
         }
-
+        .arrow {
+            position: absolute;
+            top: -30px;
+            left: 10px;
+            cursor: pointer;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid white;
+        }
         .expanded-banner {
             position: fixed;
             bottom: 0;
@@ -231,27 +217,22 @@
             transition: transform 0.3s ease;
             z-index: 1001;
         }
-
         .expanded-banner.show {
             display: flex;
         }
-
         .expanded-banner a {
             color: white;
             text-decoration: none;
-            font-size: 20px;
+            font-size: 24px;
             margin-right: 20px;
             font-weight: bold;
         }
-
         .expanded-banner a:last-child {
             margin-right: 0;
         }
-
         .expanded-banner a:hover {
             color: gold;
         }
-
         .shop-frame {
             position: fixed;
             right: -300px;
@@ -269,18 +250,15 @@
             color: white;
             overflow-y: auto;
         }
-
         .shop-frame.show {
             display: flex;
             right: 0;
         }
-
         .shop-frame h2 {
             margin-top: 0;
             font-size: 24px;
             color: #8a2be2;
         }
-
         .shop-frame .item-card {
             background-color: #4b2c64;
             padding: 15px;
@@ -292,23 +270,27 @@
             color: white;
             position: relative;
         }
-
         .shop-frame .item-card h3 {
             margin: 0;
             font-size: 20px;
         }
-
         .shop-frame .item-card p {
             margin: 5px 0 10px;
             font-size: 16px;
         }
-
         .shop-frame .item-card .made-by {
             font-size: 14px;
             color: rgba(255, 255, 255, 0.7);
             margin-top: 10px;
         }
-
+        .shop-frame .item-card .original-price {
+            text-decoration: line-through;
+            color: #ff0000;
+        }
+        .shop-frame .item-card .discounted-price {
+            color: gold;
+            font-weight: bold;
+        }
         .shop-frame .item-card button {
             padding: 8px 16px;
             width: 100%;
@@ -320,11 +302,9 @@
             font-size: 16px;
             margin-top: 10px;
         }
-
         .shop-frame .item-card button:hover {
             background-color: #5d3fd3;
         }
-
         .loading-circle {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #8a2be2;
@@ -334,12 +314,15 @@
             animation: spin 1s linear infinite;
             display: inline-block;
         }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
+        .countdown {
+            margin-top: 10px;
+            font-size: 14px;
+            color: gold;
+        }
         .payment-frame {
             position: fixed;
             top: 50%;
@@ -355,17 +338,14 @@
             display: none;
             z-index: 1003;
         }
-
         .payment-frame h2 {
             margin: 0 0 15px;
         }
-
         .payment-buttons {
             margin-top: 20px;
             display: flex;
             justify-content: space-between;
         }
-
         .payment-buttons button {
             padding: 8px 16px;
             background-color: #8a2be2;
@@ -376,11 +356,9 @@
             font-size: 14px;
             width: 45%;
         }
-
         .payment-buttons button:hover {
             background-color: #5d3fd3;
         }
-
         .settings-sidebar {
             position: fixed;
             left: -250px;
@@ -397,12 +375,10 @@
             flex-direction: column;
             align-items: center;
         }
-
         .settings-sidebar.show {
             display: flex;
             left: 0;
         }
-
         .switch {
             position: relative;
             display: inline-block;
@@ -410,11 +386,9 @@
             height: 28px;
             margin-left: 10px;
         }
-
         .switch input {
             display: none;
         }
-
         .slider {
             position: absolute;
             cursor: pointer;
@@ -426,7 +400,6 @@
             transition: 0.4s;
             border-radius: 28px;
         }
-
         .slider:before {
             position: absolute;
             content: "";
@@ -438,33 +411,27 @@
             transition: 0.4s;
             border-radius: 50%;
         }
-
         input:checked + .slider {
             background-color: #8a2be2;
         }
-
         input:checked + .slider:before {
             transform: translateX(22px);
         }
-
         .toggle-container {
             width: 100%;
             text-align: left;
             margin-bottom: 20px;
             font-size: 18px;
         }
-
         .toggle-container .switch {
             margin-left: 20px;
             vertical-align: middle;
         }
-
         .toggle-container hr {
             border: 1px solid #6a0dad;
             margin-top: 10px;
         }
-
-        .credits-page {
+        .search-page, .credits-page {
             position: fixed;
             left: 100%;
             top: 0;
@@ -482,11 +449,9 @@
             font-size: 24px;
             text-align: center;
         }
-
-        .credits-page.show {
+        .search-page.show, .credits-page.show {
             transform: translateX(-100%);
         }
-
         .back-button {
             position: absolute;
             top: 20px;
@@ -496,11 +461,9 @@
             color: white;
             cursor: pointer;
         }
-
         .back-button:hover {
             color: #8a2be2;
         }
-
         .announcement {
             display: none;
             position: fixed;
@@ -516,17 +479,14 @@
             width: 300px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
-
         .announcement h2 {
             font-size: 20px;
             margin-bottom: 15px;
         }
-
         .announcement p {
             font-size: 16px;
             margin-bottom: 20px;
         }
-
         .announcement button {
             padding: 10px 20px;
             background-color: #8a2be2;
@@ -535,11 +495,35 @@
             border-radius: 4px;
             cursor: pointer;
         }
-
         .announcement button:hover {
             background-color: #5d3fd3;
         }
-
+        .secret-message {
+            display: none;
+            margin-top: 20px;
+            font-size: 16px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        .close-btn {
+            margin-top: 20px;
+            cursor: pointer;
+            color: #ff4d4d;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .slide-back {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            align-self: flex-start;
+            margin-bottom: 20px;
+        }
+        .slide-back:hover {
+            color: #8a2be2;
+        }
         .typing-indicator {
             position: absolute;
             bottom: 60px;
@@ -550,6 +534,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="banner">
         <h1>Chatter</h1>
@@ -562,7 +547,7 @@
             </div>
             <div class="dropdown-menu" id="dropdown-menu">
                 <a href="#" id="settings-link">Settings</a>
-                <a href="#" id="credits-link">Credits</a>
+                <a href="#">Change Username</a>
                 <a href="#" id="logout-button">Log Out</a>
                 <p class="coins-spent">Coins Spent: 0</p>
                 <p class="coins-pending">Coins Pending: 0</p>
@@ -577,6 +562,7 @@
     <div class="typing-indicator" id="typing-indicator"></div>
 
     <div class="input-container" id="input-container">
+        <div class="arrow" id="expand-arrow"></div>
         <input type="text" placeholder="Type a message..." id="message-input">
         <button id="send-button">Send</button>
         <img src="https://img.icons8.com/ios-filled/50/ffffff/shopping-basket-2.png" class="basket-icon" id="basket-icon" alt="Basket">
@@ -728,6 +714,16 @@
             // Close settings sidebar
             document.getElementById('slide-back-settings').addEventListener('click', function () {
                 settingsSidebar.classList.remove('show');
+            });
+
+            // Navigate to Credits Page
+            document.getElementById('credits-link').addEventListener('click', function () {
+                creditsPage.classList.add('show');
+            });
+
+            // Navigate back from Credits Page to Home
+            document.getElementById('credits-back-button').addEventListener('click', function () {
+                creditsPage.classList.remove('show');
             });
 
             // Log Out Functionality
@@ -949,6 +945,33 @@
                     buyChatterPlusButton.innerHTML = 'Buy'; // Reset the button
                 }
             });
+
+            // Countdown Timer for Chatter+ Discount
+            function updateDiscountCountdown() {
+                const countdownElement = document.getElementById('discount-countdown');
+                const originalPriceElement = document.getElementById('chatterplus-original-price');
+                const discountedPriceElement = document.getElementById('chatterplus-discounted-price');
+
+                const countdownEndDate = new Date("September 1, 2024 00:00:00").getTime();
+                const now = new Date().getTime();
+                const distance = countdownEndDate - now;
+
+                if (distance > 0) {
+                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    countdownElement.textContent = `50% Off Ends in: ${days}D ${hours}H ${minutes}M ${seconds}S`;
+                } else {
+                    // Remove discount and revert to original price
+                    discountedPriceElement.style.display = 'none';
+                    originalPriceElement.textContent = '70 Coins';
+                    countdownElement.textContent = '';
+                }
+            }
+
+            setInterval(updateDiscountCountdown, 1000); // Update countdown every second
 
             // Send button functionality
             sendButton.addEventListener('click', function () {
