@@ -19,7 +19,7 @@
         .banner {
             background-color: #6a0dad;
             color: white;
-            padding: 25px 20px;
+            padding: 15px 20px; /* Adjusted padding for better mobile compatibility */
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -29,14 +29,14 @@
         }
         .banner h1 {
             margin: 0;
-            font-size: 28px;
+            font-size: 24px; /* Reduced font size for mobile */
         }
         .event-timer {
-            font-size: 14px;
+            font-size: 12px; /* Reduced font size for mobile */
             font-weight: bold;
             position: absolute;
             top: 10px;
-            left: 45%;
+            left: 50%;
             transform: translateX(-50%);
             white-space: nowrap;
             color: gold;
@@ -46,7 +46,7 @@
             cursor: pointer;
         }
         .user-email span {
-            font-size: 18px;
+            font-size: 16px; /* Reduced font size for mobile */
             display: block;
         }
         .user-coins {
@@ -56,7 +56,7 @@
         }
         .user-coins span {
             margin-left: 5px;
-            font-size: 22px;
+            font-size: 18px; /* Reduced font size for mobile */
             font-weight: bold;
         }
         .yellow-dot {
@@ -76,7 +76,7 @@
             padding: 10px;
             border-radius: 4px;
             z-index: 1000;
-            min-width: 200px;
+            min-width: 180px; /* Reduced min-width for mobile */
             opacity: 0;
             transform: translateY(-10px);
             transition: opacity 0.3s ease, transform 0.3s ease;
@@ -89,11 +89,11 @@
         }
         .dropdown-menu a {
             display: block;
-            padding: 12px 16px;
+            padding: 10px 14px; /* Adjusted padding for mobile */
             color: white;
             text-decoration: none;
-            font-size: 16px;
-            margin: 5px 0;
+            font-size: 14px; /* Reduced font size for mobile */
+            margin: 4px 0;
             border-radius: 4px;
             background-color: #8a2be2;
             font-weight: bold;
@@ -104,7 +104,7 @@
         .dropdown-menu p {
             margin: 5px 0;
             padding: 0;
-            font-size: 18px;
+            font-size: 16px; /* Reduced font size for mobile */
             background-color: transparent;
             border: none;
             cursor: default;
@@ -147,7 +147,10 @@
             100% { transform: translate(0); opacity: 1; }
         }
         .input-container {
-            position: relative;
+            position: fixed; /* Fixed position to ensure visibility on mobile */
+            bottom: 0;
+            left: 0;
+            width: 100%;
             padding: 10px;
             background-color: #6a0dad;
             box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2);
@@ -155,12 +158,6 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
-        }
-        .input-container.fixed {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
         }
         .input-container input[type="text"] {
             width: 60%;
@@ -170,7 +167,7 @@
             font-size: 16px;
         }
         .input-container button {
-            padding: 10px 40px;
+            padding: 10px 20px; /* Adjusted padding for mobile */
             margin-left: 10px;
             border: none;
             background-color: #8a2be2;
@@ -430,7 +427,7 @@
             border: 1px solid #6a0dad;
             margin-top: 10px;
         }
-        .rent-page, .search-page, .credits-page {
+        .search-page, .credits-page {
             position: fixed;
             left: 100%;
             top: 0;
@@ -448,15 +445,8 @@
             font-size: 24px;
             text-align: center;
         }
-        .rent-page.show, .search-page.show, .credits-page.show {
+        .search-page.show, .credits-page.show {
             transform: translateX(-100%);
-        }
-        .rent-banner {
-            background-color: #6a0dad;
-            padding: 20px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
         }
         .back-button {
             position: absolute;
@@ -469,74 +459,6 @@
         }
         .back-button:hover {
             color: #8a2be2;
-        }
-        .create-item-btn {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #8a2be2;
-            border: none;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-        }
-        .create-item-btn:hover {
-            background-color: #5d3fd3;
-        }
-        .create-item-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #34234a;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            color: white;
-            display: none;
-            z-index: 1004;
-            text-align: center;
-            width: 300px;
-        }
-        .create-item-popup h2 {
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-        .create-item-popup input[type="text"] {
-            width: 80%;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-        .create-item-popup select {
-            width: 80%;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-        .create-item-popup button {
-            padding: 10px 20px;
-            background-color: #8a2be2;
-            border: none;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-            width: 100%;
-        }
-        .create-item-popup button:hover {
-            background-color: #5d3fd3;
-        }
-        .close-create-item-popup {
-            cursor: pointer;
-            margin-top: 20px;
-            color: #ff4d4d;
         }
         .announcement {
             display: none;
@@ -621,7 +543,7 @@
             </div>
             <div class="dropdown-menu" id="dropdown-menu">
                 <a href="#" id="settings-link">Settings</a>
-                <a href="#" id="rent-link">Rent</a>
+                <a href="#" id="search-link">Search</a>
                 <a href="#">Change Username</a>
                 <a href="#" id="logout-button">Log Out</a>
                 <p class="coins-spent">Coins Spent: 0</p>
@@ -666,19 +588,6 @@
             <div class="countdown" id="discount-countdown"></div>
             <button id="buy-chatterplus-button">Buy</button>
         </div>
-        <button class="create-item-btn" id="create-item-btn">Create Item</button>
-    </div>
-
-    <div class="create-item-popup" id="create-item-popup">
-        <h2>Creation</h2>
-        <input type="text" placeholder="Item Name" id="item-name-input">
-        <input type="text" placeholder="Price" id="item-price-input">
-        <select id="item-category-input">
-            <option value="vip">VIP</option>
-            <option value="custom-theme">Custom Theme</option>
-        </select>
-        <button id="save-item-btn">Save</button>
-        <span class="close-create-item-popup" id="close-create-item-popup">Close</span>
     </div>
 
     <div class="payment-frame" id="payment-frame">
@@ -701,11 +610,6 @@
             </label>
             <hr>
         </div>
-    </div>
-
-    <div class="rent-page" id="rent-page">
-        <span class="back-button" id="rent-back-button">&lt;</span>
-        Rent (Coming Soon...)
     </div>
 
     <div class="search-page" id="search-page">
@@ -773,16 +677,8 @@
             const settingsSidebar = document.getElementById('settings-sidebar');
             const shakeToggle = document.getElementById('shake-toggle');
             const typingIndicator = document.getElementById('typing-indicator');
-            const rentPage = document.getElementById('rent-page');
             const searchPage = document.getElementById('search-page');
             const creditsPage = document.getElementById('credits-page');
-            const createItemBtn = document.getElementById('create-item-btn');
-            const createItemPopup = document.getElementById('create-item-popup');
-            const closeCreateItemPopup = document.getElementById('close-create-item-popup');
-            const saveItemBtn = document.getElementById('save-item-btn');
-            const itemNameInput = document.getElementById('item-name-input');
-            const itemPriceInput = document.getElementById('item-price-input');
-            const itemCategoryInput = document.getElementById('item-category-input');
 
             let coins = 0;
             let coinsSpent = 0;
@@ -822,16 +718,6 @@
             // Close settings sidebar
             document.getElementById('slide-back-settings').addEventListener('click', function () {
                 settingsSidebar.classList.remove('show');
-            });
-
-            // Navigate to Rent Page
-            document.getElementById('rent-link').addEventListener('click', function () {
-                rentPage.classList.add('show');
-            });
-
-            // Navigate back from Rent Page to Home
-            document.getElementById('rent-back-button').addEventListener('click', function () {
-                rentPage.classList.remove('show');
             });
 
             // Navigate to Search Page
@@ -1132,80 +1018,6 @@
                 });
             });
 
-            // Show Create Item Popup
-            createItemBtn.addEventListener('click', function () {
-                createItemPopup.style.display = 'block';
-            });
-
-            // Close Create Item Popup
-            closeCreateItemPopup.addEventListener('click', function () {
-                createItemPopup.style.display = 'none';
-            });
-
-            // Save Item Functionality
-            saveItemBtn.addEventListener('click', function () {
-                const itemName = itemNameInput.value.trim();
-                const itemPrice = itemPriceInput.value.trim();
-                const itemCategory = itemCategoryInput.value;
-
-                if (itemName && itemPrice && itemCategory) {
-                    const user = firebase.auth().currentUser;
-                    const itemCard = document.createElement('div');
-                    itemCard.className = 'item-card';
-
-                    itemCard.innerHTML = `
-                        <h3>${itemName}</h3>
-                        <p>${itemPrice} Coins</p>
-                        <p class="made-by">Made by ${user.email.split('@')[0]}</p>
-                        <button class="item-buy-btn">Owned</button>
-                    `;
-
-                    if (itemCategory === "vip") {
-                        itemCard.classList.add('vip-item');
-                        itemCard.querySelector('p.made-by').textContent += " (VIP)";
-                        ownsVip = true;
-                        firebase.database().ref(`users/${user.uid}`).update({
-                            ownsVip: true,
-                        });
-                    } else if (itemCategory === "custom-theme") {
-                        itemCard.classList.add('custom-theme-item');
-                        itemCard.querySelector('p.made-by').textContent += " (Custom Theme)";
-                        ownsCustomTheme = true;
-                        customThemeColor = "#ff69b4"; // Example color, can be set dynamically
-                        firebase.database().ref(`users/${user.uid}`).update({
-                            ownsCustomTheme: true,
-                            customThemeColor: customThemeColor
-                        });
-                    }
-
-                    // Add new item to the shop frame
-                    shopFrame.insertBefore(itemCard, createItemBtn);
-
-                    // Clear the input fields
-                    itemNameInput.value = '';
-                    itemPriceInput.value = '';
-                    itemCategoryInput.value = 'vip';
-
-                    // Close the popup
-                    createItemPopup.style.display = 'none';
-
-                    // Save item to Firebase
-                    firebase.database().ref(`items/${itemName}`).set({
-                        name: itemName,
-                        price: itemPrice,
-                        category: itemCategory,
-                        creator: user.email,
-                        owned: true // Creator owns the item by default
-                    });
-
-                    // Set the button to "Owned" for the creator
-                    itemCard.querySelector('.item-buy-btn').textContent = "Owned";
-                    itemCard.querySelector('.item-buy-btn').disabled = true;
-                } else {
-                    alert("Please fill in all fields.");
-                }
-            });
-
             // Load created items from Firebase
             function loadItems() {
                 const user = firebase.auth().currentUser;
@@ -1228,7 +1040,7 @@
                                 itemCard.classList.add('custom-theme-item');
                                 itemCard.querySelector('.made-by').textContent += ' (Custom Theme)';
                             }
-                            shopFrame.insertBefore(itemCard, createItemBtn);
+                            shopFrame.insertBefore(itemCard, null);
 
                             // Add click event to the buy button
                             const buyButton = itemCard.querySelector('.item-buy-btn');
