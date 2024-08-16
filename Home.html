@@ -19,24 +19,27 @@
         .banner {
             background-color: #6a0dad;
             color: white;
-            padding: 15px 20px; /* Adjusted padding for better mobile compatibility */
+            padding: 25px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             z-index: 1000;
-            position: relative;
+            position: fixed; /* Make the banner fixed */
+            top: 0;
+            left: 0;
+            width: 100%;
         }
         .banner h1 {
             margin: 0;
-            font-size: 24px; /* Reduced font size for mobile */
+            font-size: 28px;
         }
         .event-timer {
-            font-size: 12px; /* Reduced font size for mobile */
+            font-size: 14px;
             font-weight: bold;
             position: absolute;
             top: 10px;
-            left: 50%;
+            left: 45%;
             transform: translateX(-50%);
             white-space: nowrap;
             color: gold;
@@ -46,7 +49,7 @@
             cursor: pointer;
         }
         .user-email span {
-            font-size: 16px; /* Reduced font size for mobile */
+            font-size: 18px;
             display: block;
         }
         .user-coins {
@@ -56,7 +59,7 @@
         }
         .user-coins span {
             margin-left: 5px;
-            font-size: 18px; /* Reduced font size for mobile */
+            font-size: 22px;
             font-weight: bold;
         }
         .yellow-dot {
@@ -76,7 +79,7 @@
             padding: 10px;
             border-radius: 4px;
             z-index: 1000;
-            min-width: 180px; /* Reduced min-width for mobile */
+            min-width: 200px;
             opacity: 0;
             transform: translateY(-10px);
             transition: opacity 0.3s ease, transform 0.3s ease;
@@ -89,11 +92,11 @@
         }
         .dropdown-menu a {
             display: block;
-            padding: 10px 14px; /* Adjusted padding for mobile */
+            padding: 12px 16px;
             color: white;
             text-decoration: none;
-            font-size: 14px; /* Reduced font size for mobile */
-            margin: 4px 0;
+            font-size: 16px;
+            margin: 5px 0;
             border-radius: 4px;
             background-color: #8a2be2;
             font-weight: bold;
@@ -104,7 +107,7 @@
         .dropdown-menu p {
             margin: 5px 0;
             padding: 0;
-            font-size: 16px; /* Reduced font size for mobile */
+            font-size: 18px;
             background-color: transparent;
             border: none;
             cursor: default;
@@ -122,6 +125,7 @@
             background-color: #34234a;
             flex-grow: 1;
             overflow-y: auto;
+            margin-top: 80px; /* Adjust to ensure the banner doesn't overlap content */
         }
         .chat-message {
             margin: 10px 0;
@@ -147,7 +151,7 @@
             100% { transform: translate(0); opacity: 1; }
         }
         .input-container {
-            position: fixed; /* Fixed position to ensure visibility on mobile */
+            position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
@@ -167,7 +171,7 @@
             font-size: 16px;
         }
         .input-container button {
-            padding: 10px 20px; /* Adjusted padding for mobile */
+            padding: 10px 40px;
             margin-left: 10px;
             border: none;
             background-color: #8a2be2;
@@ -543,7 +547,6 @@
             </div>
             <div class="dropdown-menu" id="dropdown-menu">
                 <a href="#" id="settings-link">Settings</a>
-                <a href="#" id="search-link">Search</a>
                 <a href="#">Change Username</a>
                 <a href="#" id="logout-button">Log Out</a>
                 <p class="coins-spent">Coins Spent: 0</p>
@@ -567,7 +570,6 @@
 
     <div class="expanded-banner" id="expanded-banner">
         <a href="#" id="home-link">Home</a>
-        <a href="#" id="search-link">Search</a>
         <a href="#" id="credits-link">Credits</a>
     </div>
 
@@ -610,11 +612,6 @@
             </label>
             <hr>
         </div>
-    </div>
-
-    <div class="search-page" id="search-page">
-        <span class="back-button" id="search-back-button">&lt;</span>
-        <div>Search Page (Coming Soon...)</div>
     </div>
 
     <div class="credits-page" id="credits-page">
@@ -677,7 +674,6 @@
             const settingsSidebar = document.getElementById('settings-sidebar');
             const shakeToggle = document.getElementById('shake-toggle');
             const typingIndicator = document.getElementById('typing-indicator');
-            const searchPage = document.getElementById('search-page');
             const creditsPage = document.getElementById('credits-page');
 
             let coins = 0;
@@ -718,16 +714,6 @@
             // Close settings sidebar
             document.getElementById('slide-back-settings').addEventListener('click', function () {
                 settingsSidebar.classList.remove('show');
-            });
-
-            // Navigate to Search Page
-            document.getElementById('search-link').addEventListener('click', function () {
-                searchPage.classList.add('show');
-            });
-
-            // Navigate back from Search Page to Home
-            document.getElementById('search-back-button').addEventListener('click', function () {
-                searchPage.classList.remove('show');
             });
 
             // Navigate to Credits Page
@@ -1018,117 +1004,6 @@
                 });
             });
 
-            // Load created items from Firebase
-            function loadItems() {
-                const user = firebase.auth().currentUser;
-                if (user) {
-                    firebase.database().ref('items').once('value').then(function (snapshot) {
-                        snapshot.forEach(function (childSnapshot) {
-                            const itemData = childSnapshot.val();
-                            const itemCard = document.createElement('div');
-                            itemCard.className = 'item-card';
-                            itemCard.innerHTML = `
-                                <h3>${itemData.name}</h3>
-                                <p>${itemData.price} Coins</p>
-                                <p class="made-by">Made by ${itemData.creator}</p>
-                                <button class="item-buy-btn">${itemData.creator === user.email ? 'Owned' : 'Buy'}</button>
-                            `;
-                            if (itemData.category === 'vip') {
-                                itemCard.classList.add('vip-item');
-                                itemCard.querySelector('.made-by').textContent += ' (VIP)';
-                            } else if (itemData.category === 'custom-theme') {
-                                itemCard.classList.add('custom-theme-item');
-                                itemCard.querySelector('.made-by').textContent += ' (Custom Theme)';
-                            }
-                            shopFrame.insertBefore(itemCard, null);
-
-                            // Add click event to the buy button
-                            const buyButton = itemCard.querySelector('.item-buy-btn');
-                            if (itemData.creator !== user.email && !itemData.owned) {
-                                buyButton.addEventListener('click', function () {
-                                    purchaseItem(itemData, buyButton);
-                                });
-                            } else {
-                                buyButton.disabled = true;
-                            }
-                        });
-                    });
-                }
-            }
-
-            // Purchase item functionality
-            function purchaseItem(itemData, button) {
-                const cost = parseInt(itemData.price);
-
-                if (coins >= cost || isAdmin) {
-                    coins -= cost;
-                    coinsSpent += cost;
-                    coinsDisplay.textContent = `Coins: ${coins}`;
-                    coinsSpentDisplay.textContent = `Coins Spent: ${coinsSpent}`;
-                    saveUserData();
-
-                    const user = firebase.auth().currentUser;
-                    if (user) {
-                        button.textContent = "Owned";
-                        button.disabled = true;
-
-                        // Update item ownership in Firebase
-                        firebase.database().ref(`items/${itemData.name}`).update({
-                            owned: true
-                        });
-
-                        // Add coins to the creator's pending balance
-                        if (itemData.creator) {
-                            firebase.database().ref('users')
-                                .orderByChild('email')
-                                .equalTo(itemData.creator)
-                                .once('value')
-                                .then(function (snapshot) {
-                                    snapshot.forEach(function (childSnapshot) {
-                                        const creatorUid = childSnapshot.key;
-                                        const creatorData = childSnapshot.val();
-                                        const creatorCoinsPending = creatorData.coinsPending || 0;
-                                        firebase.database().ref(`users/${creatorUid}`).update({
-                                            coinsPending: creatorCoinsPending + cost
-                                        });
-                                    });
-                                });
-                        } else {
-                            console.error('Error: itemData.creator is undefined.');
-                        }
-                    }
-                } else {
-                    alert("Not enough coins!");
-                }
-            }
-
-            // Countdown Timer Logic
-            const eventStartDate = new Date("August 16, 2024 00:00:00").getTime();
-
-            function updateTimer() {
-                const now = new Date().getTime();
-                const distance = eventStartDate - now;
-
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                eventTimerElement.textContent = `Event Starting in: ${days}D ${hours}H ${minutes}M ${seconds}S`;
-
-                if (distance < 0) {
-                    clearInterval(timerInterval);
-                    announcement.style.display = 'block'; // Show the announcement
-                    eventTimerElement.textContent = "Event Started!";
-                }
-            }
-
-            const timerInterval = setInterval(updateTimer, 1000);
-
-            closeAnnouncementButton.addEventListener('click', function () {
-                announcement.style.display = 'none';
-            });
-
             // Firebase authentication logic
             firebase.auth().onAuthStateChanged(function (user) {
                 if (user) {
@@ -1151,8 +1026,6 @@
                     loadMessages();
                     // Check ownership status
                     checkOwnership();
-                    // Load created items
-                    loadItems();
                 }
             });
         });
