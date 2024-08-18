@@ -38,9 +38,9 @@
 
         #banner h1 {
             margin: 0;
-            font-size: 36px; /* Large and bold title */
+            font-size: 36px;
             font-weight: bold;
-            margin-left: 10px; /* Shifted to the left to avoid overlap */
+            margin-left: 10px;
         }
 
         #user-info {
@@ -48,7 +48,7 @@
         }
 
         #user-email {
-            font-size: 18px; /* Larger font size for email */
+            font-size: 18px;
             font-weight: bold;
         }
 
@@ -101,10 +101,11 @@
             padding: 20px;
             overflow-y: auto;
             border-bottom: 1px solid #ddd;
-            font-size: 18px; /* Larger font size for messages */
-            line-height: 1.5; /* Better line spacing */
+            font-size: 18px;
+            line-height: 1.5;
             display: flex;
             flex-direction: column;
+            justify-content: flex-end; /* Ensure messages stay above the input box */
         }
 
         .message-card {
@@ -147,7 +148,7 @@
             padding: 10px;
             box-sizing: border-box;
             align-items: center;
-            background-color: white; /* Ensure it's visible against background */
+            background-color: white;
             position: fixed;
             bottom: 0;
             width: 100%;
@@ -168,7 +169,7 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
-            font-size: 18px; /* Larger font size for input */
+            font-size: 18px;
         }
 
         #send-button {
@@ -180,21 +181,20 @@
             cursor: pointer;
             margin-left: 10px;
             font-size: 18px;
-            opacity: 0.5; /* Semi-transparent by default */
-            pointer-events: none; /* Not pressable by default */
-            transition: opacity 0.3s ease; /* Smooth transition for opacity */
+            opacity: 0.5;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
         }
 
         #send-button.active {
-            opacity: 1; /* Fully opaque when active */
-            pointer-events: auto; /* Pressable when active */
+            opacity: 1;
+            pointer-events: auto;
         }
 
-        /* Settings Page */
         #settings-page {
             position: absolute;
             top: 0;
-            right: -100vw; /* Hidden off-screen to the right */
+            right: -100vw;
             width: 100vw;
             height: 100vh;
             background-color: white;
@@ -308,13 +308,12 @@
         body.dark-mode #banner, body.dark-mode #settings-banner {
             background-color: #0056b3;
         }
-
     </style>
 </head>
 <body>
     <div id="chat-frame">
         <div id="banner">
-            <h1>Chatter</h1> <!-- Title aligned to the left -->
+            <h1>Chatter</h1>
             <div id="user-info">
                 <div id="user-email">User@gmail.com</div>
                 <div id="chatter-coins">
@@ -329,16 +328,15 @@
         </div>
         <div id="messages"></div>
         <div id="input-container">
-            <div id="typing-indicator"></div> <!-- Typing indicator added here -->
+            <div id="typing-indicator"></div>
             <input type="text" id="message-input" placeholder="Type your message...">
             <button id="send-button">&#10003;</button>
         </div>
     </div>
 
-    <!-- Settings Page -->
     <div id="settings-page">
         <div id="settings-banner">
-            <span id="back-button">&lt;</span> <!-- Back button -->
+            <span id="back-button">&lt;</span>
             Settings
         </div>
         <div id="settings-content">
@@ -358,13 +356,13 @@
     <script>
         // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
-            authDomain: "login-71866.firebaseapp.com",
-            databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
-            projectId: "login-71866",
-            storageBucket: "login-71866.appspot.com",
-            messagingSenderId: "434042354282",
-            appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
         // Initialize Firebase
@@ -391,6 +389,20 @@
         let coinCount = 0;
         let typingTimeout;
 
+        // Function to abbreviate numbers
+        function abbreviateNumber(value) {
+            const suffixes = ["", "K", "M", "B", "T"];
+            let newValue = value;
+            let suffixIndex = 0;
+
+            while (newValue >= 1000 && suffixIndex < suffixes.length - 1) {
+                newValue /= 1000;
+                suffixIndex++;
+            }
+
+            return `${newValue.toFixed(2)}${suffixes[suffixIndex]}`;
+        }
+
         // Toggle Dropdown Menu
         userEmailElement.addEventListener('click', () => {
             dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
@@ -407,14 +419,14 @@
                     const userCoinsRef = database.ref(`users/${user.uid}/coins`);
                     userCoinsRef.on('value', (snapshot) => {
                         coinCount = snapshot.val() || 0;
-                        coinCountElement.textContent = coinCount;
+                        coinCountElement.textContent = abbreviateNumber(coinCount);
                     });
 
                     // Start coin increment every minute
                     setInterval(() => {
                         coinCount += 10;
                         userCoinsRef.set(coinCount);
-                        coinCountElement.textContent = coinCount;
+                        coinCountElement.textContent = abbreviateNumber(coinCount);
                     }, 60000); // 60000 ms = 1 minute
                 } else {
                     coinCountElement.textContent = 'Unlimited'; // Set coins to unlimited for admin
