@@ -21,6 +21,7 @@
             height: 100vh;
             background-color: white;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden; /* Ensure content doesn't overflow the chat frame */
         }
 
         #banner {
@@ -30,6 +31,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0; /* Prevents shrinking */
         }
 
         #banner h1 {
@@ -101,6 +103,7 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
+            scroll-behavior: smooth;
         }
 
         .message-card {
@@ -161,6 +164,7 @@
             width: 100%;
             box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
             z-index: 10;
+            flex-shrink: 0; /* Prevents shrinking */
         }
 
         #typing-indicator {
@@ -483,19 +487,6 @@
             } else {
                 sendButton.classList.remove('active');
                 database.ref('typing').remove(); // Clear typing status immediately
-            }
-        });
-
-        // Adjust chat interface when keyboard is visible (especially for mobile devices)
-        window.addEventListener('resize', () => {
-            const isKeyboardVisible = window.innerHeight < 500; // Arbitrary value, adjust based on expected height
-            if (isKeyboardVisible) {
-                // Adjust chat frame and messages container to fit above the keyboard
-                messagesContainer.style.height = `calc(${window.innerHeight}px - ${banner.offsetHeight + inputContainer.offsetHeight}px)`;
-                messagesContainer.scrollTop = messagesContainer.scrollHeight; // Ensure chat is scrolled to the bottom
-            } else {
-                // Restore original dimensions when keyboard is hidden
-                messagesContainer.style.height = `calc(100vh - ${banner.offsetHeight + inputContainer.offsetHeight}px)`;
             }
         });
 
