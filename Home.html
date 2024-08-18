@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1, user-scalable=no">
     <title>Chatter</title>
     <style>
         body {
@@ -148,6 +148,10 @@
             box-sizing: border-box;
             align-items: center;
             background-color: white; /* Ensure it's visible against background */
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 10;
         }
 
         #typing-indicator {
