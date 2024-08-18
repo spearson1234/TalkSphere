@@ -50,6 +50,7 @@
         #user-email {
             font-size: 18px;
             font-weight: bold;
+            cursor: pointer;
         }
 
         #chatter-coins {
@@ -141,6 +142,21 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+
+        @keyframes sendMessage {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .message-card.send-animation {
+            animation: sendMessage 0.5s ease-in-out;
         }
 
         #input-container {
@@ -356,13 +372,13 @@
     <script>
         // Firebase Configuration
         const firebaseConfig = {
-       apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
-  authDomain: "login-71866.firebaseapp.com",
-  databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
-  projectId: "login-71866",
-  storageBucket: "login-71866.appspot.com",
-  messagingSenderId: "434042354282",
-  appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
+            apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
+            authDomain: "login-71866.firebaseapp.com",
+            databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
+            projectId: "login-71866",
+            storageBucket: "login-71866.appspot.com",
+            messagingSenderId: "434042354282",
+            appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
         };
 
         // Initialize Firebase
@@ -502,7 +518,7 @@
             messageElement.classList.add('message-card');
 
             if (messageData.startsWith(username + ':')) {
-                messageElement.classList.add('message-sent');
+                messageElement.classList.add('message-sent', 'send-animation');
             } else {
                 messageElement.classList.add('message-received');
             }
@@ -516,10 +532,24 @@
         sendButton.addEventListener('click', () => {
             const message = messageInput.value.trim();
             if (message) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message-card', 'message-sent', 'send-animation');
+                messageElement.textContent = `${username}: ${message}`;
+                messagesContainer.appendChild(messageElement);
+
+                // Send the message to Firebase
                 messagesRef.push(`${username}: ${message}`);
+                
+                // Reset input box and focus
                 messageInput.value = '';
-                sendButton.classList.remove('active'); // Disable the send button after sending
-                database.ref('typing').remove(); // Clear typing status
+                sendButton.classList.remove('active');
+                messageInput.focus();
+                
+                // Remove typing status
+                database.ref('typing').remove();
+
+                // Scroll to bottom of the chat
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
             }
         });
 
