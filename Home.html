@@ -15,20 +15,18 @@
         }
 
         #chat-frame {
+            display: flex;
+            flex-direction: column;
             width: 100vw;
             height: 100vh;
             background-color: white;
-            display: flex;
-            flex-direction: column;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            position: relative;
         }
 
         #banner {
             background-color: skyblue;
             color: white;
             padding: 20px;
-            text-align: left;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -38,7 +36,6 @@
             margin: 0;
             font-size: 36px;
             font-weight: bold;
-            margin-left: 10px;
         }
 
         #user-info {
@@ -124,14 +121,12 @@
             align-self: flex-end;
             background-color: #007BFF;
             color: white;
-            text-align: left;
         }
 
         .message-received {
             align-self: flex-start;
             background-color: #E9E9E9;
             color: black;
-            text-align: left;
         }
 
         @keyframes fadeInSlideUp {
@@ -385,7 +380,6 @@
         const auth = firebase.auth();
 
         // DOM Elements
-        const chatFrame = document.getElementById('chat-frame');
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
         const messagesContainer = document.getElementById('messages');
@@ -497,12 +491,10 @@
             const isKeyboardVisible = window.innerHeight < 500; // Arbitrary value, adjust based on expected height
             if (isKeyboardVisible) {
                 // Adjust chat frame and messages container to fit above the keyboard
-                chatFrame.style.height = `${window.innerHeight}px`;
                 messagesContainer.style.height = `calc(${window.innerHeight}px - ${banner.offsetHeight + inputContainer.offsetHeight}px)`;
                 messagesContainer.scrollTop = messagesContainer.scrollHeight; // Ensure chat is scrolled to the bottom
             } else {
                 // Restore original dimensions when keyboard is hidden
-                chatFrame.style.height = "100vh";
                 messagesContainer.style.height = `calc(100vh - ${banner.offsetHeight + inputContainer.offsetHeight}px)`;
             }
         });
