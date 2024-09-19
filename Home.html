@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoonScope Chat App</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Add Firebase scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">MoonScope</div>
+        <div id="user-menu" class="user-menu">
+            <div id="user-email" class="user-email">User@gmail.com</div>
+            <div id="chips-display" class="chips-display">Chips: 0</div>
+            <div id="dropdown" class="dropdown-menu">
+                <button id="settings-btn">Settings</button>
+                <button id="period-tracker-btn" class="rainbow-outline">Period Tracker</button>
+                <button id="logout-btn">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="chat-container">
+            <section class="chat-window">
+                <div class="messages" id="messages">
+                    <!-- Chat messages will appear here -->
+                </div>
+                <form id="message-form">
+                    <input type="text" id="message-input" placeholder="Type a message..." required>
+                    <button type="submit">Send</button>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <div id="settings-panel" class="settings-panel">
+        <button id="close-settings" class="close-btn">X</button>
+        <h2>Settings</h2>
+        <!-- Settings content goes here -->
+    </div>
+
+    <!-- Period Tracker Modal -->
+    <div id="period-tracker-modal" class="modal">
+        <button id="close-period-tracker-modal" class="close-btn">X</button>
+        <h2>Period Tracker</h2>
+        <label for="date-picker">Select Period Start Date:</label>
+        <input type="date" id="date-picker">
+        <button id="save-period-btn">Save</button>
+        <div id="countdown-display" class="countdown">Countdown: 00d 00h 00m 00s</div>
+    </div>
+
+    <script src="controller.js"></script>
+</body>
+</html>
