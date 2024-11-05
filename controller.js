@@ -159,49 +159,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
         savePeriodBtn.addEventListener('click', () => {
             const selectedDate = new Date(datePicker.value);
-            if (selectedDate.toString() === 'Invalid Date') {
-                alert('Please select a valid date.');
-                return;
+            // Set a countdown based on the selected date
+            if (selectedDate) {
+                const countdown = setInterval(() => {
+                    const now = new Date();
+                    const distance = selectedDate - now;
+
+                    // Time calculations for days, hours, minutes, and seconds
+                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    // Display the result in the countdown display
+                    countdownDisplay.innerHTML = `Countdown: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+                    // If the countdown is over, display an alert
+                    if (distance < 0) {
+                        clearInterval(countdown);
+                        countdownDisplay.innerHTML = 'Period Started!';
+                    }
+                }, 1000);
             }
-
-            const now = new Date();
-            const timeLeft = selectedDate - now;
-            if (timeLeft <= 0) {
-                countdownDisplay.textContent = 'The selected date has already passed!';
-                return;
-            }
-
-            const updateCountdown = () => {
-                const now = new Date();
-                const timeLeft = selectedDate - now;
-                if (timeLeft <= 0) {
-                    countdownDisplay.textContent = 'Time is up!';
-                    clearInterval(countdownInterval);
-                } else {
-                    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-                    countdownDisplay.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-                }
-            };
-
-            updateCountdown();
-            const countdownInterval = setInterval(updateCountdown, 1000);
-            periodTrackerModal.classList.remove('active');
         });
-    } else {
-        console.error('Required DOM elements for period tracker are missing');
     }
 
-    // Handle logout
+    // Logout functionality
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
-            auth.signOut().then(() => {
-                window.location.href = 'Main.html';
-            }).catch(error => {
-                console.error('Error signing out:', error);
-            });
+            auth.signOut()
+                .then(() => {
+                    console.log('User signed out successfully');
+                })
+                .catch((error) => {
+                    console.error('Error signing out:', error);
+                });
         });
     }
 });
