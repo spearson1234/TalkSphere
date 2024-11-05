@@ -95,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 messagesListener.off(); // Remove previous listener if it exists
             }
             loadMessages(); // Load messages
+            updateChips('admin@gmail.com', 1000000); // Give admin@gmail.com 1M Chips
         } else {
             userEmailDisplay.textContent = 'Not signed in';
         }
@@ -105,9 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesListener = database.ref('messages').on('child_added', snapshot => {
             const msg = snapshot.val();
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'message';
-
-            // Extract the part of the email before the '@' symbol
+            messageDiv.className = 'message';            // Extract the part of the email before the '@' symbol
             const userName = msg.user.split('@')[0];
 
             messageDiv.innerHTML = `<strong>${userName}:</strong> ${msg.text}`;
