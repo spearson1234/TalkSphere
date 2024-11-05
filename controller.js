@@ -38,17 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to format large numbers with suffixes
     function formatNumber(amount) {
-        if (amount >= 1e12) {
-            return (amount / 1e12).toFixed(2) + 'T'; // Trillion
-        } else if (amount >= 1e9) {
-            return (amount / 1e9).toFixed(2) + 'B'; // Billion
-        } else if (amount >= 1e6) {
-            return (amount / 1e6).toFixed(2) + 'M'; // Million
-        } else if (amount >= 1e3) {
-            return (amount / 1e3).toFixed(2) + 'K'; // Thousand
-        } else {
-            return amount.toString(); // Less than a thousand
-        }
+        if (amount >= 1e12) return (amount / 1e12).toFixed(2) + 'T';
+        if (amount >= 1e9) return (amount / 1e9).toFixed(2) + 'B';
+        if (amount >= 1e6) return (amount / 1e6).toFixed(2) + 'M';
+        if (amount >= 1e3) return (amount / 1e3).toFixed(2) + 'K';
+        return amount.toString();
     }
 
     // Update chips display
@@ -56,20 +50,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const user = auth.currentUser;
         if (user) {
             const sanitizedEmail = sanitizeEmail(user.email);
-            database.ref(`users/${sanitizedEmail}/chips`).once('value').then(snapshot => {
-                const chipsAmount = snapshot.val() || 0;
-                if (chipsDisplay) {
-                    chipsDisplay.textContent = `Chips: ${formatNumber(chipsAmount)}`;
-                }
-            }).catch(error => {
-                console.error('Error fetching chips amount:', error);
-            });
+            database.ref(`users/${sanitizedEmail}/chips`).once('value')
+                .then(snapshot => {
+                    const chipsAmount = snapshot.val() || 0;
+                    if (chipsDisplay) {
+                        chipsDisplay.textContent = `Chips: ${formatNumber(chipsAmount)}`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching chips amount:', error);
+                });
         }
     }
 
     // Function to sanitize email for Firebase path
     function sanitizeEmail(email) {
-        return email.replace(/\./g, ','); // Replace '.' with ',' for Firebase path
+        return email.replace(/\./g, ',');
     }
 
     // Function to update chip amount for a specific user
@@ -78,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         database.ref(`users/${sanitizedEmail}/chips`).set(amount)
             .then(() => {
                 console.log(`Chips updated successfully for ${email}.`);
-                updateChipsDisplay(); // Update chips display after setting the new value
+                updateChipsDisplay();
             })
             .catch(error => {
                 console.error('Error updating chips:', error);
@@ -88,13 +84,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle user authentication state changes
     auth.onAuthStateChanged(user => {
         if (user) {
-            // Always display the email as `user@gmail.com` on the top banner
             userEmailDisplay.textContent = user.email;
-            updateChipsDisplay(); // Update chips display when user is authenticated
+            updateChipsDisplay();
             if (messagesListener) {
-                messagesListener.off(); // Remove previous listener if it exists
+                messagesListener.off();
             }
-            loadMessages(); // Load messages
+            loadMessages();
             updateChips('admin@gmail.com', 1000000); // Give admin@gmail.com 1M Chips
         } else {
             userEmailDisplay.textContent = 'Not signed in';
@@ -106,9 +101,8 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesListener = database.ref('messages').on('child_added', snapshot => {
             const msg = snapshot.val();
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'message';            // Extract the part of the email before the '@' symbol
+            messageDiv.className = 'message';
             const userName = msg.user.split('@')[0];
-
             messageDiv.innerHTML = `<strong>${userName}:</strong> ${msg.text}`;
             messagesContainer.appendChild(messageDiv);
         });
@@ -117,8 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Toggle dropdown menu
     if (userMenu && dropdown) {
         userMenu.addEventListener('click', () => {
-            const isVisible = dropdown.style.display === 'block';
-            dropdown.style.display = isVisible ? 'none' : 'block';
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
         });
     }
 
@@ -140,11 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (messageForm && messageInput && messagesContainer) {
         messageForm.addEventListener('submit', (event) => {
             event.preventDefault();
-
             const newMessage = messageInput.value;
             if (newMessage.trim() === '') return;
-
-            // Add new message to the database
             const user = auth.currentUser;
             if (user) {
                 database.ref('messages').push({
@@ -152,9 +142,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     text: newMessage
                 });
             }
-
             messageInput.value = '';
-            messagesContainer.scrollTop = messagesContainer.scrollHeight; // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         });
     }
 
@@ -209,7 +198,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             auth.signOut().then(() => {
-                // Redirect to Main.html after successful logout
                 window.location.href = 'Main.html';
             }).catch(error => {
                 console.error('Error signing out:', error);
