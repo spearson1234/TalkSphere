@@ -21,19 +21,23 @@ const chatBox = document.getElementById("chatBox");
 const messagesContainer = document.getElementById("messages");
 const userMessageInput = document.getElementById("userMessage");
 const sendMessageBtn = document.getElementById("sendMessage");
+const endChatBtn = document.getElementById("endChat");
+const usernamePlaceholder = document.getElementById("username-placeholder");
 
-// Check if user is authenticated
+// Auth state observer
 firebase.auth().onAuthStateChanged(user => {
     if (user) {
-        // User is logged in, handle the user logic
-        const userName = user.displayName || user.email.split('@')[0]; // Get the user name
+        // If the user is signed in, display the username
+        const userName = user.displayName || user.email.split('@')[0];  // Display name or email prefix
+        usernamePlaceholder.textContent = userName;
 
-        // If the user is not admin and sends a message, request support
+        // If user is not admin, send support request
         if (user.email !== 'admin@gmail.com') {
             sendSupportRequest(user.email);
         }
     } else {
-        console.log("User not logged in");
+        // If not signed in, show "Not logged in"
+        usernamePlaceholder.textContent = "Not logged in";
     }
 });
 
@@ -103,7 +107,7 @@ function loadMessages() {
 }
 
 // Handle the end of the chat (Admin's control)
-function endChat() {
+endChatBtn.addEventListener('click', () => {
     const supportStatusRef = database.ref('supportStatus');
     supportStatusRef.update({
         isChatActive: false,
@@ -111,4 +115,4 @@ function endChat() {
 
     // Hide the chat box
     chatBox.style.display = 'none';
-}
+});
