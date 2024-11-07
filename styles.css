@@ -1,13 +1,36 @@
+/* General Styles */
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+/* Top Banner */
+.top-banner {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    height: 100vh;
+    background-color: grey;  /* Set banner background to grey */
+    padding: 15px 20px;
+    color: white;
+}
+
+.app-name {
+    font-size: 24px;
     margin: 0;
 }
 
+.user-info {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#username-placeholder {
+    color: yellow;  /* Set username placeholder text to yellow */
+}
+
+/* Admin Notification */
 .notification {
     background-color: #ffcc00;
     padding: 15px;
@@ -16,6 +39,10 @@ body {
     justify-content: space-between;
     align-items: center;
     width: 300px;
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .notification p {
@@ -32,12 +59,18 @@ body {
     cursor: pointer;
 }
 
+/* Chat Box */
 .chat-box {
     background-color: #fff;
     padding: 20px;
     width: 300px;
     border-radius: 5px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
 }
 
 .messages {
@@ -64,6 +97,7 @@ button {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-top: 10px;
 }
 
 button:disabled {
