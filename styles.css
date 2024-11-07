@@ -1,158 +1,29 @@
-/* General Reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    background-color: #f4f4f4;
 }
 
-header {
-    background-color: #333;
-    color: white;
-    padding: 10px;
+.top-banner {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: relative;
-}
-
-.logo {
-    font-size: 24px;
-}
-
-.user-menu {
-    position: relative;
-    cursor: pointer;
-}
-
-.user-email {
-    margin-right: 10px;
-}
-
-.chips-display {
-    margin-right: 10px;
-}
-
-.dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background: white;
-    color: black;
-    border: 1px solid #ccc;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-}
-
-.dropdown-menu button {
-    width: 100%;
-    border: none;
-    background: none;
-    padding: 10px;
-    text-align: left;
-}
-
-.dropdown-menu button:hover {
-    background-color: #f1f1f1;
-}
-
-.chat-container {
-    padding: 20px;
-}
-
-.chat-window {
-    background: #f9f9f9;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    height: 400px;
-    overflow-y: auto;
-}
-
-.messages {
-    padding: 10px;
-}
-
-.message {
-    margin-bottom: 10px;
-}
-
-#message-form {
-    display: flex;
-    margin-top: 10px;
-}
-
-#message-input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-#message-form button {
-    padding: 10px 15px;
-    border: none;
-    background-color: #28a745;
+    background-color: grey;  /* Set banner background to grey */
+    padding: 15px 20px;
     color: white;
-    cursor: pointer;
-    border-radius: 5px;
 }
 
-#message-form button:hover {
-    background-color: #218838;
+.app-name {
+    font-size: 24px;
+    margin: 0;
 }
 
-.settings-panel {
-    display: none;
-    position: fixed;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    border: 1px solid #ccc;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    z-index: 1000;
-}
-
-.settings-panel.open {
-    display: block;
-}
-
-.close-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    float: right;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    border: 1px solid #ccc;
-    padding: 20px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-}
-
-.modal.active {
-    display: block;
-}
-
-.countdown {
+.user-info {
+    font-size: 18px;
     font-weight: bold;
 }
 
-.rainbow-outline {
-    background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+#username-placeholder {
+    color: yellow;  /* Set username placeholder text to yellow */
 }
