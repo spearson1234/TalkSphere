@@ -3,37 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Support</title>
+    <title>MoonScoped</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-<!-- Top Banner -->
-<div class="top-banner">
-    <div class="app-name">Customer Support</div>
-    <div class="user-info">
-        <span id="username-placeholder">Not logged in</span>
+    <div class="top-banner">
+        <h1 class="app-name">MoonScoped</h1>
+        <div class="user-info">
+            <span id="username-placeholder">Not logged in</span>
+        </div>
     </div>
-</div>
 
-<!-- Admin Notification -->
-<div id="notification" class="notification" style="display:none;">
-    <p>Customer request support</p>
-    <button id="connectBtn">Connect</button>
-</div>
+    <!-- Chat Bubble Button -->
+    <button id="chatBubble">💬</button>
 
-<!-- Chat Box -->
-<div id="chatBox" class="chat-box" style="display:none;">
-    <div id="messages" class="messages"></div>
-    <input type="text" id="userMessage" placeholder="Type a message" />
-    <button id="sendMessage">Send</button>
-    <button id="endChat">End Chat</button>
-</div>
+    <!-- Chat Box (Hidden by default) -->
+    <div id="chatBox">
+        <div class="chatHeader">
+            <span>Customer Service</span>
+            <button id="closeChat">❌</button>
+        </div>
+        <div class="chatContent">
+            <div id="statusMessage" class="statusMessage">Waiting for a message...</div>
+        </div>
+        <div class="chatInputArea">
+            <input type="text" id="chatInput" placeholder="Type a message...">
+            <button id="sendBtn">Send</button>
+        </div>
+    </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="controller.js"></script>
+    <!-- Admin Notification (Hidden by default) -->
+    <div id="notification" style="display: none;">
+        <span>Customer request support</span>
+        <button id="connectBtn">Connect</button>
+    </div>
 
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <!-- Your custom JS file -->
+    <script src="controller.js"></script>
 </body>
 </html>
