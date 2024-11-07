@@ -8,6 +8,14 @@
 </head>
 <body>
 
+<!-- Top Banner -->
+<div class="top-banner">
+    <div class="app-name">Customer Support</div>
+    <div class="user-info">
+        <span id="username-placeholder">Not logged in</span>
+    </div>
+</div>
+
 <!-- Admin Notification -->
 <div id="notification" class="notification" style="display:none;">
     <p>Customer request support</p>
@@ -19,6 +27,7 @@
     <div id="messages" class="messages"></div>
     <input type="text" id="userMessage" placeholder="Type a message" />
     <button id="sendMessage">Send</button>
+    <button id="endChat">End Chat</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
