@@ -9,7 +9,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: grey;  /* Set banner background to grey */
+    background-color: grey;
     padding: 15px 20px;
     color: white;
 }
@@ -25,5 +25,87 @@ body {
 }
 
 #username-placeholder {
-    color: yellow;  /* Set username placeholder text to yellow */
+    color: yellow;
+}
+
+/* Chat Styles */
+#chatBox {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    height: 400px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: none;
+    flex-direction: column;
+}
+
+.chatHeader {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px 8px 0 0;
+}
+
+.chatContent {
+    padding: 10px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.chatInputArea {
+    display: flex;
+    padding: 10px;
+    background-color: #f4f4f4;
+}
+
+.chatInputArea input {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.chatInputArea button {
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.statusMessage {
+    color: #aaa;
+    text-align: center;
+    margin-top: 100px;
+}
+
+/* Admin Notification Styles */
+#notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #fff;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: none;
+}
+
+#notification button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
 }
