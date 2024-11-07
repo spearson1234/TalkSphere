@@ -33,6 +33,23 @@ firebase.auth().onAuthStateChanged(user => {
         if (user.email === 'admin@gmail.com') {
             notification.style.display = 'block';
         }
+
+        // Check the user's support status in the database
+        const supportStatusRef = database.ref('supportStatus');
+        supportStatusRef.on('value', snapshot => {
+            const supportStatus = snapshot.val();
+            if (supportStatus && supportStatus.userEmail === user.email) {
+                // Show chat if it's the correct user or admin
+                chatBox.style.display = 'flex';
+                statusMessage.textContent = "Getting support...";
+            } else if (supportStatus && supportStatus.isChatActive) {
+                // Admin can see the chat if it's active
+                chatBox.style.display = 'flex';
+            } else {
+                // Hide the chat if not the admin or the user needing support
+                chatBox.style.display = 'none';
+            }
+        });
     } else {
         usernamePlaceholder.textContent = "Not logged in";
     }
@@ -54,14 +71,27 @@ sendBtn.addEventListener("click", () => {
     if (message) {
         // Show "Getting support..." when the user sends a message
         statusMessage.textContent = "Getting support...";
-
-        // After sending a message, clear the input field
         chatInput.value = '';
+
+        // Update the Firebase database with the current support status
+        const supportStatusRef = database.ref('supportStatus');
+        supportStatusRef.set({
+            userEmail: firebase.auth().currentUser.email,
+            isChatActive: false // Not active yet for admin connection
+        });
     }
 });
 
 // Admin connects to the user
 connectBtn.addEventListener("click", () => {
     statusMessage.textContent = "Connected"; // Change status to "Connected"
-    notification.style.display = 'none'; // Hide the notification
+    notification.style.display = 'none'; // Hide admin notification
+    const supportStatusRef = database.ref('supportStatus');
+    supportStatusRef.set({
+        isChatActive: true,
+        userEmail: 'supportUser@example.com' // This will be dynamic
+    });
 });
+
+// Handle authentication
+auth.signInAnonymously().catch(console.error);
