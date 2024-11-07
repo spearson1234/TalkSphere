@@ -1,6 +1,6 @@
 // Firebase configuration and initialization
 const firebaseConfig = {
-     apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
+    apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
     authDomain: "login-71866.firebaseapp.com",
     databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
     projectId: "login-71866",
@@ -16,26 +16,52 @@ const database = firebase.database();
 
 // Elements
 const usernamePlaceholder = document.getElementById("username-placeholder");
+const chatBox = document.getElementById("chatBox");
+const chatInput = document.getElementById("chatInput");
+const sendBtn = document.getElementById("sendBtn");
+const statusMessage = document.getElementById("statusMessage");
+const notification = document.getElementById("notification");
+const connectBtn = document.getElementById("connectBtn");
 
-// Auth state observer
+// Authentication state observer
 firebase.auth().onAuthStateChanged(user => {
     if (user) {
-        // If the user is signed in, display the username
-        const userName = user.displayName || user.email.split('@')[0];  // Display name or email prefix
+        const userName = user.displayName || user.email.split('@')[0];
         usernamePlaceholder.textContent = userName;
 
-        // Store user data in the Realtime Database (if it's the first time)
-        const userRef = database.ref('users/' + user.uid);
-        userRef.once('value', snapshot => {
-            if (!snapshot.exists()) {
-                userRef.set({
-                    username: userName,
-                    email: user.email
-                });
-            }
-        });
+        // If the user is admin, show the notification for support request
+        if (user.email === 'admin@gmail.com') {
+            notification.style.display = 'block';
+        }
     } else {
-        // If not signed in, show "Not logged in"
         usernamePlaceholder.textContent = "Not logged in";
     }
+});
+
+// Open the chat box when the user clicks the chat bubble
+document.getElementById("chatBubble").addEventListener("click", () => {
+    chatBox.style.display = 'flex';
+});
+
+// Close the chat box when the user clicks the close button
+document.getElementById("closeChat").addEventListener("click", () => {
+    chatBox.style.display = 'none';
+});
+
+// Send a message when the send button is clicked
+sendBtn.addEventListener("click", () => {
+    const message = chatInput.value;
+    if (message) {
+        // Show "Getting support..." when the user sends a message
+        statusMessage.textContent = "Getting support...";
+
+        // After sending a message, clear the input field
+        chatInput.value = '';
+    }
+});
+
+// Admin connects to the user
+connectBtn.addEventListener("click", () => {
+    statusMessage.textContent = "Connected"; // Change status to "Connected"
+    notification.style.display = 'none'; // Hide the notification
 });
