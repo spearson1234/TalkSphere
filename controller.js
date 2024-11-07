@@ -1,97 +1,128 @@
-// Firebase configuration and initialization
+// Firebase Configuration (Replace with your Firebase configuration)
 const firebaseConfig = {
-    apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
-    authDomain: "login-71866.firebaseapp.com",
-    databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
-    projectId: "login-71866",
-    storageBucket: "login-71866.appspot.com",
-    messagingSenderId: "434042354282",
-    appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
+ apiKey: "AIzaSyCph4r--7O-g0dRQhqmn7wNPTOR4OYfguc",
+  authDomain: "fir-46d9c.firebaseapp.com",
+  databaseURL: "https://fir-46d9c-default-rtdb.firebaseio.com",
+  projectId: "fir-46d9c",
+  storageBucket: "fir-46d9c.firebasestorage.app",
+  messagingSenderId: "162679514419",
+  appId: "1:162679514419:web:cb5e5848d4d9cc4d424a46"
 };
 
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const database = firebase.database();
+const database = firebase.database(app);
 
-// Elements
-const usernamePlaceholder = document.getElementById("username-placeholder");
-const chatBox = document.getElementById("chatBox");
-const chatInput = document.getElementById("chatInput");
-const sendBtn = document.getElementById("sendBtn");
-const statusMessage = document.getElementById("statusMessage");
-const notification = document.getElementById("notification");
-const connectBtn = document.getElementById("connectBtn");
+// DOM Elements
+const chatButton = document.getElementById("chatButton");
+const chatWindow = document.getElementById("chatWindow");
+const chatContent = document.getElementById("chatContent");
+const userInput = document.getElementById("userInput");
+const sendButton = document.getElementById("sendButton");
 
-// Authentication state observer
-firebase.auth().onAuthStateChanged(user => {
-    if (user) {
-        const userName = user.displayName || user.email.split('@')[0];
-        usernamePlaceholder.textContent = userName;
+// Firebase reference for messages
+const messagesRef = firebase.database().ref('messages');
 
-        // If the user is admin, show the notification for support request
-        if (user.email === 'admin@gmail.com') {
-            notification.style.display = 'block';
-        }
+// Toggle chat window visibility
+function toggleChat() {
+  if (chatWindow.style.display === "none" || chatWindow.style.display === "") {
+    chatWindow.style.display = "block";
+    chatWindow.style.transform = "translateY(0)";
+    chatButton.style.display = "none";
 
-        // Check the user's support status in the database
-        const supportStatusRef = database.ref('supportStatus');
-        supportStatusRef.on('value', snapshot => {
-            const supportStatus = snapshot.val();
-            if (supportStatus && supportStatus.userEmail === user.email) {
-                // Show chat if it's the correct user or admin
-                chatBox.style.display = 'flex';
-                statusMessage.textContent = "Getting support...";
-            } else if (supportStatus && supportStatus.isChatActive) {
-                // Admin can see the chat if it's active
-                chatBox.style.display = 'flex';
-            } else {
-                // Hide the chat if not the admin or the user needing support
-                chatBox.style.display = 'none';
-            }
-        });
-    } else {
-        usernamePlaceholder.textContent = "Not logged in";
-    }
-});
+    // Send welcome message when chat opens
+    sendMessageToFirebase('Bot', 'Welcome to Customer Service! How can I assist you today?');
+  } else {
+    chatWindow.style.transform = "translateY(100%)";
+    setTimeout(() => {
+      chatWindow.style.display = "none";
+      chatButton.style.display = "flex";
+    }, 400);
+  }
+}
 
-// Open the chat box when the user clicks the chat bubble
-document.getElementById("chatBubble").addEventListener("click", () => {
-    chatBox.style.display = 'flex';
-});
+// Send message to Firebase
+function sendMessage() {
+  const messageText = userInput.value.trim();
+  if (messageText) {
+    // Send user message
+    sendMessageToFirebase('User', messageText);
 
-// Close the chat box when the user clicks the close button
-document.getElementById("closeChat").addEventListener("click", () => {
-    chatBox.style.display = 'none';
-});
+    // Clear input field
+    userInput.value = '';
 
-// Send a message when the send button is clicked
-sendBtn.addEventListener("click", () => {
-    const message = chatInput.value;
-    if (message) {
-        // Show "Getting support..." when the user sends a message
-        statusMessage.textContent = "Getting support...";
-        chatInput.value = '';
+    // Show typing indicator for bot response
+    showTypingIndicator();
 
-        // Update the Firebase database with the current support status
-        const supportStatusRef = database.ref('supportStatus');
-        supportStatusRef.set({
-            userEmail: firebase.auth().currentUser.email,
-            isChatActive: false // Not active yet for admin connection
-        });
-    }
-});
+    // Simulate bot response
+    setTimeout(() => {
+      sendMessageToFirebase('Bot', "Sure, help is on the way...");
+      
+      // Simulate system message: Connecting to expert
+      setTimeout(() => {
+        sendMessageToFirebase('System', "Connecting to an expert...");
+        
+        // Wait for 5 seconds, then update system message
+        setTimeout(() => {
+          sendMessageToFirebase('System', "Connected");
+          sendMessageToFirebase('Bot', "Hi! You're talking to an Expert!");
+        }, 5000);
+      }, 3000);
+    }, 2000);
+  }
+}
 
-// Admin connects to the user
-connectBtn.addEventListener("click", () => {
-    statusMessage.textContent = "Connected"; // Change status to "Connected"
-    notification.style.display = 'none'; // Hide admin notification
-    const supportStatusRef = database.ref('supportStatus');
-    supportStatusRef.set({
-        isChatActive: true,
-        userEmail: 'supportUser@example.com' // This will be dynamic
-    });
-});
+// Send message to Firebase function
+function sendMessageToFirebase(sender, message) {
+  const newMessage = {
+    sender: sender,
+    message: message,
+    timestamp: Date.now()
+  };
 
-// Handle authentication
-auth.signInAnonymously().catch(console.error);
+  // Push message to Firebase
+  messagesRef.push(newMessage);
+}
+
+// Listen for new messages in real-time from Firebase
+messagesRef.on('child_added', function(snapshot) {
+  const messageData = snapshot.val();
+  const messageElement = document.createElement('p');
+  
+  // Differentiate message types (user, bot, system)
+  if (messageData.sender === 'Bot') {
+    messageElement.classList.add('bot-message');
+  } else if (messageData.sender === 'User') {
+    messageElement.classList.add('user-message');
+  } else {
+    messageElement.classList.add('system-message');
+  }
+
+  messageElement.textContent = messageData.message;
+  chatContent.appendChild(messageElement);
+
+  // Scroll chat to the bottom
+  chatContent.scrollTop = chatContent.scrollHeight;
+
+  // Hide typing indicator after response is sent
+  if (messageData.sender === 'Bot') {
+    hideTypingIndicator();
+  }
+}
+
+// Display typing indicator for bot
+function showTypingIndicator() {
+  const typingElement = document.createElement('p');
+  typingElement.classList.add('typing-indicator');
+  typingElement.textContent = 'Bot is typing...';
+  chatContent.appendChild(typingElement);
+  chatContent.scrollTop = chatContent.scrollHeight;
+}
+
+// Hide typing indicator
+function hideTypingIndicator() {
+  const typingElement = document.querySelector('.typing-indicator');
+  if (typingElement) {
+    typingElement.remove();
+  }
+}
