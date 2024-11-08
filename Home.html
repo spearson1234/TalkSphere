@@ -1,24 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Customer Service Chat</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iMessage Chat</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Chat Button -->
-  <div id="chatButton" class="chat-button" onclick="toggleChat()">💬</div>
-  
-  <!-- Chat Window -->
-  <div id="chatWindow" class="chat-window">
-    <div id="chatContent" class="chat-content"></div>
-    <input type="text" id="userInput" class="user-input" placeholder="Type a message..." />
-    <button id="sendButton" class="send-button" onclick="sendMessage()">Send</button>
-  </div>
+    <div class="chat-container">
+        <header class="chat-header">
+            <div class="header-content">
+                <h2>Chat</h2>
+                <p id="email-display">user@gmail.com</p>
+            </div>
+            <div class="options-button">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </header>
+        <div id="chat-box" class="chat-box"></div>
+        <div class="input-container">
+            <input type="text" id="message-input" placeholder="iMessage">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
-  <script src="script.js"></script>
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="controller.js"></script>
 </body>
 </html>
