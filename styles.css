@@ -1,85 +1,146 @@
-/* Chat Button Styling */
-.chat-button {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #4CAF50;
-  color: white;
-  border-radius: 50%;
-  padding: 15px;
-  cursor: pointer;
-  font-size: 24px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
 }
 
-/* Chat Window Styling */
-.chat-window {
-  display: none;
-  position: fixed;
-  bottom: 70px;
-  right: 20px;
-  width: 300px;
-  height: 400px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  flex-direction: column;
-  overflow-y: auto;
-  padding: 10px;
+/* Main chat container */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 450px; /* Max width for larger screens */
+    width: 100%;
+    height: 90vh; /* Adjust height relative to viewport */
+    margin: 5vh auto;
+    background-color: #f0f4f8;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* Chat Content Styling */
-.chat-content {
-  flex-grow: 1;
-  overflow-y: auto;
-  padding: 10px;
-  max-height: 300px;
+/* Chat header */
+.chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    background-color: #007aff;
+    color: white;
+    border-radius: 15px 15px 0 0;
+    position: relative;
 }
 
-/* User and Bot Message Styling */
-.bot-message {
-  color: green;
-  font-weight: bold;
-  margin-bottom: 10px;
+.header-content {
+    text-align: center;
 }
 
-.user-message {
-  color: blue;
-  text-align: right;
-  margin-bottom: 10px;
+.chat-header h2 {
+    margin-bottom: 5px;
+    font-size: 18px;
 }
 
-.system-message {
-  color: #888;
-  text-align: center;
-  font-style: italic;
-  margin-bottom: 10px;
+#email-display {
+    font-size: 14px;
+    color: #d1e0ff;
 }
 
-/* Input Box Styling */
-.user-input {
-  padding: 10px;
-  width: 100%;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.options-button {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 25px;
+    height: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
 }
 
-/* Send Button Styling */
-.send-button {
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 10px;
+.options-button span {
+    display: block;
+    height: 3px;
+    background-color: white;
+    border-radius: 2px;
 }
 
-/* Typing Indicator Styling */
-.typing-indicator {
-  color: #bbb;
-  font-style: italic;
-  font-size: 14px;
-  margin-bottom: 10px;
+/* Chat box area */
+.chat-box {
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Message bubbles */
+.message {
+    max-width: 75%;
+    padding: 10px 15px;
+    margin: 5px 0;
+    border-radius: 15px;
+    font-size: 14px;
+}
+
+.message.user {
+    background-color: #007aff;
+    color: white;
+    align-self: flex-end;
+    border-radius: 15px 15px 0 15px;
+}
+
+.message.bot {
+    background-color: #e5e5ea;
+    color: black;
+    align-self: flex-start;
+    border-radius: 15px 15px 15px 0;
+}
+
+/* Input area */
+.input-container {
+    display: flex;
+    padding: 10px;
+    background-color: #fff;
+    border-top: 1px solid #ccc;
+    border-radius: 0 0 15px 15px;
+}
+
+#message-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    outline: none;
+    font-size: 14px;
+}
+
+#send-button {
+    padding: 10px 15px;
+    margin-left: 10px;
+    background-color: #007aff;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+#send-button:hover {
+    background-color: #005bb5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .chat-container {
+        width: 90%;
+        height: 80vh;
+    }
+    
+    #message-input {
+        font-size: 16px;
+    }
+
+    #send-button {
+        padding: 12px 18px;
+    }
 }
