@@ -1,12 +1,12 @@
 // Firebase configuration
 const firebaseConfig = {
-   apiKey: "AIzaSyCph4r--7O-g0dRQhqmn7wNPTOR4OYfguc",
-  authDomain: "fir-46d9c.firebaseapp.com",
-  databaseURL: "https://fir-46d9c-default-rtdb.firebaseio.com",
-  projectId: "fir-46d9c",
-  storageBucket: "fir-46d9c.firebasestorage.app",
-  messagingSenderId: "162679514419",
-  appId: "1:162679514419:web:cb5e5848d4d9cc4d424a46"
+     apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
+    authDomain: "login-71866.firebaseapp.com",
+    databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
+    projectId: "login-71866",
+    storageBucket: "login-71866.appspot.com",
+    messagingSenderId: "434042354282",
+    appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
 };
 
 // Initialize Firebase
