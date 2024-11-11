@@ -1,5 +1,5 @@
 const firebaseConfig = {
-  // Your Firebase configuration (replace with your own)
+  // Your Firebase configuration here
   apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
   authDomain: "login-71866.firebaseapp.com",
   databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
@@ -17,25 +17,25 @@ const messagesRef = database.ref('messages');
 const messageInput = document.getElementById('message-input');
 const sendButton = document.getElementById('send-button');
 const messagesDiv = document.querySelector('.chat-messages');
-const userDisplay = document.getElementById('user-email'); // Assuming this element exists
+const userEmailDisplay = document.getElementById('user-email');
 
-// Handle user authentication (replace with your actual logic)
+// Handle user authentication
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
-    // User is logged in
-    userDisplay.textContent = user.email; // Update email display
+    // User is signed in, display email
+    userEmailDisplay.textContent = user.email;
     sendButton.disabled = false; // Enable send button
   } else {
-    // User is not logged in
-    userDisplay.textContent = ""; // Clear email display
-    sendButton.disabled = true; // Disable send button
+    // User is signed out, clear email display and disable button
+    userEmailDisplay.textContent = "";
+    sendButton.disabled = true;
   }
 });
 
 sendButton.addEventListener('click', () => {
   const message = messageInput.value.trim();
   if (message) {
-    const senderEmail = userDisplay.textContent; // Get email from display
+    const senderEmail = userEmailDisplay.textContent;
     messagesRef.push({
       text: message,
       sender: senderEmail
@@ -48,7 +48,7 @@ messagesRef.on('child_added', (snapshot) => {
   const messageData = snapshot.val();
   const messageElement = document.createElement('div');
   messageElement.classList.add('chat-message');
-  messageElement.innerHTML = `<strong>${messageData.sender}:</strong> ${messageData.text}`;
+  messageElement.innerHTML = `<span class="sender-name">${messageData.sender}:</span> ${messageData.text}`;
   messagesDiv.appendChild(messageElement);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 });
