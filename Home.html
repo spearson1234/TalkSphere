@@ -1,37 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iMessage Chat</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="chat-container">
-        <header class="chat-header">
-            <div class="header-content">
-                <h2>Chat</h2>
-                <p id="email-display">user@gmail.com</p>
-            </div>
-            <div class="options-button">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </header>
-        <div id="chat-box" class="chat-box"></div>
-        <div class="input-container">
-            <input type="text" id="message-input" placeholder="iMessage">
-            <button id="send-button">Send</button>
-        </div>
-    </div>
-
-    <!-- Firebase Scripts -->
-        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <title>Chat App</title>
+  <link rel="stylesheet" href="style.css">
+   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-    <!-- Custom JavaScript -->
-    <script src="controller.js"></script>
+</head>
+<body>
+  <header class="chat-header">
+    <h1 class="chat-title">Chatter</h1>
+    <span id="user-email">user@gmail.com</span>  </header>
+  <div class="chat-container">
+    <div class="chat-messages"></div>
+    <div class="chat-input">
+      <input type="text" id="message-input" placeholder="Type your message">
+      <button id="send-button">Send</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
