@@ -30,13 +30,13 @@ html, body {
 
 .chat-title {
   margin: 0;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: bold;
   color: #e6e6e6;
 }
 
 .user-info {
-  font-size: 14px;
+  font-size: 16px;
   color: #aaa;
 }
 
@@ -66,43 +66,49 @@ html, body {
 /* Message styles */
 .chat-message {
   display: flex;
-  margin-bottom: 12px;
+  margin-bottom: 8px; /* Reduced gap between messages */
 }
 
 .sender-name {
   font-weight: bold;
-  margin-right: 8px;
+  margin-right: 5px;
   color: #aaa;
-}
-
-.my-message {
-  justify-content: flex-end; /* Aligns my messages to the right */
-  text-align: right;
-}
-
-.other-message {
-  justify-content: flex-start;
-  text-align: left;
+  font-size: 0.9em;
 }
 
 .message-bubble {
-  background-color: #333;
   padding: 12px;
+  font-size: 1.1em; /* Larger text */
   border-radius: 15px;
-  max-width: 70%;
+  max-width: 75%;
   color: #e6e6e6;
   box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.3);
 }
 
+/* Styling for user messages (right-aligned) */
+.my-message {
+  justify-content: flex-end; /* Aligns my messages to the right */
+}
+
 .my-message .message-bubble {
   background-color: #555;
+  color: #fff;
   margin-left: auto; /* Moves the bubble to the right */
+}
+
+/* Styling for other messages (left-aligned) */
+.other-message {
+  justify-content: flex-start;
+}
+
+.other-message .message-bubble {
+  background-color: #333;
 }
 
 /* Input box styles */
 .chat-input {
   background: linear-gradient(135deg, #333, #444);
-  padding: 12px;
+  padding: 15px;
   border-top: 1px solid #555;
   display: flex;
   align-items: center;
@@ -113,10 +119,10 @@ html, body {
   background-color: #444;
   color: #e6e6e6;
   border: 1px solid #555;
-  padding: 10px;
+  padding: 12px;
   border-radius: 20px;
   width: 85%;
-  font-size: 16px;
+  font-size: 1.1em;
   transition: border 0.3s ease;
 }
 
@@ -129,7 +135,7 @@ html, body {
   background-color: #666;
   color: #fff;
   border: none;
-  padding: 10px 20px;
+  padding: 12px 25px;
   border-radius: 20px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
@@ -159,13 +165,13 @@ html, body {
   }
 
   .chat-message {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
   }
 
   .message-bubble {
     padding: 15px;
-    font-size: 18px;
-    max-width: 80%;
+    font-size: 1.2em;
+    max-width: 85%;
   }
 
   .chat-input {
@@ -176,18 +182,17 @@ html, body {
 
   .chat-input input {
     width: 100%;
-    font-size: 18px;
+    font-size: 1.2em;
     padding: 15px;
   }
 
   .chat-input button {
     width: 100%;
     padding: 15px;
-    font-size: 18px;
+    font-size: 1.2em;
   }
 
   .chat-input input::placeholder {
-    font-size: 16px;
+    font-size: 1em;
   }
 }
-
