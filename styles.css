@@ -1,23 +1,26 @@
-/* CSS for the chat application */
-
 /* Global styles */
 html, body {
   height: 100%;
   margin: 0;
   font-family: Arial, sans-serif;
+  background-color: #222; /* Dark background */
+  color: #fff; /* White text */
 }
 
 /* Header styles */
 .chat-header {
-  background-color: #f0f0f0;
+  background-color: #333;
   padding: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid #444;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3); /* Glow effect */
 }
 
 .chat-title {
   margin: 0;
+  font-size: 20px;
 }
 
 .user-info {
@@ -30,6 +33,7 @@ html, body {
   height: calc(100% - 40px); /* Adjust for header height */
   display: flex;
   flex-direction: column;
+  background-color: #222;
 }
 
 .chat-messages {
@@ -46,6 +50,7 @@ html, body {
 .sender-name {
   font-weight: bold;
   margin-right: 5px;
+  color: #ccc;
 }
 
 .my-message {
@@ -59,12 +64,50 @@ html, body {
 }
 
 .message-bubble {
-  background-color: #f0f0f0;
+  background-color: #333;
   padding: 10px;
   border-radius: 10px;
   max-width: 70%;
+  color: #fff;
 }
 
 .my-message .message-bubble {
-  background-color: #dcf8c6;
+  background-color: #444;
+}
+
+/* Input box styles */
+.chat-input {
+  background-color: #333;
+  padding: 10px;
+  border-top: 1px solid #444;
+}
+
+.chat-input input {
+  background-color: #444;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  width: 80%;
+}
+
+.chat-input button {
+  background-color: #444;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .chat-input {
+    flex-direction: column;
+  }
+
+  .chat-input input {
+    width: 100%;
+    margin-bottom: 10px;
+  }
 }
