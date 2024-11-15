@@ -1,72 +1,104 @@
+// Initialize Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
-  authDomain: "login-71866.firebaseapp.com",
-  databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
-  projectId: "login-71866",
-  storageBucket: "login-71866.appspot.com",
-  messagingSenderId: "434042354282",
-  appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
+    apiKey: "your-api-key",
+    authDomain: "your-project-id.firebaseapp.com",
+    projectId: "your-project-id",
+    storageBucket: "your-project-id.appspot.com",
+    messagingSenderId: "your-sender-id",
+    appId: "your-app-id",
+    measurementId: "your-measurement-id"
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-const messagesRef = database.ref('messages');
+const app = firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const storage = firebase.storage();
+const db = firebase.firestore();
 
-// DOM Elements
-const messageInput = document.getElementById('message-input');
-const sendButton = document.getElementById('send-button');
-const messagesDiv = document.querySelector('.chat-messages');
-const userEmailDisplay = document.getElementById('user-email');
+// Handle profile picture upload
+function updateProfilePic() {
+    const fileInput = document.getElementById("profile-pic-upload");
+    const profilePic = document.getElementById("profile-pic");
 
-// Handle user authentication
-firebase.auth().onAuthStateChanged((user) => {
-  if (user) {
-    userEmailDisplay.textContent = user.email;
-    sendButton.disabled = false; // Enable send button
-  } else {
-    userEmailDisplay.textContent = "Please sign in";
-    sendButton.disabled = true;
-  }
+    const file = fileInput.files[0];
+    if (file) {
+        const user = auth.currentUser;
+        const storageRef = storage.ref(`profile_pics/${user.uid}`);
+
+        // Upload the file to Firebase storage
+        const uploadTask = storageRef.put(file);
+        uploadTask.on('state_changed', 
+            (snapshot) => {},
+            (error) => { console.error(error); },
+            () => {
+                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                    profilePic.src = downloadURL;
+                    // Update profile picture URL in Firestore
+                    db.collection("users").doc(user.uid).update({ profilePic: downloadURL });
+                });
+            }
+        );
+    }
+}
+
+// Update the username in Firebase Firestore
+function updateUsername() {
+    const usernameInput = document.getElementById("username");
+    const username = usernameInput.value;
+    
+    const user = auth.currentUser;
+    db.collection("users").doc(user.uid).update({ username: username })
+        .then(() => {
+            console.log("Username updated!");
+        })
+        .catch((error) => {
+            console.error("Error updating username: ", error);
+        });
+}
+
+// Monitor the authentication state
+auth.onAuthStateChanged(user => {
+    if (user) {
+        // If user is logged in, populate the profile data
+        const usernameInput = document.getElementById("username");
+        const profilePic = document.getElementById("profile-pic");
+
+        db.collection("users").doc(user.uid).get().then((doc) => {
+            if (doc.exists) {
+                const userData = doc.data();
+                usernameInput.value = userData.username || 'Username';
+                profilePic.src = userData.profilePic || 'default-avatar.png';
+            }
+        });
+    } else {
+        // Redirect to login page if not logged in
+        window.location.href = '/login.html';
+    }
 });
 
-// Send message function
-const sendMessage = () => {
-  const message = messageInput.value.trim();
-  if (message && firebase.auth().currentUser) {
-    const senderEmail = firebase.auth().currentUser.email;
-    messagesRef.push({
-      text: message,
-      sender: senderEmail
-    });
-    messageInput.value = ''; // Clear the input box
-  }
+// Function to switch between pages (Home, Chat, Settings)
+function showPage(pageId) {
+    const pages = document.querySelectorAll('.page');
+    pages.forEach(page => page.style.display = 'none'); // Hide all pages
+    document.getElementById(pageId).style.display = 'block'; // Show selected page
+}
+
+// Initialize page to show 'home' on load
+window.onload = function() {
+    showPage('home'); // Show home page by default
 };
 
-// Send message on button click or Enter key
-sendButton.addEventListener('click', sendMessage);
-messageInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') {
-    sendMessage();
-  }
-});
+// Function to update the app's theme (light/dark mode)
+function updateTheme() {
+    const themeSelect = document.getElementById("theme");
+    const theme = themeSelect.value;
+    document.body.className = theme;
+}
 
-// Display messages in real-time
-messagesRef.on('child_added', (snapshot) => {
-  const messageData = snapshot.val();
-  const messageElement = document.createElement('div');
-  messageElement.classList.add('chat-message', 'message-bubble');
-
-  // Check if the message is from the current user for alignment
-  if (messageData.sender === userEmailDisplay.textContent) {
-    messageElement.classList.add('my-message'); // Right-align
-  } else {
-    messageElement.classList.add('other-message'); // Left-align
-  }
-
-  messageElement.innerHTML = `<span class="sender-name">${messageData.sender}:</span> ${messageData.text}`;
-  messagesDiv.appendChild(messageElement);
-
-  // Scroll to the bottom
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
-});
+// Function to toggle notifications
+function toggleNotifications() {
+    const notificationsCheckbox = document.getElementById("notifications");
+    const notificationsEnabled = notificationsCheckbox.checked;
+    console.log("Notifications enabled:", notificationsEnabled);
+    // Handle enabling/disabling notifications (you can link it to your backend)
+}
