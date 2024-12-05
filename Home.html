@@ -50,8 +50,8 @@
                 <h2 class="text-xl font-bold">Realtime Chat</h2>
                 <div class="relative">
                     <button id="profile-button" class="flex items-center focus:outline-none">
-                        <div class="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center mr-2">
-                            <span class="font-bold">U</span>
+                        <div id="profile-avatar" class="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center mr-2">
+                            <span id="profile-initial" class="font-bold">U</span>
                         </div>
                         <i class="fas fa-chevron-down text-blue-500"></i>
                     </button>
@@ -73,10 +73,10 @@
         <div id="profile-container" class="hidden flex flex-col h-full w-full absolute inset-0 bg-white p-4">
             <button id="back-button" class="text-blue-500 mb-4"><i class="fas fa-arrow-left"></i> Back</button>
             <div class="flex flex-col items-center">
-                <div class="w-24 h-24 rounded-full bg-blue-500 text-white flex items-center justify-center mb-4">
-                    <span class="text-2xl font-bold">U</span>
+                <div id="profile-avatar-large" class="w-24 h-24 rounded-full bg-blue-500 text-white flex items-center justify-center mb-4">
+                    <span id="profile-initial-large" class="text-2xl font-bold">U</span>
                 </div>
-                <h2 class="text-xl font-bold">Username</h2>
+                <h2 id="profile-username" class="text-xl font-bold">Username</h2>
             </div>
         </div>
     </div>
@@ -84,7 +84,7 @@
     <script>
         // Your web app's Firebase configuration
         const firebaseConfig = {
-                     apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
+                             apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
     authDomain: "login-71866.firebaseapp.com",
     databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
     projectId: "login-71866",
@@ -106,6 +106,28 @@
         const profileContainer = document.getElementById('profile-container');
         const chatContainer = document.getElementById('chat-container');
         const backButton = document.getElementById('back-button');
+        const profileAvatar = document.getElementById('profile-avatar');
+        const profileInitial = document.getElementById('profile-initial');
+        const profileAvatarLarge = document.getElementById('profile-avatar-large');
+        const profileInitialLarge = document.getElementById('profile-initial-large');
+        const profileUsername = document.getElementById('profile-username');
+
+        // User data
+        const user = {
+            email: 'admin@gmail.com',
+            username: 'Admin',
+            initial: 'A'
+        };
+
+        // Update profile information
+        function updateProfile() {
+            profileInitial.textContent = user.initial;
+            profileInitialLarge.textContent = user.initial;
+            profileUsername.innerHTML = user.username + (user.email === 'admin@gmail.com' ? ' <i class="fas fa-check-circle text-blue-500"></i>' : '');
+        }
+
+        // Initialize profile
+        updateProfile();
 
         // Toggle profile menu with animation
         profileButton.addEventListener('click', () => {
