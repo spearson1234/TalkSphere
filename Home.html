@@ -122,6 +122,9 @@
             verified: false
         };
 
+        // Admin email
+        const adminEmail = 'admin@gmail.com';
+
         // Update profile information
         function updateProfile() {
             profileInitial.textContent = user.initial;
@@ -210,7 +213,7 @@
 
             const textElement = document.createElement('div');
             textElement.classList.add('bg-blue-100', 'text-blue-900', 'p-2', 'rounded');
-            textElement.innerHTML = message.text + (message.email === 'admin@gmail.com' ? ' <i class="fas fa-check-circle text-blue-500"></i>' : '');
+            textElement.innerHTML = message.text + (message.email === adminEmail ? ' <i class="fas fa-check-circle text-blue-500"></i>' : '');
 
             messageElement.appendChild(colorElement);
             messageElement.appendChild(textElement);
@@ -228,16 +231,17 @@
             applyVerificationButton.textContent = 'Applying...';
             applyVerificationButton.disabled = true;
 
-            // Simulate sending a message to admin
+            // Send a private message to admin
             setTimeout(() => {
-                const newMessageRef = database.ref('messages').push();
+                const newMessageRef = database.ref('privateMessages').push();
                 newMessageRef.set({
-                    text: `${user.username} (${user.email}) wants a verification badge. <button class="bg-green-500 text-white px-2 py-1 rounded" onclick="approveVerification('${user.email}')">Approve</button> <button class="bg-red-500 text-white px-2 py-1 rounded" onclick="denyVerification('${user.email}')">Deny</button>`,
+                    text: `${user.username} (${user.email}) wants a verification badge.`,
                     timestamp: Date.now(),
-                    initial: 'A',
-                    username: 'Admin',
-                    email: 'admin@gmail.com',
-                    color: 'bg-red-500' // Placeholder color class for admin
+                    initial: user.initial,
+                    username: user.username,
+                    email: user.email,
+                    recipient: adminEmail,
+                    color: 'bg-blue-500' // Placeholder color class
                 });
 
                 applyVerificationButton.textContent = 'Applied';
@@ -246,6 +250,29 @@
         });
 
         // Function to handle admin response
+        database.ref('privateMessages').on('child_added', (snapshot) => {
+            const message = snapshot.val();
+            if (message.recipient === adminEmail && message.text.includes(user.email)) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('mb-2', 'p-2', 'rounded', 'max-w-xs', 'break-words', 'flex', 'items-start');
+
+                const colorElement = document.createElement('div');
+                colorElement.classList.add('w-10', 'h-10', 'rounded-full', 'bg-red-500', 'text-white', 'flex', 'items-center', 'justify-center', 'mr-2');
+                colorElement.textContent = 'A';
+
+                const textElement = document.createElement('div');
+                textElement.classList.add('bg-blue-100', 'text-blue-900', 'p-2', 'rounded');
+                textElement.innerHTML = `${message.text} <button class="bg-green-500 text-white px-2 py-1 rounded" onclick="approveVerification('${message.email}')">Approve</button> <button class="bg-red-500 text-white px-2 py-1 rounded" onclick="denyVerification('${message.email}')">Deny</button>`;
+
+                messageElement.appendChild(colorElement);
+                messageElement.appendChild(textElement);
+
+                chatBox.appendChild(messageElement);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        });
+
+        // Function to approve verification
         window.approveVerification = function(email) {
             if (email === user.email) {
                 user.verified = true;
@@ -254,6 +281,7 @@
             }
         };
 
+        // Function to deny verification
         window.denyVerification = function(email) {
             if (email === user.email) {
                 alert('Verification denied.');
