@@ -77,7 +77,6 @@
                     <span id="profile-initial-large" class="text-2xl font-bold">U</span>
                 </div>
                 <h2 id="profile-username" class="text-xl font-bold">Username</h2>
-                <button id="apply-verification-button" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Apply for Verification</button>
             </div>
         </div>
     </div>
@@ -112,24 +111,19 @@
         const profileAvatarLarge = document.getElementById('profile-avatar-large');
         const profileInitialLarge = document.getElementById('profile-initial-large');
         const profileUsername = document.getElementById('profile-username');
-        const applyVerificationButton = document.getElementById('apply-verification-button');
 
         // User data
         const user = {
-            email: 'user@example.com',
-            username: 'User',
-            initial: 'U',
-            verified: false
+            email: 'admin@gmail.com',
+            username: 'Admin',
+            initial: 'A'
         };
-
-        // Admin email
-        const adminEmail = 'admin@gmail.com';
 
         // Update profile information
         function updateProfile() {
             profileInitial.textContent = user.initial;
             profileInitialLarge.textContent = user.initial;
-            profileUsername.innerHTML = user.username + (user.verified ? ' <i class="fas fa-check-circle text-blue-500"></i>' : '');
+            profileUsername.innerHTML = user.username + (user.email === 'admin@gmail.com' ? ' <i class="fas fa-check-circle text-blue-500"></i>' : '');
         }
 
         // Initialize profile
@@ -213,7 +207,7 @@
 
             const textElement = document.createElement('div');
             textElement.classList.add('bg-blue-100', 'text-blue-900', 'p-2', 'rounded');
-            textElement.innerHTML = message.text + (message.email === adminEmail ? ' <i class="fas fa-check-circle text-blue-500"></i>' : '');
+            textElement.innerHTML = message.text + (message.email === 'admin@gmail.com' ? ' <i class="fas fa-check-circle text-blue-500"></i>' : '');
 
             messageElement.appendChild(colorElement);
             messageElement.appendChild(textElement);
@@ -225,79 +219,6 @@
             chatBox.appendChild(messageElement);
             chatBox.scrollTop = chatBox.scrollHeight;
         });
-
-        // Function to apply for verification
-        applyVerificationButton.addEventListener('click', () => {
-            applyVerificationButton.textContent = 'Applying...';
-            applyVerificationButton.disabled = true;
-
-            // Send a private message to admin
-            setTimeout(() => {
-                const newMessageRef = database.ref('privateMessages').push();
-                newMessageRef.set({
-                    text: `${user.username} (${user.email}) wants a verification badge.`,
-                    timestamp: Date.now(),
-                    initial: user.initial,
-                    username: user.username,
-                    email: user.email,
-                    recipient: adminEmail,
-                    color: 'bg-blue-500' // Placeholder color class
-                });
-
-                applyVerificationButton.textContent = 'Applied';
-                applyVerificationButton.disabled = false;
-            }, 2000);
-        });
-
-        // Function to handle admin response
-        database.ref('privateMessages').on('child_added', (snapshot) => {
-            const message = snapshot.val();
-            if (message.recipient === adminEmail && message.text.includes(user.email)) {
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('mb-2', 'p-2', 'rounded', 'max-w-xs', 'break-words', 'flex', 'items-start');
-
-                const colorElement = document.createElement('div');
-                colorElement.classList.add('w-10', 'h-10', 'rounded-full', 'bg-red-500', 'text-white', 'flex', 'items-center', 'justify-center', 'mr-2');
-                colorElement.textContent = 'A';
-
-                const textElement = document.createElement('div');
-                textElement.classList.add('bg-blue-100', 'text-blue-900', 'p-2', 'rounded');
-                textElement.innerHTML = `${message.text} <button class="bg-green-500 text-white px-2 py-1 rounded" onclick="approveVerification('${message.email}')">Approve</button> <button class="bg-red-500 text-white px-2 py-1 rounded" onclick="denyVerification('${message.email}')">Deny</button>`;
-
-                messageElement.appendChild(colorElement);
-                messageElement.appendChild(textElement);
-
-                chatBox.appendChild(messageElement);
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }
-        });
-
-        // Function to approve verification
-        window.approveVerification = function(email) {
-            if (email === user.email) {
-                user.verified = true;
-                updateProfile();
-                alert('Verification approved!');
-            }
-        };
-
-        // Function to deny verification
-        window.denyVerification = function(email) {
-            if (email === user.email) {
-                alert('Verification denied.');
-            }
-        };
-
-        // Simulate user login
-        function loginUser(email, username) {
-            user.email = email;
-            user.username = username;
-            user.initial = email.charAt(0).toUpperCase();
-            updateProfile();
-        }
-
-        // Example login
-        loginUser('user@example.com', 'User');
     </script>
 </body>
 </html>
