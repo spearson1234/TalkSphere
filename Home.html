@@ -199,18 +199,22 @@
         database.ref('messages').on('child_added', (snapshot) => {
             const message = snapshot.val();
             const messageElement = document.createElement('div');
-            messageElement.classList.add('mb-2', 'p-2', 'rounded', 'max-w-xs', 'break-words', 'flex', 'items-start', 'self-end');
+            messageElement.classList.add('mb-2', 'p-2', 'rounded', 'max-w-xs', 'break-words', 'flex', 'items-start');
 
             const colorElement = document.createElement('div');
             colorElement.classList.add('w-10', 'h-10', 'rounded-full', message.color, 'text-white', 'flex', 'items-center', 'justify-center', 'mr-2');
             colorElement.textContent = message.initial;
 
             const textElement = document.createElement('div');
-            textElement.classList.add('bg-blue-100', 'text-blue-900', 'p-2', 'rounded', 'self-end');
+            textElement.classList.add('bg-blue-100', 'text-blue-900', 'p-2', 'rounded');
             textElement.innerHTML = message.text + (message.email === 'admin@gmail.com' ? ' <i class="fas fa-check-circle text-blue-500"></i>' : '');
 
             messageElement.appendChild(colorElement);
             messageElement.appendChild(textElement);
+
+            if (message.email === user.email) {
+                messageElement.classList.add('self-end');
+            }
 
             chatBox.appendChild(messageElement);
             chatBox.scrollTop = chatBox.scrollHeight;
