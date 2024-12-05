@@ -113,7 +113,7 @@
         const profileUsername = document.getElementById('profile-username');
 
         // User data
-        const user = {
+        let user = {
             email: 'admin@gmail.com',
             username: 'Admin',
             initial: 'A'
@@ -123,7 +123,7 @@
         function updateProfile() {
             profileInitial.textContent = user.initial;
             profileInitialLarge.textContent = user.initial;
-            profileUsername.innerHTML = user.username + (user.email === 'admin@gmail.com' ? ' <i class="fas fa-check-circle text-blue-500"></i>' : '');
+            profileUsername.textContent = user.email;
         }
 
         // Initialize profile
@@ -219,6 +219,17 @@
             chatBox.appendChild(messageElement);
             chatBox.scrollTop = chatBox.scrollHeight;
         });
+
+        // Simulate user login
+        function loginUser(email) {
+            user.email = email;
+            user.initial = email.charAt(0).toUpperCase();
+            user.username = email;
+            updateProfile();
+        }
+
+        // Example usage: login with a different email
+        loginUser('example@gmail.com');
     </script>
 </body>
 </html>
