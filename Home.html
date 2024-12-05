@@ -46,14 +46,14 @@
 <body class="bg-gray-100 h-screen flex items-center justify-center">
     <div id="app-container" class="w-full max-w-md mx-auto bg-white rounded-lg shadow-lg flex flex-col h-full relative">
         <div id="chat-container" class="flex flex-col h-full w-full absolute inset-0">
-            <div class="flex items-center justify-between p-4 border-b border-gray-300">
+            <div class="flex items-center justify-between p-4 border-b border-gray-300 bg-blue-500 text-white rounded-t-lg">
                 <h2 class="text-xl font-bold">Realtime Chat</h2>
                 <div class="relative">
                     <button id="profile-button" class="flex items-center focus:outline-none">
-                        <div id="profile-avatar" class="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center mr-2">
+                        <div id="profile-avatar" class="w-10 h-10 rounded-full bg-white text-blue-500 flex items-center justify-center mr-2">
                             <span id="profile-initial" class="font-bold">U</span>
                         </div>
-                        <i class="fas fa-chevron-down text-blue-500"></i>
+                        <i class="fas fa-chevron-down text-white"></i>
                     </button>
                     <div id="profile-menu" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg">
                         <a href="#" id="profile-link" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
@@ -62,10 +62,10 @@
                     </div>
                 </div>
             </div>
-            <div id="chat-box" class="flex-1 overflow-y-scroll p-4">
+            <div id="chat-box" class="flex-1 overflow-y-scroll p-4 bg-gray-50">
                 <!-- Chat messages will appear here -->
             </div>
-            <div class="flex p-4 border-t border-gray-300">
+            <div class="flex p-4 border-t border-gray-300 bg-gray-100 rounded-b-lg">
                 <input id="message-input" type="text" class="flex-1 border border-gray-300 rounded-l px-4 py-2" placeholder="Type a message...">
                 <button id="send-button" class="bg-blue-500 text-white px-4 py-2 rounded-r"><i class="fas fa-paper-plane"></i></button>
             </div>
@@ -77,6 +77,7 @@
                     <span id="profile-initial-large" class="text-2xl font-bold">U</span>
                 </div>
                 <h2 id="profile-username" class="text-xl font-bold">Username</h2>
+                <button id="apply-verification-button" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Apply for Verification</button>
             </div>
         </div>
     </div>
@@ -84,13 +85,13 @@
     <script>
         // Your web app's Firebase configuration
         const firebaseConfig = {
-                  apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
-    authDomain: "login-71866.firebaseapp.com",
-    databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
-    projectId: "login-71866",
-    storageBucket: "login-71866.appspot.com",
-    messagingSenderId: "434042354282",
-    appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
+            apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
+            authDomain: "login-71866.firebaseapp.com",
+            databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
+            projectId: "login-71866",
+            storageBucket: "login-71866.appspot.com",
+            messagingSenderId: "434042354282",
+            appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
         };
 
         // Initialize Firebase
@@ -111,19 +112,21 @@
         const profileAvatarLarge = document.getElementById('profile-avatar-large');
         const profileInitialLarge = document.getElementById('profile-initial-large');
         const profileUsername = document.getElementById('profile-username');
+        const applyVerificationButton = document.getElementById('apply-verification-button');
 
         // User data
         const user = {
-            email: 'admin@gmail.com',
-            username: 'Admin',
-            initial: 'A'
+            email: 'user@example.com',
+            username: 'User',
+            initial: 'U',
+            verified: false
         };
 
         // Update profile information
         function updateProfile() {
             profileInitial.textContent = user.initial;
             profileInitialLarge.textContent = user.initial;
-            profileUsername.innerHTML = user.username + (user.email === 'admin@gmail.com' ? ' <i class="fas fa-check-circle text-blue-500"></i>' : '');
+            profileUsername.innerHTML = user.username + (user.verified ? ' <i class="fas fa-check-circle text-blue-500"></i>' : '');
         }
 
         // Initialize profile
@@ -219,6 +222,43 @@
             chatBox.appendChild(messageElement);
             chatBox.scrollTop = chatBox.scrollHeight;
         });
+
+        // Function to apply for verification
+        applyVerificationButton.addEventListener('click', () => {
+            applyVerificationButton.textContent = 'Applying...';
+            applyVerificationButton.disabled = true;
+
+            // Simulate sending a message to admin
+            setTimeout(() => {
+                const newMessageRef = database.ref('messages').push();
+                newMessageRef.set({
+                    text: `${user.username} (${user.email}) wants a verification badge. <button class="bg-green-500 text-white px-2 py-1 rounded" onclick="approveVerification('${user.email}')">Approve</button> <button class="bg-red-500 text-white px-2 py-1 rounded" onclick="denyVerification('${user.email}')">Deny</button>`,
+                    timestamp: Date.now(),
+                    initial: 'A',
+                    username: 'Admin',
+                    email: 'admin@gmail.com',
+                    color: 'bg-red-500' // Placeholder color class for admin
+                });
+
+                applyVerificationButton.textContent = 'Applied';
+                applyVerificationButton.disabled = false;
+            }, 2000);
+        });
+
+        // Function to handle admin response
+        window.approveVerification = function(email) {
+            if (email === user.email) {
+                user.verified = true;
+                updateProfile();
+                alert('Verification approved!');
+            }
+        };
+
+        window.denyVerification = function(email) {
+            if (email === user.email) {
+                alert('Verification denied.');
+            }
+        };
     </script>
 </body>
 </html>
