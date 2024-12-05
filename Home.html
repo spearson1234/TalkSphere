@@ -10,13 +10,13 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet"/>
   <!-- Firebase -->
-   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script>
    // Your web app's Firebase configuration
    const firebaseConfig = {
-        apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
+           apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
     authDomain: "login-71866.firebaseapp.com",
     databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
     projectId: "login-71866",
@@ -55,9 +55,18 @@
        transform: translateX(100%);
      }
    }
+
+   .scroll-smooth {
+     scroll-behavior: smooth;
+   }
+
+   .dark-mode {
+     background-color: #1a202c;
+     color: #cbd5e0;
+   }
   </style>
  </head>
- <body class="font-roboto bg-gray-100">
+ <body class="font-roboto bg-gray-100 scroll-smooth">
   <!-- Navbar -->
   <nav class="bg-white shadow-md">
    <div class="container mx-auto px-4 py-2 flex justify-between items-center">
@@ -76,22 +85,22 @@
       </button>
       <ul class="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg hidden" id="profileDropdownMenu">
        <li>
-        <a class="block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#">
+        <a class="block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#hero">
          Home
         </a>
        </li>
        <li>
-        <a class="block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#">
+        <a class="block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#about">
          About
         </a>
        </li>
        <li>
-        <a class="block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#">
+        <a class="block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#services">
          Services
         </a>
        </li>
        <li>
-        <a class="block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#">
+        <a class="block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#contact">
          Contact
         </a>
        </li>
@@ -101,7 +110,7 @@
         </a>
        </li>
        <li>
-        <a class="block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#">
+        <a class="block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#" id="settingsLink">
          Settings
         </a>
        </li>
@@ -118,7 +127,7 @@
   <!-- Main Content -->
   <div id="mainContent">
    <!-- Hero Section -->
-   <section class="bg-blue-600 text-white py-20">
+   <section class="bg-blue-600 text-white py-20" id="hero">
     <div class="container mx-auto px-4 text-center">
      <h1 class="text-4xl font-bold mb-4">
       Your Mental Health Matters
@@ -132,7 +141,7 @@
     </div>
    </section>
    <!-- About Section -->
-   <section class="py-20">
+   <section class="py-20" id="about">
     <div class="container mx-auto px-4 text-center">
      <h2 class="text-3xl font-bold mb-8">
       About Us
@@ -144,7 +153,7 @@
     </div>
    </section>
    <!-- Services Section -->
-   <section class="bg-gray-200 py-20">
+   <section class="bg-gray-200 py-20" id="services">
     <div class="container mx-auto px-4 text-center">
      <h2 class="text-3xl font-bold mb-8">
       Our Services
@@ -181,7 +190,7 @@
     </div>
    </section>
    <!-- Contact Section -->
-   <section class="py-20">
+   <section class="py-20" id="contact">
     <div class="container mx-auto px-4 text-center">
      <h2 class="text-3xl font-bold mb-8">
       Contact Us
@@ -230,6 +239,27 @@
     </div>
    </div>
   </div>
+  <!-- Settings Page -->
+  <div class="hidden fixed inset-0 bg-white z-50 overflow-auto" id="settingsPage">
+   <div class="container mx-auto px-4 py-20">
+    <h2 class="text-3xl font-bold mb-8 text-center">
+     Settings
+    </h2>
+    <div class="max-w-lg mx-auto bg-gray-100 p-6 rounded-lg shadow-md">
+     <div class="flex items-center mb-4">
+      <label class="flex items-center">
+       <input class="mr-2" id="darkModeToggle" type="checkbox"/>
+       <span>
+        Toggle Dark Theme
+       </span>
+      </label>
+     </div>
+     <button class="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold" id="backToMainFromSettingsButton">
+      Back to Main
+     </button>
+    </div>
+   </div>
+  </div>
   <!-- Footer -->
   <footer class="bg-gray-800 text-white py-6">
    <div class="container mx-auto px-4 text-center">
@@ -267,8 +297,8 @@
    document.getElementById('logoutButton').addEventListener('click', function() {
      auth.signOut().then(() => {
        alert('User signed out');
-       // Redirect to home or login page
-       window.location.href = '/';
+       // Redirect to login page
+       window.location.href = '/login.html';
      }).catch((error) => {
        console.error('Sign Out Error', error);
      });
@@ -309,7 +339,21 @@
      }, 500);
    });
 
-   // Back to main button click event
+   // Settings link click event
+   document.getElementById('settingsLink').addEventListener('click', function() {
+     var mainContent = document.getElementById('mainContent');
+     var settingsPage = document.getElementById('settingsPage');
+     mainContent.classList.add('slide-out');
+     settingsPage.classList.remove('hidden');
+     settingsPage.classList.add('slide-in');
+     setTimeout(() => {
+       mainContent.classList.add('hidden');
+       mainContent.classList.remove('slide-out');
+       settingsPage.classList.remove('slide-in');
+     }, 500);
+   });
+
+   // Back to main button click event from profile page
    document.getElementById('backToMainButton').addEventListener('click', function() {
      var mainContent = document.getElementById('mainContent');
      var profilePage = document.getElementById('profilePage');
@@ -321,6 +365,25 @@
        profilePage.classList.remove('slide-out');
        mainContent.classList.remove('slide-in');
      }, 500);
+   });
+
+   // Back to main button click event from settings page
+   document.getElementById('backToMainFromSettingsButton').addEventListener('click', function() {
+     var mainContent = document.getElementById('mainContent');
+     var settingsPage = document.getElementById('settingsPage');
+     settingsPage.classList.add('slide-out');
+     mainContent.classList.remove('hidden');
+     mainContent.classList.add('slide-in');
+     setTimeout(() => {
+       settingsPage.classList.add('hidden');
+       settingsPage.classList.remove('slide-out');
+       mainContent.classList.remove('slide-in');
+     }, 500);
+   });
+
+   // Toggle dark mode
+   document.getElementById('darkModeToggle').addEventListener('change', function() {
+     document.body.classList.toggle('dark-mode');
    });
   </script>
  </body>
