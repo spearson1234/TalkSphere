@@ -1,235 +1,139 @@
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Realtime Chat Application</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <style>
-        .dropdown-enter {
-            opacity: 0;
-            transform: translateY(-10px);
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Chat Application
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+  <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js">
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js">
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js">
+  </script>
+  <style>
+   body {
+            font-family: 'Roboto', sans-serif;
         }
-        .dropdown-enter-active {
-            opacity: 1;
-            transform: translateY(0);
-            transition: opacity 200ms, transform 200ms;
-        }
-        .dropdown-leave {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .dropdown-leave-active {
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 200ms, transform 200ms;
-        }
-        .slide-enter {
-            transform: translateX(100%);
-        }
-        .slide-enter-active {
-            transform: translateX(0);
-            transition: transform 300ms;
-        }
-        .slide-leave {
-            transform: translateX(0);
-        }
-        .slide-leave-active {
-            transform: translateX(100%);
-            transition: transform 300ms;
-        }
-    </style>
-</head>
-<body class="bg-gray-100 h-screen flex items-center justify-center">
-    <div id="app-container" class="w-full max-w-md mx-auto bg-white rounded-lg shadow-lg flex flex-col h-full relative">
-        <div id="chat-container" class="flex flex-col h-full w-full absolute inset-0">
-            <div class="flex items-center justify-between p-4 border-b border-gray-300 bg-blue-500 text-white rounded-t-lg">
-                <h2 class="text-xl font-bold">Realtime Chat</h2>
-                <div class="relative">
-                    <button id="profile-button" class="flex items-center focus:outline-none">
-                        <div id="profile-avatar" class="w-10 h-10 rounded-full bg-white text-blue-500 flex items-center justify-center mr-2">
-                            <span id="profile-initial" class="font-bold">U</span>
-                        </div>
-                        <i class="fas fa-chevron-down text-white"></i>
-                    </button>
-                    <div id="profile-menu" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg">
-                        <a href="#" id="profile-link" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
-                        <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Settings</a>
-                        <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
-                    </div>
-                </div>
-            </div>
-            <div id="chat-box" class="flex-1 overflow-y-scroll p-4 bg-gray-50">
-                <!-- Chat messages will appear here -->
-            </div>
-            <div class="flex p-4 border-t border-gray-300 bg-gray-100 rounded-b-lg">
-                <input id="message-input" type="text" class="flex-1 border border-gray-300 rounded-l px-4 py-2" placeholder="Type a message...">
-                <button id="send-button" class="bg-blue-500 text-white px-4 py-2 rounded-r"><i class="fas fa-paper-plane"></i></button>
-            </div>
-        </div>
-        <div id="profile-container" class="hidden flex flex-col h-full w-full absolute inset-0 bg-white p-4">
-            <button id="back-button" class="text-blue-500 mb-4"><i class="fas fa-arrow-left"></i> Back</button>
-            <div class="flex flex-col items-center">
-                <div id="profile-avatar-large" class="w-24 h-24 rounded-full bg-blue-500 text-white flex items-center justify-center mb-4">
-                    <span id="profile-initial-large" class="text-2xl font-bold">U</span>
-                </div>
-                <h2 id="profile-username" class="text-xl font-bold">Username</h2>
-            </div>
-        </div>
+  </style>
+ </head>
+ <body class="bg-gray-100 h-screen flex flex-col">
+  <header class="bg-white shadow-md p-4 flex justify-between items-center">
+   <h1 class="text-xl font-bold">
+    Chat Application
+   </h1>
+   <div class="relative">
+    <button class="flex items-center space-x-2 focus:outline-none" id="profileButton">
+     <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+      U
+     </div>
+     <i class="fas fa-chevron-down">
+     </i>
+    </button>
+    <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 transition-all duration-300 ease-in-out" id="dropdownMenu">
+     <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="#" id="profileLink">
+      Profile
+     </a>
+     <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="#">
+      Settings
+     </a>
+     <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="#" id="logoutButton">
+      Logout
+     </a>
     </div>
-
-    <script>
-        // Your web app's Firebase configuration
+   </div>
+  </header>
+  <main class="flex-grow p-4 overflow-y-auto" id="chatContainer">
+   <!-- Chat messages will be dynamically added here -->
+  </main>
+  <footer class="bg-white p-4 shadow-md flex items-center space-x-4">
+   <input class="flex-grow p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" id="messageInput" placeholder="Type a message..." type="text"/>
+   <button class="bg-blue-500 text-white p-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none" id="sendButton">
+    <i class="fas fa-paper-plane">
+    </i>
+   </button>
+  </footer>
+  <script>
+   // Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
-            authDomain: "login-71866.firebaseapp.com",
-            databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
-            projectId: "login-71866",
-            storageBucket: "login-71866.appspot.com",
-            messagingSenderId: "434042354282",
-            appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID",
+            databaseURL: "YOUR_DATABASE_URL"
         };
 
         // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const database = firebase.database();
 
-        const chatBox = document.getElementById('chat-box');
-        const messageInput = document.getElementById('message-input');
-        const sendButton = document.getElementById('send-button');
-        const profileButton = document.getElementById('profile-button');
-        const profileMenu = document.getElementById('profile-menu');
-        const profileLink = document.getElementById('profile-link');
-        const profileContainer = document.getElementById('profile-container');
-        const chatContainer = document.getElementById('chat-container');
-        const backButton = document.getElementById('back-button');
-        const profileAvatar = document.getElementById('profile-avatar');
-        const profileInitial = document.getElementById('profile-initial');
-        const profileAvatarLarge = document.getElementById('profile-avatar-large');
-        const profileInitialLarge = document.getElementById('profile-initial-large');
-        const profileUsername = document.getElementById('profile-username');
-
-        // User data
-        let user = {
-            email: 'admin@gmail.com',
-            username: 'Admin',
-            initial: 'A'
-        };
-
-        // Update profile information
-        function updateProfile() {
-            profileInitial.textContent = user.initial;
-            profileInitialLarge.textContent = user.initial;
-            profileUsername.textContent = user.email;
-        }
-
-        // Initialize profile
-        updateProfile();
-
-        // Toggle profile menu with animation
-        profileButton.addEventListener('click', () => {
-            if (profileMenu.classList.contains('hidden')) {
-                profileMenu.classList.remove('hidden', 'dropdown-leave', 'dropdown-leave-active');
-                profileMenu.classList.add('dropdown-enter');
-                setTimeout(() => {
-                    profileMenu.classList.add('dropdown-enter-active');
-                }, 10);
+        // Authentication state observer
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // User is signed in
+                loadMessages();
+                document.querySelector('#profileButton div').textContent = user.displayName ? user.displayName.charAt(0).toUpperCase() : 'U';
             } else {
-                profileMenu.classList.remove('dropdown-enter', 'dropdown-enter-active');
-                profileMenu.classList.add('dropdown-leave');
-                setTimeout(() => {
-                    profileMenu.classList.add('dropdown-leave-active');
-                    setTimeout(() => {
-                        profileMenu.classList.add('hidden');
-                    }, 200);
-                }, 10);
+                // User is signed out
+                window.location.href = 'login.html'; // Redirect to login page
             }
         });
 
-        // Show profile page with slide animation
-        profileLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            chatContainer.classList.add('slide-leave');
-            setTimeout(() => {
-                chatContainer.classList.add('hidden');
-                chatContainer.classList.remove('slide-leave', 'slide-leave-active');
-                profileContainer.classList.remove('hidden', 'slide-enter', 'slide-enter-active');
-                profileContainer.classList.add('slide-enter');
-                setTimeout(() => {
-                    profileContainer.classList.add('slide-enter-active');
-                }, 10);
-            }, 300);
-        });
+        // Load chat messages
+        function loadMessages() {
+            const chatContainer = document.getElementById('chatContainer');
+            database.ref('messages').on('child_added', snapshot => {
+                const message = snapshot.val();
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('flex', 'items-start', 'space-x-4', message.sender === auth.currentUser.uid ? 'justify-end' : '');
+                messageElement.innerHTML = `
+                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">${message.sender === auth.currentUser.uid ? 'U' : 'S'}</div>
+                    <div class="${message.sender === auth.currentUser.uid ? 'bg-blue-500 text-white' : 'bg-white text-gray-800'} p-4 rounded-lg shadow-md">
+                        <p>${message.text}</p>
+                    </div>
+                `;
+                chatContainer.appendChild(messageElement);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            });
+        }
 
-        // Back to chat page with slide animation
-        backButton.addEventListener('click', () => {
-            profileContainer.classList.add('slide-leave');
-            setTimeout(() => {
-                profileContainer.classList.add('hidden');
-                profileContainer.classList.remove('slide-leave', 'slide-leave-active');
-                chatContainer.classList.remove('hidden', 'slide-enter', 'slide-enter-active');
-                chatContainer.classList.add('slide-enter');
-                setTimeout(() => {
-                    chatContainer.classList.add('slide-enter-active');
-                }, 10);
-            }, 300);
-        });
-
-        // Function to send a message
-        sendButton.addEventListener('click', () => {
-            const message = messageInput.value.trim();
-            if (message) {
-                const newMessageRef = database.ref('messages').push();
-                newMessageRef.set({
-                    text: message,
-                    timestamp: Date.now(),
-                    initial: user.initial,
-                    username: user.username,
-                    email: user.email,
-                    color: 'bg-blue-500' // Placeholder color class
-                });
+        // Send message
+        document.getElementById('sendButton').addEventListener('click', () => {
+            const messageInput = document.getElementById('messageInput');
+            const messageText = messageInput.value.trim();
+            if (messageText) {
+                const message = {
+                    text: messageText,
+                    sender: auth.currentUser.uid,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                };
+                database.ref('messages').push(message);
                 messageInput.value = '';
             }
         });
 
-        // Function to display messages
-        database.ref('messages').on('child_added', (snapshot) => {
-            const message = snapshot.val();
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('mb-2', 'p-2', 'rounded', 'max-w-xs', 'break-words', 'flex', 'items-start');
-
-            const colorElement = document.createElement('div');
-            colorElement.classList.add('w-10', 'h-10', 'rounded-full', message.color, 'text-white', 'flex', 'items-center', 'justify-center', 'mr-2');
-            colorElement.textContent = message.initial;
-
-            const textElement = document.createElement('div');
-            textElement.classList.add('bg-blue-100', 'text-blue-900', 'p-2', 'rounded');
-            textElement.innerHTML = message.text + (message.email === 'admin@gmail.com' ? ' <i class="fas fa-check-circle text-blue-500"></i>' : '');
-
-            messageElement.appendChild(colorElement);
-            messageElement.appendChild(textElement);
-
-            if (message.email === user.email) {
-                messageElement.classList.add('self-end');
-            }
-
-            chatBox.appendChild(messageElement);
-            chatBox.scrollTop = chatBox.scrollHeight;
+        // Toggle dropdown menu
+        document.getElementById('profileButton').addEventListener('click', () => {
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            dropdownMenu.classList.toggle('hidden');
         });
 
-        // Simulate user login
-        function loginUser(email) {
-            user.email = email;
-            user.initial = email.charAt(0).toUpperCase();
-            user.username = email;
-            updateProfile();
-        }
+        // Logout
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            auth.signOut();
+        });
 
-        // Example usage: login with a different email
-        loginUser('example@gmail.com');
-    </script>
-</body>
+        // Profile link
+        document.getElementById('profileLink').addEventListener('click', () => {
+            window.location.href = 'profile.html';
+        });
+  </script>
+ </body>
 </html>
