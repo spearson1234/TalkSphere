@@ -287,6 +287,17 @@
                 alert('Verification denied.');
             }
         };
+
+        // Simulate user login
+        function loginUser(email, username) {
+            user.email = email;
+            user.username = username;
+            user.initial = email.charAt(0).toUpperCase();
+            updateProfile();
+        }
+
+        // Example login
+        loginUser('user@example.com', 'User');
     </script>
 </body>
 </html>
