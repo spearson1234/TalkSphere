@@ -33,7 +33,7 @@
                 </div>
                 <button class="relative focus:outline-none" id="infoButton">
                     <i class="fas fa-info-circle text-2xl"></i>
-                    <span id="notificationBadge" class="absolute top-0 right-0 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center hidden">0</span>
+                    <span id="notificationBadge" class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center hidden">0</span>
                 </button>
             </div>
         </div>
@@ -85,6 +85,7 @@
         <div class="flex flex-col items-center">
             <i class="fas fa-user-circle text-6xl mb-4"></i>
             <p id="userEmail" class="text-gray-700">Placeholder</p>
+            <p class="text-gray-700">Followers: 0 Likes: 0</p>
             <button id="loginButton" class="bg-blue-600 text-white px-4 py-2 rounded mt-4">Login Here</button>
             <button id="logoutButton" class="bg-red-600 text-white px-4 py-2 rounded mt-4 hidden">Logout</button>
         </div>
@@ -181,7 +182,7 @@
             likeButton.innerHTML = '<i class="fas fa-thumbs-up"></i>';
             likeButton.addEventListener('click', function() {
                 const user = auth.currentUser;
-                if (user) {
+                if (user && user.email !== story.author) {
                     const notificationData = {
                         type: 'like',
                         from: user.email,
@@ -190,6 +191,8 @@
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     };
                     database.ref('notifications').push(notificationData);
+                } else {
+                    alert('You cannot like your own story.');
                 }
             });
 
@@ -198,7 +201,7 @@
             dislikeButton.innerHTML = '<i class="fas fa-thumbs-down"></i>';
             dislikeButton.addEventListener('click', function() {
                 const user = auth.currentUser;
-                if (user) {
+                if (user && user.email !== story.author) {
                     const notificationData = {
                         type: 'dislike',
                         from: user.email,
@@ -207,6 +210,8 @@
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     };
                     database.ref('notifications').push(notificationData);
+                } else {
+                    alert('You cannot dislike your own story.');
                 }
             });
 
@@ -348,11 +353,24 @@
 
         document.getElementById('infoButton').addEventListener('click', function() {
             document.getElementById('notificationModal').classList.remove('hidden');
+            resetNotifications();
         });
 
         document.getElementById('closeNotification').addEventListener('click', function() {
             document.getElementById('notificationModal').classList.add('hidden');
         });
+
+        function resetNotifications() {
+            const user = auth.currentUser;
+            if (user) {
+                database.ref('notifications').orderByChild('to').equalTo(user.email).once('value', function(snapshot) {
+                    snapshot.forEach(function(childSnapshot) {
+                        childSnapshot.ref.remove();
+                    });
+                    document.getElementById('notificationBadge').classList.add('hidden');
+                });
+            }
+        }
     </script>
 </body>
 </html>
