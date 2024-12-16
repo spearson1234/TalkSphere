@@ -6,7 +6,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+       <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
@@ -19,15 +19,15 @@
     <header class="bg-blue-600 text-white p-4">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-2xl font-bold">Story Maker</h1>
-            <div class="hidden md:flex relative">
+            <div class="relative">
                 <button class="flex items-center space-x-2 focus:outline-none" id="profileButton">
                     <i class="fas fa-user-circle text-2xl"></i>
                     <i class="fas fa-chevron-down"></i>
                 </button>
                 <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2" id="dropdownMenu">
-                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
-                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a>
-                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" id="profileLink">Profile</a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" id="settingsLink">Settings</a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" id="logoutLink">Logout</a>
                 </div>
             </div>
         </div>
@@ -81,6 +81,10 @@
                 <i class="fas fa-user-circle text-2xl"></i>
                 <span>Profile</span>
             </button>
+            <button class="flex flex-col items-center" id="mobileLogoutButton">
+                <i class="fas fa-sign-out-alt text-2xl"></i>
+                <span>Logout</span>
+            </button>
         </div>
     </div>
 
@@ -113,7 +117,7 @@
     <script>
         // Firebase configuration
         const firebaseConfig = {
-                  apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
+                 apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
     authDomain: "login-71866.firebaseapp.com",
     databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
     projectId: "login-71866",
@@ -171,8 +175,33 @@
             }
         });
 
+        document.getElementById('profileLink').addEventListener('click', function() {
+            document.getElementById('profilePage').classList.remove('hidden');
+            document.getElementById('dropdownMenu').classList.add('hidden');
+        });
+
+        document.getElementById('settingsLink').addEventListener('click', function() {
+            alert('Settings page is under construction.');
+        });
+
+        document.getElementById('logoutLink').addEventListener('click', function() {
+            auth.signOut().then(() => {
+                alert('Logged out successfully.');
+            }).catch((error) => {
+                console.error('Error logging out:', error);
+            });
+        });
+
         document.getElementById('mobileProfileButton').addEventListener('click', function() {
             document.getElementById('profilePage').classList.remove('hidden');
+        });
+
+        document.getElementById('mobileLogoutButton').addEventListener('click', function() {
+            auth.signOut().then(() => {
+                alert('Logged out successfully.');
+            }).catch((error) => {
+                console.error('Error logging out:', error);
+            });
         });
 
         document.getElementById('closeProfile').addEventListener('click', function() {
