@@ -108,7 +108,7 @@
     </div>
 
     <div id="notificationModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
-        <div class="bg-white p-6 rounded shadow-md">
+        <div class="bg-white p-6 rounded shadow-md max-h-96 overflow-y-auto">
             <h2 class="text-2xl font-bold mb-4">Notifications</h2>
             <div id="notificationContent" class="space-y-4">
                 <!-- Notifications will be appended here -->
@@ -185,6 +185,7 @@
                     const notificationData = {
                         type: 'like',
                         from: user.email,
+                        to: story.author,
                         storyId: storyId,
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     };
@@ -201,6 +202,7 @@
                     const notificationData = {
                         type: 'dislike',
                         from: user.email,
+                        to: story.author,
                         storyId: storyId,
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     };
