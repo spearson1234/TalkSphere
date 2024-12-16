@@ -6,7 +6,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-       <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
@@ -19,7 +19,7 @@
     <header class="bg-blue-600 text-white p-4">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-2xl font-bold">Story Maker</h1>
-            <div class="relative">
+            <div class="relative hidden md:block">
                 <button class="flex items-center space-x-2 focus:outline-none" id="profileButton">
                     <i class="fas fa-user-circle text-2xl"></i>
                     <i class="fas fa-chevron-down"></i>
@@ -40,10 +40,6 @@
                 <div class="mb-4">
                     <label for="title" class="block text-gray-700">Title</label>
                     <input type="text" id="title" class="w-full p-2 border border-gray-300 rounded mt-1" required>
-                </div>
-                <div class="mb-4">
-                    <label for="author" class="block text-gray-700">Author</label>
-                    <input type="text" id="author" class="w-full p-2 border border-gray-300 rounded mt-1" required>
                 </div>
                 <div class="mb-4">
                     <label for="content" class="block text-gray-700">Content</label>
@@ -81,10 +77,6 @@
                 <i class="fas fa-user-circle text-2xl"></i>
                 <span>Profile</span>
             </button>
-            <button class="flex flex-col items-center" id="mobileLogoutButton">
-                <i class="fas fa-sign-out-alt text-2xl"></i>
-                <span>Logout</span>
-            </button>
         </div>
     </div>
 
@@ -94,6 +86,7 @@
             <i class="fas fa-user-circle text-6xl mb-4"></i>
             <p id="userEmail" class="text-gray-700">Placeholder</p>
             <button id="loginButton" class="bg-blue-600 text-white px-4 py-2 rounded mt-4">Login Here</button>
+            <button id="logoutButton" class="bg-red-600 text-white px-4 py-2 rounded mt-4 hidden">Logout</button>
         </div>
     </div>
 
@@ -117,13 +110,13 @@
     <script>
         // Firebase configuration
         const firebaseConfig = {
-                 apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
-    authDomain: "login-71866.firebaseapp.com",
-    databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
-    projectId: "login-71866",
-    storageBucket: "login-71866.appspot.com",
-    messagingSenderId: "434042354282",
-    appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
+            apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
+            authDomain: "login-71866.firebaseapp.com",
+            databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
+            projectId: "login-71866",
+            storageBucket: "login-71866.appspot.com",
+            messagingSenderId: "434042354282",
+            appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
         };
 
         // Initialize Firebase
@@ -135,31 +128,37 @@
             event.preventDefault();
             
             const title = document.getElementById('title').value;
-            const author = document.getElementById('author').value;
             const content = document.getElementById('content').value;
+            const user = auth.currentUser;
 
-            const storyDiv = document.createElement('div');
-            storyDiv.classList.add('bg-white', 'p-6', 'rounded', 'shadow-md');
+            if (user) {
+                const author = user.email;
 
-            const storyTitle = document.createElement('h3');
-            storyTitle.classList.add('text-2xl', 'font-bold', 'mb-2');
-            storyTitle.textContent = title;
+                const storyDiv = document.createElement('div');
+                storyDiv.classList.add('bg-white', 'p-6', 'rounded', 'shadow-md');
 
-            const storyAuthor = document.createElement('p');
-            storyAuthor.classList.add('text-gray-700', 'italic', 'mb-2');
-            storyAuthor.textContent = `By: ${author}`;
+                const storyTitle = document.createElement('h3');
+                storyTitle.classList.add('text-2xl', 'font-bold', 'mb-2');
+                storyTitle.textContent = title;
 
-            const storyContent = document.createElement('p');
-            storyContent.classList.add('text-gray-700');
-            storyContent.textContent = content;
+                const storyAuthor = document.createElement('p');
+                storyAuthor.classList.add('text-gray-700', 'italic', 'mb-2');
+                storyAuthor.textContent = `By: ${author}`;
 
-            storyDiv.appendChild(storyTitle);
-            storyDiv.appendChild(storyAuthor);
-            storyDiv.appendChild(storyContent);
+                const storyContent = document.createElement('p');
+                storyContent.classList.add('text-gray-700');
+                storyContent.textContent = content;
 
-            document.getElementById('stories').appendChild(storyDiv);
+                storyDiv.appendChild(storyTitle);
+                storyDiv.appendChild(storyAuthor);
+                storyDiv.appendChild(storyContent);
 
-            document.getElementById('storyForm').reset();
+                document.getElementById('stories').appendChild(storyDiv);
+
+                document.getElementById('storyForm').reset();
+            } else {
+                alert('You must be logged in to submit a story.');
+            }
         });
 
         document.getElementById('profileButton').addEventListener('click', function() {
@@ -196,14 +195,6 @@
             document.getElementById('profilePage').classList.remove('hidden');
         });
 
-        document.getElementById('mobileLogoutButton').addEventListener('click', function() {
-            auth.signOut().then(() => {
-                alert('Logged out successfully.');
-            }).catch((error) => {
-                console.error('Error logging out:', error);
-            });
-        });
-
         document.getElementById('closeProfile').addEventListener('click', function() {
             document.getElementById('profilePage').classList.add('hidden');
         });
@@ -222,6 +213,7 @@
                     const user = userCredential.user;
                     document.getElementById('userEmail').textContent = user.email;
                     document.getElementById('loginButton').classList.add('hidden');
+                    document.getElementById('logoutButton').classList.remove('hidden');
                     document.getElementById('loginModal').classList.add('hidden');
                 })
                 .catch((error) => {
@@ -229,13 +221,26 @@
                 });
         });
 
+        document.getElementById('logoutButton').addEventListener('click', function() {
+            auth.signOut().then(() => {
+                alert('Logged out successfully.');
+                document.getElementById('profilePage').classList.add('hidden');
+                document.getElementById('logoutButton').classList.add('hidden');
+                document.getElementById('loginButton').classList.remove('hidden');
+            }).catch((error) => {
+                console.error('Error logging out:', error);
+            });
+        });
+
         auth.onAuthStateChanged((user) => {
             if (user) {
                 document.getElementById('userEmail').textContent = user.email;
                 document.getElementById('loginButton').classList.add('hidden');
+                document.getElementById('logoutButton').classList.remove('hidden');
             } else {
                 document.getElementById('userEmail').textContent = 'Placeholder';
                 document.getElementById('loginButton').classList.remove('hidden');
+                document.getElementById('logoutButton').classList.add('hidden');
             }
         });
     </script>
