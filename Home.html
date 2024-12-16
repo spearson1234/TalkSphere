@@ -31,8 +31,9 @@
                         <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" id="logoutLink">Logout</a>
                     </div>
                 </div>
-                <button class="focus:outline-none" id="infoButton">
+                <button class="relative focus:outline-none" id="infoButton">
                     <i class="fas fa-info-circle text-2xl"></i>
+                    <span id="notificationBadge" class="absolute top-0 right-0 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center hidden">0</span>
                 </button>
             </div>
         </div>
@@ -106,6 +107,16 @@
         </div>
     </div>
 
+    <div id="notificationModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
+        <div class="bg-white p-6 rounded shadow-md">
+            <h2 class="text-2xl font-bold mb-4">Notifications</h2>
+            <div id="notificationContent" class="space-y-4">
+                <!-- Notifications will be appended here -->
+            </div>
+            <button id="closeNotification" class="bg-blue-600 text-white px-4 py-2 rounded mt-4">Close</button>
+        </div>
+    </div>
+
     <script>
         // Firebase configuration
         const firebaseConfig = {
@@ -149,7 +160,7 @@
             }
         });
 
-        function displayStory(story) {
+        function displayStory(story, storyId) {
             const storyDiv = document.createElement('div');
             storyDiv.classList.add('bg-white', 'p-6', 'rounded', 'shadow-md');
 
@@ -169,14 +180,32 @@
             likeButton.classList.add('text-green-500', 'mr-2');
             likeButton.innerHTML = '<i class="fas fa-thumbs-up"></i>';
             likeButton.addEventListener('click', function() {
-                alert(`${auth.currentUser.email} has liked this story!`);
+                const user = auth.currentUser;
+                if (user) {
+                    const notificationData = {
+                        type: 'like',
+                        from: user.email,
+                        storyId: storyId,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    };
+                    database.ref('notifications').push(notificationData);
+                }
             });
 
             const dislikeButton = document.createElement('button');
             dislikeButton.classList.add('text-red-500');
             dislikeButton.innerHTML = '<i class="fas fa-thumbs-down"></i>';
             dislikeButton.addEventListener('click', function() {
-                alert(`${auth.currentUser.email} has disliked this story!`);
+                const user = auth.currentUser;
+                if (user) {
+                    const notificationData = {
+                        type: 'dislike',
+                        from: user.email,
+                        storyId: storyId,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    };
+                    database.ref('notifications').push(notificationData);
+                }
             });
 
             const buttonContainer = document.createElement('div');
@@ -194,7 +223,8 @@
 
         database.ref('stories').on('child_added', function(snapshot) {
             const story = snapshot.val();
-            displayStory(story);
+            const storyId = snapshot.key;
+            displayStory(story, storyId);
         });
 
         document.getElementById('profileButton').addEventListener('click', function() {
@@ -273,6 +303,7 @@
                 document.getElementById('userEmail').textContent = user.email;
                 document.getElementById('loginButton').classList.add('hidden');
                 document.getElementById('logoutButton').classList.remove('hidden');
+                loadNotifications(user.email);
             } else {
                 document.getElementById('userEmail').textContent = 'Placeholder';
                 document.getElementById('loginButton').classList.remove('hidden');
@@ -280,8 +311,45 @@
             }
         });
 
+        function loadNotifications(email) {
+            database.ref('notifications').orderByChild('to').equalTo(email).on('value', function(snapshot) {
+                const notifications = snapshot.val();
+                const notificationBadge = document.getElementById('notificationBadge');
+                const notificationContent = document.getElementById('notificationContent');
+                notificationContent.innerHTML = '';
+                let count = 0;
+
+                for (const key in notifications) {
+                    if (notifications.hasOwnProperty(key)) {
+                        const notification = notifications[key];
+                        const notificationDiv = document.createElement('div');
+                        notificationDiv.classList.add('bg-gray-100', 'p-4', 'rounded', 'shadow-md');
+
+                        const notificationText = document.createElement('p');
+                        notificationText.classList.add('text-gray-700');
+                        notificationText.textContent = `${notification.from} has ${notification.type}d your story!`;
+
+                        notificationDiv.appendChild(notificationText);
+                        notificationContent.appendChild(notificationDiv);
+                        count++;
+                    }
+                }
+
+                if (count > 0) {
+                    notificationBadge.textContent = count;
+                    notificationBadge.classList.remove('hidden');
+                } else {
+                    notificationBadge.classList.add('hidden');
+                }
+            });
+        }
+
         document.getElementById('infoButton').addEventListener('click', function() {
-            alert('Welcome to Story Maker! Here you can create and share your stories with others.');
+            document.getElementById('notificationModal').classList.remove('hidden');
+        });
+
+        document.getElementById('closeNotification').addEventListener('click', function() {
+            document.getElementById('notificationModal').classList.add('hidden');
         });
     </script>
 </body>
