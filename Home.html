@@ -1,64 +1,119 @@
 <html lang="en">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>
-   Chat Application
-  </title>
-  <script src="https://cdn.tailwindcss.com">
-  </script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Story Maker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-  </script>
-  <style>
-   body {
-            font-family: 'Roboto', sans-serif;
+    <style>
+        .hidden {
+            display: none;
         }
-  </style>
- </head>
- <body class="bg-gray-100 h-screen flex flex-col">
-  <header class="bg-white shadow-md p-4 flex justify-between items-center">
-   <h1 class="text-xl font-bold">
-    Chat Application
-   </h1>
-   <div class="relative">
-    <button class="flex items-center space-x-2 focus:outline-none" id="profileButton">
-     <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-      U
-     </div>
-     <i class="fas fa-chevron-down">
-     </i>
-    </button>
-    <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 transition-all duration-300 ease-in-out" id="dropdownMenu">
-     <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="#" id="profileLink">
-      Profile
-     </a>
-     <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="#">
-      Settings
-     </a>
-     <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="#" id="logoutButton">
-      Logout
-     </a>
+    </style>
+</head>
+<body class="font-roboto bg-gray-100">
+    <header class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Story Maker</h1>
+            <div class="hidden md:flex relative">
+                <button class="flex items-center space-x-2 focus:outline-none" id="profileButton">
+                    <i class="fas fa-user-circle text-2xl"></i>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2" id="dropdownMenu">
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4">
+        <section class="mb-8">
+            <h2 class="text-3xl font-bold mb-4">Create a New Story</h2>
+            <form id="storyForm" class="bg-white p-6 rounded shadow-md">
+                <div class="mb-4">
+                    <label for="title" class="block text-gray-700">Title</label>
+                    <input type="text" id="title" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                </div>
+                <div class="mb-4">
+                    <label for="author" class="block text-gray-700">Author</label>
+                    <input type="text" id="author" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                </div>
+                <div class="mb-4">
+                    <label for="content" class="block text-gray-700">Content</label>
+                    <textarea id="content" class="w-full p-2 border border-gray-300 rounded mt-1" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Submit</button>
+            </form>
+        </section>
+
+        <section>
+            <h2 class="text-3xl font-bold mb-4">Stories</h2>
+            <div id="stories" class="space-y-4">
+                <!-- Stories will be appended here -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-blue-600 text-white p-4 mt-8">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2023 Story Maker. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div class="fixed bottom-0 left-0 right-0 bg-blue-600 text-white p-4 md:hidden">
+        <div class="flex justify-around">
+            <button class="flex flex-col items-center">
+                <i class="fas fa-home text-2xl"></i>
+                <span>Home</span>
+            </button>
+            <button class="flex flex-col items-center">
+                <i class="fas fa-cog text-2xl"></i>
+                <span>Settings</span>
+            </button>
+            <button class="flex flex-col items-center" id="mobileProfileButton">
+                <i class="fas fa-user-circle text-2xl"></i>
+                <span>Profile</span>
+            </button>
+        </div>
     </div>
-   </div>
-  </header>
-  <main class="flex-grow p-4 overflow-y-auto" id="chatContainer">
-   <!-- Chat messages will be dynamically added here -->
-  </main>
-  <footer class="bg-white p-4 shadow-md flex items-center space-x-4">
-   <input class="flex-grow p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" id="messageInput" placeholder="Type a message..." type="text"/>
-   <button class="bg-blue-500 text-white p-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none" id="sendButton">
-    <i class="fas fa-paper-plane">
-    </i>
-   </button>
-  </footer>
-  <script>
-   // Firebase configuration
+
+    <div id="profilePage" class="hidden fixed inset-0 bg-white p-4">
+        <button id="closeProfile" class="text-blue-600 mb-4"><i class="fas fa-arrow-left"></i> Back</button>
+        <div class="flex flex-col items-center">
+            <i class="fas fa-user-circle text-6xl mb-4"></i>
+            <p id="userEmail" class="text-gray-700">Placeholder</p>
+            <button id="loginButton" class="bg-blue-600 text-white px-4 py-2 rounded mt-4">Login Here</button>
+        </div>
+    </div>
+
+    <div id="loginModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
+        <div class="bg-white p-6 rounded shadow-md">
+            <h2 class="text-2xl font-bold mb-4">Login</h2>
+            <form id="loginForm">
+                <div class="mb-4">
+                    <label for="email" class="block text-gray-700">Email</label>
+                    <input type="email" id="email" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="block text-gray-700">Password</label>
+                    <input type="password" id="password" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                </div>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
         const firebaseConfig = {
-                apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
+                  apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
     authDomain: "login-71866.firebaseapp.com",
     databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
     projectId: "login-71866",
@@ -68,70 +123,92 @@
         };
 
         // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const database = firebase.database();
 
-        // Authentication state observer
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                // User is signed in
-                loadMessages();
-                document.querySelector('#profileButton div').textContent = user.displayName ? user.displayName.charAt(0).toUpperCase() : 'U';
-            } else {
-                // User is signed out
-                window.location.href = 'login.html'; // Redirect to login page
-            }
+        document.getElementById('storyForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const title = document.getElementById('title').value;
+            const author = document.getElementById('author').value;
+            const content = document.getElementById('content').value;
+
+            const storyDiv = document.createElement('div');
+            storyDiv.classList.add('bg-white', 'p-6', 'rounded', 'shadow-md');
+
+            const storyTitle = document.createElement('h3');
+            storyTitle.classList.add('text-2xl', 'font-bold', 'mb-2');
+            storyTitle.textContent = title;
+
+            const storyAuthor = document.createElement('p');
+            storyAuthor.classList.add('text-gray-700', 'italic', 'mb-2');
+            storyAuthor.textContent = `By: ${author}`;
+
+            const storyContent = document.createElement('p');
+            storyContent.classList.add('text-gray-700');
+            storyContent.textContent = content;
+
+            storyDiv.appendChild(storyTitle);
+            storyDiv.appendChild(storyAuthor);
+            storyDiv.appendChild(storyContent);
+
+            document.getElementById('stories').appendChild(storyDiv);
+
+            document.getElementById('storyForm').reset();
         });
 
-        // Load chat messages
-        function loadMessages() {
-            const chatContainer = document.getElementById('chatContainer');
-            database.ref('messages').on('child_added', snapshot => {
-                const message = snapshot.val();
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('flex', 'items-start', 'space-x-4', message.sender === auth.currentUser.uid ? 'justify-end' : '');
-                messageElement.innerHTML = `
-                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">${message.sender === auth.currentUser.uid ? 'U' : 'S'}</div>
-                    <div class="${message.sender === auth.currentUser.uid ? 'bg-blue-500 text-white' : 'bg-white text-gray-800'} p-4 rounded-lg shadow-md">
-                        <p>${message.text}</p>
-                    </div>
-                `;
-                chatContainer.appendChild(messageElement);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            });
-        }
-
-        // Send message
-        document.getElementById('sendButton').addEventListener('click', () => {
-            const messageInput = document.getElementById('messageInput');
-            const messageText = messageInput.value.trim();
-            if (messageText) {
-                const message = {
-                    text: messageText,
-                    sender: auth.currentUser.uid,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                };
-                database.ref('messages').push(message);
-                messageInput.value = '';
-            }
-        });
-
-        // Toggle dropdown menu
-        document.getElementById('profileButton').addEventListener('click', () => {
+        document.getElementById('profileButton').addEventListener('click', function() {
             const dropdownMenu = document.getElementById('dropdownMenu');
             dropdownMenu.classList.toggle('hidden');
         });
 
-        // Logout
-        document.getElementById('logoutButton').addEventListener('click', () => {
-            auth.signOut();
+        window.addEventListener('click', function(event) {
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            const profileButton = document.getElementById('profileButton');
+            if (!profileButton.contains(event.target)) {
+                dropdownMenu.classList.add('hidden');
+            }
         });
 
-        // Profile link
-        document.getElementById('profileLink').addEventListener('click', () => {
-            window.location.href = 'profile.html';
+        document.getElementById('mobileProfileButton').addEventListener('click', function() {
+            document.getElementById('profilePage').classList.remove('hidden');
         });
-  </script>
- </body>
+
+        document.getElementById('closeProfile').addEventListener('click', function() {
+            document.getElementById('profilePage').classList.add('hidden');
+        });
+
+        document.getElementById('loginButton').addEventListener('click', function() {
+            document.getElementById('loginModal').classList.remove('hidden');
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    document.getElementById('userEmail').textContent = user.email;
+                    document.getElementById('loginButton').classList.add('hidden');
+                    document.getElementById('loginModal').classList.add('hidden');
+                })
+                .catch((error) => {
+                    console.error('Error logging in:', error);
+                });
+        });
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById('userEmail').textContent = user.email;
+                document.getElementById('loginButton').classList.add('hidden');
+            } else {
+                document.getElementById('userEmail').textContent = 'Placeholder';
+                document.getElementById('loginButton').classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
 </html>
