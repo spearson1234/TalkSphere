@@ -195,7 +195,12 @@
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     };
                     database.ref('notifications').push(notificationData);
-                    database.ref('stories/' + storyId).update({ likes: story.likes + 1 });
+                    database.ref('stories/' + storyId).transaction(function(story) {
+                        if (story) {
+                            story.likes++;
+                        }
+                        return story;
+                    });
                 } else {
                     alert('You cannot like your own story.');
                 }
