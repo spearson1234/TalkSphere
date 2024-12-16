@@ -19,16 +19,21 @@
     <header class="bg-blue-600 text-white p-4">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-2xl font-bold">Story Maker</h1>
-            <div class="relative hidden md:block">
-                <button class="flex items-center space-x-2 focus:outline-none" id="profileButton">
-                    <i class="fas fa-user-circle text-2xl"></i>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-                <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2" id="dropdownMenu">
-                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" id="profileLink">Profile</a>
-                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" id="settingsLink">Settings</a>
-                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" id="logoutLink">Logout</a>
+            <div class="flex items-center space-x-6">
+                <div class="relative hidden md:block">
+                    <button class="flex items-center space-x-2 focus:outline-none" id="profileButton">
+                        <i class="fas fa-user-circle text-2xl"></i>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2" id="dropdownMenu">
+                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" id="profileLink">Profile</a>
+                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" id="settingsLink">Settings</a>
+                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" id="logoutLink">Logout</a>
+                    </div>
                 </div>
+                <button class="focus:outline-none" id="infoButton">
+                    <i class="fas fa-info-circle text-2xl"></i>
+                </button>
             </div>
         </div>
     </header>
@@ -59,7 +64,7 @@
 
     <footer class="bg-blue-600 text-white p-4 mt-8">
         <div class="container mx-auto text-center">
-            <p>&copy; 2023 Story Maker. All rights reserved.</p>
+            <p>&copy; 2023 Story Maker.</p>
         </div>
     </footer>
 
@@ -149,9 +154,29 @@
                 storyContent.classList.add('text-gray-700');
                 storyContent.textContent = content;
 
+                const likeButton = document.createElement('button');
+                likeButton.classList.add('text-green-500', 'mr-2');
+                likeButton.innerHTML = '<i class="fas fa-thumbs-up"></i>';
+                likeButton.addEventListener('click', function() {
+                    alert(`${user.email} has liked your story!`);
+                });
+
+                const dislikeButton = document.createElement('button');
+                dislikeButton.classList.add('text-red-500');
+                dislikeButton.innerHTML = '<i class="fas fa-thumbs-down"></i>';
+                dislikeButton.addEventListener('click', function() {
+                    alert(`${user.email} has disliked your story!`);
+                });
+
+                const buttonContainer = document.createElement('div');
+                buttonContainer.classList.add('mt-4');
+                buttonContainer.appendChild(likeButton);
+                buttonContainer.appendChild(dislikeButton);
+
                 storyDiv.appendChild(storyTitle);
                 storyDiv.appendChild(storyAuthor);
                 storyDiv.appendChild(storyContent);
+                storyDiv.appendChild(buttonContainer);
 
                 document.getElementById('stories').appendChild(storyDiv);
 
@@ -242,6 +267,10 @@
                 document.getElementById('loginButton').classList.remove('hidden');
                 document.getElementById('logoutButton').classList.add('hidden');
             }
+        });
+
+        document.getElementById('infoButton').addEventListener('click', function() {
+            alert('Welcome to Story Maker! Here you can create and share your stories with others.');
         });
     </script>
 </body>
