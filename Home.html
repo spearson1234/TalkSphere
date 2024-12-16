@@ -85,7 +85,7 @@
         <div class="flex flex-col items-center">
             <i class="fas fa-user-circle text-6xl mb-4"></i>
             <p id="userEmail" class="text-gray-700">Placeholder</p>
-            <p class="text-gray-700">Followers: 0 Likes: 0</p>
+            <p class="text-gray-700">Followers: 0 Likes: <span id="likeCount">0</span></p>
             <button id="loginButton" class="bg-blue-600 text-white px-4 py-2 rounded mt-4">Login Here</button>
             <button id="logoutButton" class="bg-red-600 text-white px-4 py-2 rounded mt-4 hidden">Logout</button>
         </div>
@@ -148,6 +148,7 @@
                     title: title,
                     content: content,
                     author: author,
+                    likes: 0,
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 };
 
@@ -171,7 +172,10 @@
 
             const storyAuthor = document.createElement('p');
             storyAuthor.classList.add('text-gray-700', 'italic', 'mb-2');
-            storyAuthor.textContent = `By: ${story.author}`;
+            storyAuthor.innerHTML = `By: ${story.author}`;
+            if (story.author === 'admin@gmail.com') {
+                storyAuthor.innerHTML += ' <i class="fas fa-check-circle text-blue-500"></i>';
+            }
 
             const storyContent = document.createElement('p');
             storyContent.classList.add('text-gray-700');
@@ -191,6 +195,7 @@
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     };
                     database.ref('notifications').push(notificationData);
+                    database.ref('stories/' + storyId).update({ likes: story.likes + 1 });
                 } else {
                     alert('You cannot like your own story.');
                 }
@@ -232,6 +237,14 @@
             const story = snapshot.val();
             const storyId = snapshot.key;
             displayStory(story, storyId);
+        });
+
+        database.ref('stories').on('child_changed', function(snapshot) {
+            const story = snapshot.val();
+            const storyId = snapshot.key;
+            if (auth.currentUser && story.author === auth.currentUser.email) {
+                document.getElementById('likeCount').textContent = story.likes;
+            }
         });
 
         document.getElementById('profileButton').addEventListener('click', function() {
@@ -285,6 +298,9 @@
                 .then((userCredential) => {
                     const user = userCredential.user;
                     document.getElementById('userEmail').textContent = user.email;
+                    if (user.email === 'admin@gmail.com') {
+                        document.getElementById('userEmail').innerHTML += ' <i class="fas fa-check-circle text-blue-500"></i>';
+                    }
                     document.getElementById('loginButton').classList.add('hidden');
                     document.getElementById('logoutButton').classList.remove('hidden');
                     document.getElementById('loginModal').classList.add('hidden');
@@ -308,6 +324,9 @@
         auth.onAuthStateChanged((user) => {
             if (user) {
                 document.getElementById('userEmail').textContent = user.email;
+                if (user.email === 'admin@gmail.com') {
+                    document.getElementById('userEmail').innerHTML += ' <i class="fas fa-check-circle text-blue-500"></i>';
+                }
                 document.getElementById('loginButton').classList.add('hidden');
                 document.getElementById('logoutButton').classList.remove('hidden');
                 loadNotifications(user.email);
@@ -353,23 +372,17 @@
 
         document.getElementById('infoButton').addEventListener('click', function() {
             document.getElementById('notificationModal').classList.remove('hidden');
-            resetNotifications();
+            resetNotificationCount();
         });
 
         document.getElementById('closeNotification').addEventListener('click', function() {
             document.getElementById('notificationModal').classList.add('hidden');
         });
 
-        function resetNotifications() {
-            const user = auth.currentUser;
-            if (user) {
-                database.ref('notifications').orderByChild('to').equalTo(user.email).once('value', function(snapshot) {
-                    snapshot.forEach(function(childSnapshot) {
-                        childSnapshot.ref.remove();
-                    });
-                    document.getElementById('notificationBadge').classList.add('hidden');
-                });
-            }
+        function resetNotificationCount() {
+            const notificationBadge = document.getElementById('notificationBadge');
+            notificationBadge.textContent = '0';
+            notificationBadge.classList.add('hidden');
         }
     </script>
 </body>
