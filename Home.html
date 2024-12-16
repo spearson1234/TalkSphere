@@ -132,52 +132,69 @@
 
             if (user) {
                 const author = user.email;
+                const storyData = {
+                    title: title,
+                    content: content,
+                    author: author,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                };
 
-                const storyDiv = document.createElement('div');
-                storyDiv.classList.add('bg-white', 'p-6', 'rounded', 'shadow-md');
-
-                const storyTitle = document.createElement('h3');
-                storyTitle.classList.add('text-2xl', 'font-bold', 'mb-2');
-                storyTitle.textContent = title;
-
-                const storyAuthor = document.createElement('p');
-                storyAuthor.classList.add('text-gray-700', 'italic', 'mb-2');
-                storyAuthor.textContent = `By: ${author}`;
-
-                const storyContent = document.createElement('p');
-                storyContent.classList.add('text-gray-700');
-                storyContent.textContent = content;
-
-                const likeButton = document.createElement('button');
-                likeButton.classList.add('text-green-500', 'mr-2');
-                likeButton.innerHTML = '<i class="fas fa-thumbs-up"></i>';
-                likeButton.addEventListener('click', function() {
-                    alert(`${user.email} has liked your story!`);
+                database.ref('stories').push(storyData).then(() => {
+                    document.getElementById('storyForm').reset();
+                }).catch((error) => {
+                    console.error('Error saving story:', error);
                 });
-
-                const dislikeButton = document.createElement('button');
-                dislikeButton.classList.add('text-red-500');
-                dislikeButton.innerHTML = '<i class="fas fa-thumbs-down"></i>';
-                dislikeButton.addEventListener('click', function() {
-                    alert(`${user.email} has disliked your story!`);
-                });
-
-                const buttonContainer = document.createElement('div');
-                buttonContainer.classList.add('mt-4');
-                buttonContainer.appendChild(likeButton);
-                buttonContainer.appendChild(dislikeButton);
-
-                storyDiv.appendChild(storyTitle);
-                storyDiv.appendChild(storyAuthor);
-                storyDiv.appendChild(storyContent);
-                storyDiv.appendChild(buttonContainer);
-
-                document.getElementById('stories').appendChild(storyDiv);
-
-                document.getElementById('storyForm').reset();
             } else {
                 alert('You must be logged in to submit a story.');
             }
+        });
+
+        function displayStory(story) {
+            const storyDiv = document.createElement('div');
+            storyDiv.classList.add('bg-white', 'p-6', 'rounded', 'shadow-md');
+
+            const storyTitle = document.createElement('h3');
+            storyTitle.classList.add('text-2xl', 'font-bold', 'mb-2');
+            storyTitle.textContent = story.title;
+
+            const storyAuthor = document.createElement('p');
+            storyAuthor.classList.add('text-gray-700', 'italic', 'mb-2');
+            storyAuthor.textContent = `By: ${story.author}`;
+
+            const storyContent = document.createElement('p');
+            storyContent.classList.add('text-gray-700');
+            storyContent.textContent = story.content;
+
+            const likeButton = document.createElement('button');
+            likeButton.classList.add('text-green-500', 'mr-2');
+            likeButton.innerHTML = '<i class="fas fa-thumbs-up"></i>';
+            likeButton.addEventListener('click', function() {
+                alert(`${auth.currentUser.email} has liked this story!`);
+            });
+
+            const dislikeButton = document.createElement('button');
+            dislikeButton.classList.add('text-red-500');
+            dislikeButton.innerHTML = '<i class="fas fa-thumbs-down"></i>';
+            dislikeButton.addEventListener('click', function() {
+                alert(`${auth.currentUser.email} has disliked this story!`);
+            });
+
+            const buttonContainer = document.createElement('div');
+            buttonContainer.classList.add('mt-4');
+            buttonContainer.appendChild(likeButton);
+            buttonContainer.appendChild(dislikeButton);
+
+            storyDiv.appendChild(storyTitle);
+            storyDiv.appendChild(storyAuthor);
+            storyDiv.appendChild(storyContent);
+            storyDiv.appendChild(buttonContainer);
+
+            document.getElementById('stories').appendChild(storyDiv);
+        }
+
+        database.ref('stories').on('child_added', function(snapshot) {
+            const story = snapshot.val();
+            displayStory(story);
         });
 
         document.getElementById('profileButton').addEventListener('click', function() {
