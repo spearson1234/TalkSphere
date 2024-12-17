@@ -20,12 +20,12 @@
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-2xl font-bold">Story Maker</h1>
             <div class="flex items-center space-x-6">
-                <div class="relative hidden md:block">
+                 <div class="relative hidden md:block">
                     <button class="flex items-center space-x-2 focus:outline-none" id="profileButton">
                         <i class="fas fa-user-circle text-2xl"></i>
-                        <i class="fas fa-chevron-down"></i>
+                         <i class="fas fa-chevron-down"></i>
                     </button>
-                    <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2" id="dropdownMenu">
+                     <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2" id="dropdownMenu">
                         <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" id="profileLink">Profile</a>
                         <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" id="settingsLink">Settings</a>
                         <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" id="logoutLink">Logout</a>
@@ -85,7 +85,6 @@
         <div class="flex flex-col items-center">
             <i class="fas fa-user-circle text-6xl mb-4"></i>
             <p id="userEmail" class="text-gray-700">Placeholder</p>
-            <p class="text-gray-700">Followers: 0 Likes: <span id="likeCount">0</span></p>
             <button id="loginButton" class="bg-blue-600 text-white px-4 py-2 rounded mt-4">Login Here</button>
             <button id="logoutButton" class="bg-red-600 text-white px-4 py-2 rounded mt-4 hidden">Logout</button>
         </div>
@@ -247,9 +246,6 @@
         database.ref('stories').on('child_changed', function(snapshot) {
             const story = snapshot.val();
             const storyId = snapshot.key;
-            if (auth.currentUser && story.author === auth.currentUser.email) {
-                document.getElementById('likeCount').textContent = story.likes;
-            }
         });
 
         document.getElementById('profileButton').addEventListener('click', function() {
@@ -274,7 +270,7 @@
             alert('Settings page is under construction.');
         });
 
-        document.getElementById('logoutLink').addEventListener('click', function() {
+         document.getElementById('logoutLink').addEventListener('click', function() {
             auth.signOut().then(() => {
                 alert('Logged out successfully.');
             }).catch((error) => {
@@ -294,7 +290,7 @@
             document.getElementById('loginModal').classList.remove('hidden');
         });
 
-        document.getElementById('loginForm').addEventListener('submit', function(event) {
+         document.getElementById('loginForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -315,7 +311,7 @@
                 });
         });
 
-        document.getElementById('logoutButton').addEventListener('click', function() {
+         document.getElementById('logoutButton').addEventListener('click', function() {
             auth.signOut().then(() => {
                 alert('Logged out successfully.');
                 document.getElementById('profilePage').classList.add('hidden');
@@ -332,7 +328,7 @@
                 if (user.email === 'admin@gmail.com') {
                     document.getElementById('userEmail').innerHTML += ' <i class="fas fa-check-circle text-blue-500"></i>';
                 }
-                document.getElementById('loginButton').classList.add('hidden');
+                 document.getElementById('loginButton').classList.add('hidden');
                 document.getElementById('logoutButton').classList.remove('hidden');
                 loadNotifications(user.email);
             } else {
@@ -343,7 +339,7 @@
         });
 
         function loadNotifications(email) {
-            database.ref('notifications').orderByChild('to').equalTo(email).on('value', function(snapshot) {
+           database.ref('notifications').orderByChild('to').equalTo(email).on('value', function(snapshot) {
                 const notifications = snapshot.val();
                 const notificationBadge = document.getElementById('notificationBadge');
                 const notificationContent = document.getElementById('notificationContent');
@@ -385,7 +381,7 @@
         });
 
         function resetNotificationCount() {
-            const notificationBadge = document.getElementById('notificationBadge');
+             const notificationBadge = document.getElementById('notificationBadge');
             notificationBadge.textContent = '0';
             notificationBadge.classList.add('hidden');
         }
