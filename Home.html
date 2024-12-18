@@ -218,9 +218,13 @@
                     });
                     database.ref('users/' + story.author).transaction(function(user) {
                         if (user) {
-                            user.likes++;
+                            user.likes = (user.likes || 0) + 1; // Increment likes count
                         }
                         return user;
+                    });
+                    database.ref('users/' + story.author).once('value').then((snapshot) => {
+                        const userInfo = snapshot.val();
+                        document.getElementById('likesCount').textContent = `Likes: ${userInfo.likes || 0}`; // Update likes count on profile page
                     });
                 } else {
                     alert('You cannot like your own story.');
@@ -361,8 +365,11 @@
                 .then((userCredential) => {
                     const user = userCredential.user;
                     document.getElementById('userEmail').textContent = user.email;
-                    document.getElementById('followersCount').textContent = `Followers: ${user.followers || 0}`;
-                    document.getElementById('likesCount').textContent = `Likes: ${user.likes || 0}`;
+                    database.ref('users/' + user.uid).once('value').then((snapshot) => {
+                        const userInfo = snapshot.val();
+                        document.getElementById('likesCount').textContent = `Likes: ${userInfo.likes || 0}`;
+                        document.getElementById('followersCount').textContent = `Followers: ${userInfo.followers || 0}`;
+                    });
                     if (user.email === 'admin@gmail.com') {
                         document.getElementById('userEmail').innerHTML += ' <i class="fas fa-check-circle text-blue-500"></i>';
                     }
