@@ -160,6 +160,17 @@
     </div>
 
     <script>
+        function updateNetworkStatus() {
+            const loadingOverlay = document.getElementById('loading');
+            if (navigator.onLine) {
+                loadingOverlay.classList.add('hidden');
+            } else {
+                loadingOverlay.classList.remove('hidden');
+            }
+        }
+        updateNetworkStatus();
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
         // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
