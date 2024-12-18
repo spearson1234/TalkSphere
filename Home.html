@@ -13,9 +13,37 @@
         .hidden {
             display: none;
         }
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.8);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9999;
+        }
+        .loader {
+            border: 8px solid #f3f3f3; /* Light grey */
+            border-top: 8px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="font-roboto bg-gray-100">
+    <div id="loading" class="loading hidden">
+        <div class="loader"></div>
+    </div>
     <header class="bg-blue-600 text-white p-4">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-2xl font-bold">Story Maker</h1>
@@ -390,32 +418,6 @@
                 document.getElementById('logoutButton').classList.add('hidden');
             }
         });
-        
-        function loadComments(storyId, storyAuthor) {
-            const commentContent = document.getElementById('commentContent');
-            commentContent.innerHTML = ''; // Clear existing comments
-
-            database.ref(`comments/${storyId}`).on('child_added', function(snapshot) {
-                const comment = snapshot.val();
-                const commentDiv = document.createElement('div');
-                const isCreator = comment.author === storyAuthor ? ' <span class="text-green-500">(Creator)</span>' : '';
-                commentDiv.innerHTML = `<strong>${comment.author}</strong>${isCreator}: ${comment.text}`;
-                commentContent.appendChild(commentDiv);
-            });
-        }
-
-        function loadNotifications(userEmail) {
-            const notificationContent = document.getElementById('notificationContent');
-            notificationContent.innerHTML = ''; // Clear existing notifications
-
-            database.ref('notifications').orderByChild('to').equalTo(userEmail).on('child_added', function(snapshot) {
-                const notification = snapshot.val();
-                const notificationDiv = document.createElement('div');
-                notificationDiv.classList.add('border-b', 'py-2');
-                notificationDiv.innerHTML = `${notification.from} ${notification.type} your story.`;
-                notificationContent.appendChild(notificationDiv);
-            });
-        }
     </script>
 </body>
 </html>
