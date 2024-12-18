@@ -85,8 +85,6 @@
         <div class="flex flex-col items-center">
             <i class="fas fa-user-circle text-6xl mb-4"></i>
             <p id="userEmail" class="text-gray-700">Placeholder</p>
-            <p id="followersCount" class="text-gray-700">Followers: 0</p>
-            <p id="likesCount" class="text-gray-700">Likes: 0</p>
             <button id="loginButton" class="bg-blue-600 text-white px-4 py-2 rounded mt-4">Login Here</button>
             <button id="logoutButton" class="bg-red-600 text-white px-4 py-2 rounded mt-4 hidden">Logout</button>
         </div>
@@ -163,7 +161,6 @@
                     title: title,
                     content: content,
                     author: author,
-                    likes: 0,
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 };
 
@@ -210,22 +207,9 @@
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     };
                     database.ref('notifications').push(notificationData);
-                    database.ref('stories/' + storyId).transaction(function(story) {
-                        if (story) {
-                            story.likes++;
-                        }
-                        return story;
-                    });
-                    database.ref('users/' + story.author).transaction(function(user) {
-                        if (user) {
-                            user.likes = (user.likes || 0) + 1; // Increment likes count
-                        }
-                        return user;
-                    });
-                    database.ref('users/' + story.author).once('value').then((snapshot) => {
-                        const userInfo = snapshot.val();
-                        document.getElementById('likesCount').textContent = `Likes: ${userInfo.likes || 0}`; // Update likes count on profile page
-                    });
+                    // Notify the author
+                    const notificationMessage = `${user.email} has liked your story!`;
+                    alert(notificationMessage); // Display notification
                 } else {
                     alert('You cannot like your own story.');
                 }
@@ -245,6 +229,9 @@
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     };
                     database.ref('notifications').push(notificationData);
+                    // Notify the author
+                    const notificationMessage = `${user.email} has disliked your story!`;
+                    alert(notificationMessage); // Display notification
                 } else {
                     alert('You cannot dislike your own story.');
                 }
@@ -365,11 +352,6 @@
                 .then((userCredential) => {
                     const user = userCredential.user;
                     document.getElementById('userEmail').textContent = user.email;
-                    database.ref('users/' + user.uid).once('value').then((snapshot) => {
-                        const userInfo = snapshot.val();
-                        document.getElementById('likesCount').textContent = `Likes: ${userInfo.likes || 0}`;
-                        document.getElementById('followersCount').textContent = `Followers: ${userInfo.followers || 0}`;
-                    });
                     if (user.email === 'admin@gmail.com') {
                         document.getElementById('userEmail').innerHTML += ' <i class="fas fa-check-circle text-blue-500"></i>';
                     }
@@ -396,11 +378,6 @@
         auth.onAuthStateChanged((user) => {
             if (user) {
                 document.getElementById('userEmail').textContent = user.email;
-                database.ref('users/' + user.uid).once('value').then((snapshot) => {
-                    const userInfo = snapshot.val();
-                    document.getElementById('likesCount').textContent = `Likes: ${userInfo.likes || 0}`;
-                    document.getElementById('followersCount').textContent = `Followers: ${userInfo.followers || 0}`;
-                });
                 if (user.email === 'admin@gmail.com') {
                     document.getElementById('userEmail').innerHTML += ' <i class="fas fa-check-circle text-blue-500"></i>';
                 }
