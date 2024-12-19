@@ -45,12 +45,17 @@
             100% { transform: rotate(360deg); }
         }
         .sidebar {
-            transform: translateX(-100%);
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px; /* Adjust width as needed */
+            height: 100%;
+            transform: translateX(100%); /* Start off-screen */
             transition: transform 0.3s ease-in-out;
+            z-index: 1000; /* Ensure it appears above other content */
         }
         .sidebar-open {
-            transform: translateX(0);
-            transition: transform 0.3s ease-in-out;
+            transform: translateX(0); /* Slide in */
         }
   </style>
  </head>
@@ -453,8 +458,3 @@
             basketSidebar.classList.remove('sidebar-open');
             setTimeout(() => {
                 basketSidebar.classList.add('hidden');
-            }, 300); // Match the duration of the CSS transition
-        });
-    </script>
-</body>
-</html>
