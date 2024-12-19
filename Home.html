@@ -403,8 +403,9 @@
                     email: userEmail,
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 };
-                database.ref('verificationRequests').push(verificationRequest);
-                alert('Verification request sent to admin.');
+                // Store the verification request in the database
+                database.ref('Requested').push(verificationRequest);
+                alert('Verification request has been sent.');
             }, 5000);
         });
 
