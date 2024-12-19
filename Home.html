@@ -418,8 +418,9 @@
                 const adminResponse = confirm(`User ${requestEmail} has applied for verification. Do you want to allow?`);
                 if (adminResponse) {
                     // Allow verification
+                    const userEmail = requestEmail; // Get the email of the user who applied
                     document.getElementById('userEmail').innerHTML += ' <i class="fas fa-check-circle text-blue-500"></i>';
-                    localStorage.setItem(requestEmail, 'verified');
+                    localStorage.setItem(userEmail, 'verified');
                 }
             }
         });
