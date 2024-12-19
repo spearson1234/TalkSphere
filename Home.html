@@ -399,8 +399,10 @@
             setTimeout(() => {
                 loadingOverlay.classList.add('hidden');
                 const userEmail = document.getElementById('userEmail').textContent;
+                const reason = prompt("Please provide a reason for your verification request:");
                 const verificationRequest = {
                     email: userEmail,
+                    reason: reason,
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 };
                 // Store the verification request in the database
