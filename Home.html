@@ -44,6 +44,13 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .sidebar {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .sidebar-open {
+            transform: translateX(0);
+        }
   </style>
  </head>
  <body class="font-roboto bg-gray-100">
@@ -83,6 +90,11 @@
       <span class="text-sm" id="credits">
        <i class="fas fa-coins text-yellow-500"></i> 0
       </span>
+     </div>
+     <div class="flex flex-col items-center">
+      <button class="relative focus:outline-none" id="basketButton">
+       <i class="fas fa-shopping-basket text-2xl"></i>
+      </button>
      </div>
     </div>
    </div>
@@ -140,6 +152,13 @@
      </i>
      <span>
       Profile
+     </span>
+    </button>
+    <button class="flex flex-col items-center" id="mobileBasketButton">
+     <i class="fas fa-shopping-basket text-2xl">
+     </i>
+     <span>
+      Basket
      </span>
     </button>
    </div>
@@ -218,6 +237,21 @@
       Submit
      </button>
      <button class="bg-gray-400 text-white px-4 py-2 rounded" id="closeComment">
+      Close
+     </button>
+    </div>
+   </div>
+  </div>
+  <div class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-end hidden" id="basketSidebar">
+   <div class="bg-white w-64 h-full shadow-lg sidebar">
+    <div class="p-4">
+     <h2 class="text-2xl font-bold mb-4">
+      Shopping Basket
+     </h2>
+     <div class="space-y-4" id="basketContent">
+      <!-- Basket items will be appended here -->
+     </div>
+     <button class="bg-blue-600 text-white px-4 py-2 rounded mt-4" id="closeBasket">
       Close
      </button>
     </div>
@@ -400,39 +434,12 @@
                 loadingOverlay.classList.add('hidden');
                 const userEmail = document.getElementById('userEmail').textContent;
                 const reason = prompt("Please provide a reason for your verification request:");
-                const verificationRequest = {
-                    email: userEmail,
-                    reason: reason,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                };
-                // Store the verification request in the database
-                database.ref('verificationRequests').push(verificationRequest);
-                alert('Verification request has been sent.');
-            }, 5000);
-        });
-
-        // Listen for verification requests in real-time
-        database.ref('verificationRequests').on('child_added', function(snapshot) {
-            const request = snapshot.val();
-            const requestEmail = request.email;
-            const currentUser = auth.currentUser;
-
-            if (currentUser && currentUser.email === 'admin@gmail.com') {
-                const adminResponse = confirm(`User ${requestEmail} has applied for verification. Do you want to allow?`);
-                if (adminResponse) {
-                    // Allow verification
-                    const userEmail = requestEmail; // Get the email of the user who applied
-                    document.getElementById('userEmail').innerHTML += ' <i class="fas fa-check-circle text-blue-500"></i>';
-                    localStorage.setItem(userEmail, 'verified');
+                if (reason) {
+                    // Handle the verification request logic here
+                    alert(`Verification request submitted for ${userEmail} with reason: ${reason}`);
                 }
-            }
+            });
         });
-        
-        // Check verification status on page load
-        const currentUserEmail = document.getElementById('userEmail').textContent;
-        if (localStorage.getItem(currentUserEmail) === 'verified') {
-            document.getElementById('userEmail').innerHTML += ' <i class="fas fa-check-circle text-blue-500"></i>';
-        }
-  </script>
- </body>
+    </script>
+</body>
 </html>
