@@ -444,14 +444,17 @@
 
         document.getElementById('basketButton').addEventListener('click', function() {
             const basketSidebar = document.getElementById('basketSidebar');
-            basketSidebar.classList.toggle('hidden');
-            basketSidebar.classList.toggle('sidebar-open');
+            basketSidebar.classList.remove('hidden');
+            basketSidebar.classList.add('sidebar-open');
         });
 
         document.getElementById('closeBasket').addEventListener('click', function() {
             const basketSidebar = document.getElementById('basketSidebar');
-            basketSidebar.classList.add('hidden');
             basketSidebar.classList.remove('sidebar-open');
+            setTimeout(() => {
+                basketSidebar.classList.add('hidden');
+            }, 300); // Match the duration of the CSS transition
         });
     </script>
 </body>
+</html>
