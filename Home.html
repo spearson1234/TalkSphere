@@ -398,42 +398,37 @@
             loadingOverlay.classList.remove('hidden');
             setTimeout(() => {
                 loadingOverlay.classList.add('hidden');
-                const adminResponse = confirm('admin@gmail.com: Someone wants to apply for verification. Do you want to allow?');
-                if (adminResponse) {
-                    // Allow verification
-                    const userEmail = document.getElementById('userEmail').textContent;
-                    document.getElementById('userEmail').innerHTML += ' <i class="fas fa-check-circle text-blue-500"></i>';
-                    localStorage.setItem(userEmail, 'verified');
-                }
+                const userEmail = document.getElementById('userEmail').textContent;
+                const verificationRequest = {
+                    email: userEmail,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                };
+                database.ref('verificationRequests').push(verificationRequest);
+                alert('Verification request sent to admin.');
             }, 5000);
         });
 
+        // Listen for verification requests in real-time
+        database.ref('verificationRequests').on('child_added', function(snapshot) {
+            const request = snapshot.val();
+            const requestEmail = request.email;
+            const currentUser = auth.currentUser;
+
+            if (currentUser && currentUser.email === 'admin@gmail.com') {
+                const adminResponse = confirm(`User ${requestEmail} has applied for verification. Do you want to allow?`);
+                if (adminResponse) {
+                    // Allow verification
+                    document.getElementById('userEmail').innerHTML += ' <i class="fas fa-check-circle text-blue-500"></i>';
+                    localStorage.setItem(requestEmail, 'verified');
+                }
+            }
+        });
+        
         // Check verification status on page load
         const currentUserEmail = document.getElementById('userEmail').textContent;
         if (localStorage.getItem(currentUserEmail) === 'verified') {
             document.getElementById('userEmail').innerHTML += ' <i class="fas fa-check-circle text-blue-500"></i>';
         }
-
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                document.getElementById('userEmail').textContent = user.email;
-                if (user.email === 'admin@gmail.com') {
-                    document.getElementById('userEmail').innerHTML += ' <i class="fas fa-check-circle text-blue-500"></i>';
-                    document.getElementById('credits').innerHTML = '<i class="fas fa-coins text-yellow-500"></i> Infinity';
-                } else {
-                    document.getElementById('credits').innerHTML = '<i class="fas fa-coins text-yellow-500"></i> 0';
-                }
-                document.getElementById('loginButton').classList.add('hidden');
-                document.getElementById('logoutButton').classList.remove('hidden');
-                document.getElementById('applyVerificationButton').classList.remove('hidden');
-                loadNotifications(user.email);
-            } else {
-                document.getElementById('userEmail').textContent = 'Placeholder';
-                document.getElementById('loginButton').classList.remove('hidden');
-                document.getElementById('logoutButton').classList.add('hidden');
-                document.getElementById('applyVerificationButton').classList.add('hidden');
-            }
-        });
   </script>
  </body>
 </html>
