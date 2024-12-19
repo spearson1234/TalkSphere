@@ -1,16 +1,22 @@
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Story Maker</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <style>
-        .hidden {
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Story Maker
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet"/>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js">
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js">
+  </script>
+  <style>
+   .hidden {
             display: none;
         }
         .loading {
@@ -38,129 +44,187 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-    </style>
-</head>
-<body class="font-roboto bg-gray-100">
-    <div id="loading" class="loading hidden">
-        <div class="loader"></div>
+  </style>
+ </head>
+ <body class="font-roboto bg-gray-100">
+  <div class="loading hidden" id="loading">
+   <div class="loader">
+   </div>
+  </div>
+  <header class="bg-blue-600 text-white p-4">
+   <div class="container mx-auto flex justify-between items-center">
+    <h1 class="text-2xl font-bold">
+     Story Maker
+    </h1>
+    <div class="flex items-center space-x-6">
+     <div class="relative hidden md:block">
+      <button class="flex items-center space-x-2 focus:outline-none" id="profileButton">
+       <i class="fas fa-user-circle text-2xl">
+       </i>
+       <i class="fas fa-chevron-down">
+       </i>
+      </button>
+      <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2" id="dropdownMenu">
+       <a class="block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#" id="profileLink">
+        Profile
+       </a>
+       <a class="block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#" id="settingsLink">
+        Settings
+       </a>
+       <a class="block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#" id="logoutLink">
+        Logout
+       </a>
+      </div>
+     </div>
+     <div class="flex flex-col items-center">
+      <button class="relative focus:outline-none" id="vipButton">
+       <i class="fas fa-crown text-yellow-500 text-2xl"></i>
+      </button>
+      <span class="text-sm" id="credits">
+       <i class="fas fa-coins text-yellow-500"></i> 0
+      </span>
+     </div>
     </div>
-    <header class="bg-blue-600 text-white p-4">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Story Maker</h1>
-            <div class="flex items-center space-x-6">
-                <div class="relative hidden md:block">
-                    <button class="flex items-center space-x-2 focus:outline-none" id="profileButton">
-                        <i class="fas fa-user-circle text-2xl"></i>
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2" id="dropdownMenu">
-                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" id="profileLink">Profile</a>
-                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" id="settingsLink">Settings</a>
-                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" id="logoutLink">Logout</a>
-                    </div>
-                </div>
-                <button class="relative focus:outline-none" id="infoButton">
-                    <i class="fas fa-info-circle text-2xl"></i>
-                    <span id="notificationBadge" class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center hidden">0</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <main class="container mx-auto p-4 mb-16">
-        <section class="mb-8">
-            <h2 class="text-3xl font-bold mb-4">Create a New Story</h2>
-            <form id="storyForm" class="bg-white p-6 rounded shadow-md">
-                <div class="mb-4">
-                    <label for="title" class="block text-gray-700">Title</label>
-                    <input type="text" id="title" class="w-full p-2 border border-gray-300 rounded mt-1" required>
-                </div>
-                <div class="mb-4">
-                    <label for="content" class="block text-gray-700">Content</label>
-                    <textarea id="content" class="w-full p-2 border border-gray-300 rounded mt-1" rows="5" required></textarea>
-                </div>
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Submit</button>
-            </form>
-        </section>
-
-        <section>
-            <h2 class="text-3xl font-bold mb-4">Stories</h2>
-            <div id="stories" class="space-y-4">
-                <!-- Stories will be appended here -->
-            </div>
-        </section>
-    </main>
-
-    <div class="fixed bottom-0 left-0 right-0 bg-blue-600 text-white p-4 md:hidden">
-        <div class="flex justify-around">
-            <button class="flex flex-col items-center">
-                <i class="fas fa-home text-2xl"></i>
-                <span>Home</span>
-            </button>
-            <button class="flex flex-col items-center">
-                <i class="fas fa-cog text-2xl"></i>
-                <span>Settings</span>
-            </button>
-            <button class="flex flex-col items-center" id="mobileProfileButton">
-                <i class="fas fa-user-circle text-2xl"></i>
-                <span>Profile</span>
-            </button>
-        </div>
+   </div>
+  </header>
+  <main class="container mx-auto p-4 mb-16">
+   <section class="mb-8">
+    <h2 class="text-3xl font-bold mb-4">
+     Create a New Story
+    </h2>
+    <form class="bg-white p-6 rounded shadow-md" id="storyForm">
+     <div class="mb-4">
+      <label class="block text-gray-700" for="title">
+       Title
+      </label>
+      <input class="w-full p-2 border border-gray-300 rounded mt-1" id="title" required="" type="text"/>
+     </div>
+     <div class="mb-4">
+      <label class="block text-gray-700" for="content">
+       Content
+      </label>
+      <textarea class="w-full p-2 border border-gray-300 rounded mt-1" id="content" required="" rows="5"></textarea>
+     </div>
+     <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" type="submit">
+      Submit
+     </button>
+    </form>
+   </section>
+   <section>
+    <h2 class="text-3xl font-bold mb-4">
+     Stories
+    </h2>
+    <div class="space-y-4" id="stories">
+     <!-- Stories will be appended here -->
     </div>
-
-    <div id="profilePage" class="hidden fixed inset-0 bg-white p-4">
-        <button id="closeProfile" class="text-blue-600 mb-4"><i class="fas fa-arrow-left"></i> Back</button>
-        <div class="flex flex-col items-center">
-            <i class="fas fa-user-circle text-6xl mb-4"></i>
-            <p id="userEmail" class="text-gray-700">Placeholder</p>
-            <button id="loginButton" class="bg-blue-600 text-white px-4 py-2 rounded mt-4">Login Here</button>
-            <button id="logoutButton" class="bg-red-600 text-white px-4 py-2 rounded mt-4 hidden">Logout</button>
-        </div>
+   </section>
+  </main>
+  <div class="fixed bottom-0 left-0 right-0 bg-blue-600 text-white p-4 md:hidden">
+   <div class="flex justify-around">
+    <button class="flex flex-col items-center">
+     <i class="fas fa-home text-2xl">
+     </i>
+     <span>
+      Home
+     </span>
+    </button>
+    <button class="flex flex-col items-center">
+     <i class="fas fa-cog text-2xl">
+     </i>
+     <span>
+      Settings
+     </span>
+    </button>
+    <button class="flex flex-col items-center" id="mobileProfileButton">
+     <i class="fas fa-user-circle text-2xl">
+     </i>
+     <span>
+      Profile
+     </span>
+    </button>
+   </div>
+  </div>
+  <div class="hidden fixed inset-0 bg-white p-4" id="profilePage">
+   <button class="text-blue-600 mb-4" id="closeProfile">
+    <i class="fas fa-arrow-left">
+    </i>
+    Back
+   </button>
+   <div class="flex flex-col items-center">
+    <i class="fas fa-user-circle text-6xl mb-4">
+    </i>
+    <p class="text-gray-700" id="userEmail">
+     Placeholder
+    </p>
+    <button class="bg-blue-600 text-white px-4 py-2 rounded mt-4" id="loginButton">
+     Login Here
+    </button>
+    <button class="bg-red-600 text-white px-4 py-2 rounded mt-4 hidden" id="logoutButton">
+     Logout
+    </button>
+    <button class="bg-green-600 text-white px-4 py-2 rounded mt-4 hidden" id="applyVerificationButton">
+     <i class="fas fa-check-circle"></i> Apply for Verification
+    </button>
+   </div>
+  </div>
+  <div class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center" id="loginModal">
+   <div class="bg-white p-6 rounded shadow-md">
+    <h2 class="text-2xl font-bold mb-4">
+     Login
+    </h2>
+    <form id="loginForm">
+     <div class="mb-4">
+      <label class="block text-gray-700" for="email">
+       Email
+      </label>
+      <input class="w-full p-2 border border-gray-300 rounded mt-1" id="email" required="" type="email"/>
+     </div>
+     <div class="mb-4">
+      <label class="block text-gray-700" for="password">
+       Password
+      </label>
+      <input class="w-full p-2 border border-gray-300 rounded mt-1" id="password" required="" type="password"/>
+     </div>
+     <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" type="submit">
+      Login
+     </button>
+    </form>
+   </div>
+  </div>
+  <div class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center" id="notificationModal">
+   <div class="bg-white p-6 rounded shadow-md max-h-96 overflow-y-auto">
+    <h2 class="text-2xl font-bold mb-4">
+     Notifications
+    </h2>
+    <div class="space-y-4" id="notificationContent">
+     <!-- Notifications will be appended here -->
     </div>
-
-    <div id="loginModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
-        <div class="bg-white p-6 rounded shadow-md">
-            <h2 class="text-2xl font-bold mb-4">Login</h2>
-            <form id="loginForm">
-                <div class="mb-4">
-                    <label for="email" class="block text-gray-700">Email</label>
-                    <input type="email" id="email" class="w-full p-2 border border-gray-300 rounded mt-1" required>
-                </div>
-                <div class="mb-4">
-                    <label for="password" class="block text-gray-700">Password</label>
-                    <input type="password" id="password" class="w-full p-2 border border-gray-300 rounded mt-1" required>
-                </div>
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Login</button>
-            </form>
-        </div>
+    <button class="bg-blue-600 text-white px-4 py-2 rounded mt-4" id="closeNotification">
+     Close
+    </button>
+   </div>
+  </div>
+  <div class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center" id="commentModal">
+   <div class="bg-white p-6 rounded shadow-md max-w-md w-full">
+    <h2 class="text-2xl font-bold mb-4">
+     Comments
+    </h2>
+    <div class="mb-4 max-h-60 overflow-y-auto" id="commentContent">
+     <!-- Comments will be appended here -->
     </div>
-
-    <div id="notificationModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
-        <div class="bg-white p-6 rounded shadow-md max-h-96 overflow-y-auto">
-            <h2 class="text-2xl font-bold mb-4">Notifications</h2>
-            <div id="notificationContent" class="space-y-4">
-                <!-- Notifications will be appended here -->
-            </div>
-            <button id="closeNotification" class="bg-blue-600 text-white px-4 py-2 rounded mt-4">Close</button>
-        </div>
+    <textarea class="w-full p-2 border border-gray-300 rounded mt-1" id="commentInput" placeholder="Write a comment..." rows="3"></textarea>
+    <div class="flex justify-end mt-4">
+     <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mr-2" id="submitComment">
+      Submit
+     </button>
+     <button class="bg-gray-400 text-white px-4 py-2 rounded" id="closeComment">
+      Close
+     </button>
     </div>
-    
-    <div id="commentModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
-        <div class="bg-white p-6 rounded shadow-md max-w-md w-full">
-            <h2 class="text-2xl font-bold mb-4">Comments</h2>
-            <div id="commentContent" class="mb-4 max-h-60 overflow-y-auto">
-                <!-- Comments will be appended here -->
-            </div>
-            <textarea id="commentInput" class="w-full p-2 border border-gray-300 rounded mt-1" rows="3" placeholder="Write a comment..."></textarea>
-            <div class="flex justify-end mt-4">
-                <button id="submitComment" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mr-2">Submit</button>
-                <button id="closeComment" class="bg-gray-400 text-white px-4 py-2 rounded">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function updateNetworkStatus() {
+   </div>
+  </div>
+  <script>
+   function updateNetworkStatus() {
             const loadingOverlay = document.getElementById('loading');
             if (navigator.onLine) {
                 loadingOverlay.classList.add('hidden');
@@ -232,99 +296,9 @@
             storyContent.classList.add('text-gray-700');
             storyContent.textContent = story.content;
 
-            const likeButton = document.createElement('button');
-            likeButton.classList.add('text-green-500', 'mr-2');
-            likeButton.innerHTML = '<i class="fas fa-thumbs-up"></i>';
-            likeButton.addEventListener('click', function() {
-                const user = auth.currentUser;
-                if (user && user.email !== story.author) {
-                    const notificationData = {
-                        type: 'like',
-                        from: user.email,
-                        to: story.author,
-                        storyId: storyId,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP
-                    };
-                    database.ref('notifications').push(notificationData);
-                    // Notify the author
-                    const notificationMessage = `${user.email} has liked your story!`;
-                    alert(notificationMessage); // Display notification
-                } else {
-                    alert('You cannot like your own story.');
-                }
-            });
-
-            const dislikeButton = document.createElement('button');
-            dislikeButton.classList.add('text-red-500', 'mr-2');
-            dislikeButton.innerHTML = '<i class="fas fa-thumbs-down"></i>';
-            dislikeButton.addEventListener('click', function() {
-                const user = auth.currentUser;
-                if (user && user.email !== story.author) {
-                    const notificationData = {
-                        type: 'dislike',
-                        from: user.email,
-                        to: story.author,
-                        storyId: storyId,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP
-                    };
-                    database.ref('notifications').push(notificationData);
-                    // Notify the author
-                    const notificationMessage = `${user.email} has disliked your story!`;
-                    alert(notificationMessage); // Display notification
-                } else {
-                    alert('You cannot dislike your own story.');
-                }
-            });
-            
-            const commentButton = document.createElement('button');
-            commentButton.classList.add('text-blue-500');
-            commentButton.innerHTML = '<i class="fas fa-comment"></i>';
-            commentButton.addEventListener('click', function() {
-                document.getElementById('commentModal').classList.remove('hidden');
-                loadComments(storyId, story.author);
-                
-                document.getElementById('submitComment').addEventListener('click', function() {
-                    const user = auth.currentUser;
-                    if (user) {
-                        const commentText = document.getElementById('commentInput').value;
-                        if (commentText.trim() !== '') {
-                            const commentData = {
-                                author: user.email,
-                                text: commentText,
-                                timestamp: firebase.database.ServerValue.TIMESTAMP
-                            };
-                            database.ref(`comments/${storyId}`).push(commentData).then(() => {
-                                document.getElementById('commentInput').value = ''; // Clear the input field after submission
-                                loadComments(storyId, story.author); // Reload comments
-                            }).catch((error) => {
-                                console.error('Error saving comment:', error);
-                            });
-                        } else {
-                            alert('Comment cannot be empty.');
-                        }
-                    } else {
-                        alert('You must be logged in to comment.');
-                    }
-                });
-                
-                document.getElementById('closeComment').addEventListener('click', function() {
-                    document.getElementById('commentModal').classList.add('hidden');
-                    document.getElementById('submitComment').removeEventListener('click', function() {});
-                    document.getElementById('commentInput').value = '';
-                });
-                
-            });
-
-            const buttonContainer = document.createElement('div');
-            buttonContainer.classList.add('mt-4');
-            buttonContainer.appendChild(likeButton);
-            buttonContainer.appendChild(dislikeButton);
-            buttonContainer.appendChild(commentButton);
-
             storyDiv.appendChild(storyTitle);
             storyDiv.appendChild(storyAuthor);
             storyDiv.appendChild(storyContent);
-            storyDiv.appendChild(buttonContainer);
 
             document.getElementById('stories').appendChild(storyDiv);
         }
@@ -393,9 +367,13 @@
                     document.getElementById('userEmail').textContent = user.email;
                     if (user.email === 'admin@gmail.com') {
                         document.getElementById('userEmail').innerHTML += ' <i class="fas fa-check-circle text-blue-500"></i>';
+                        document.getElementById('credits').innerHTML = '<i class="fas fa-coins text-yellow-500"></i> Infinity';
+                    } else {
+                        document.getElementById('credits').innerHTML = '<i class="fas fa-coins text-yellow-500"></i> 0';
                     }
                     document.getElementById('loginButton').classList.add('hidden');
                     document.getElementById('logoutButton').classList.remove('hidden');
+                    document.getElementById('applyVerificationButton').classList.remove('hidden');
                     document.getElementById('loginModal').classList.add('hidden');
                 })
                 .catch((error) => {
@@ -409,26 +387,53 @@
                 document.getElementById('profilePage').classList.add('hidden');
                 document.getElementById('logoutButton').classList.add('hidden');
                 document.getElementById('loginButton').classList.remove('hidden');
+                document.getElementById('applyVerificationButton').classList.add('hidden');
             }).catch((error) => {
                 console.error('Error logging out:', error);
             });
         });
+
+        document.getElementById('applyVerificationButton').addEventListener('click', function() {
+            const loadingOverlay = document.getElementById('loading');
+            loadingOverlay.classList.remove('hidden');
+            setTimeout(() => {
+                loadingOverlay.classList.add('hidden');
+                const adminResponse = confirm('admin@gmail.com: Someone wants to apply for verification. Do you want to allow?');
+                if (adminResponse) {
+                    // Allow verification
+                    const userEmail = document.getElementById('userEmail').textContent;
+                    document.getElementById('userEmail').innerHTML += ' <i class="fas fa-check-circle text-blue-500"></i>';
+                    localStorage.setItem(userEmail, 'verified');
+                }
+            }, 5000);
+        });
+
+        // Check verification status on page load
+        const currentUserEmail = document.getElementById('userEmail').textContent;
+        if (localStorage.getItem(currentUserEmail) === 'verified') {
+            document.getElementById('userEmail').innerHTML += ' <i class="fas fa-check-circle text-blue-500"></i>';
+        }
 
         auth.onAuthStateChanged((user) => {
             if (user) {
                 document.getElementById('userEmail').textContent = user.email;
                 if (user.email === 'admin@gmail.com') {
                     document.getElementById('userEmail').innerHTML += ' <i class="fas fa-check-circle text-blue-500"></i>';
+                    document.getElementById('credits').innerHTML = '<i class="fas fa-coins text-yellow-500"></i> Infinity';
+                } else {
+                    document.getElementById('credits').innerHTML = '<i class="fas fa-coins text-yellow-500"></i> 0';
                 }
                 document.getElementById('loginButton').classList.add('hidden');
                 document.getElementById('logoutButton').classList.remove('hidden');
+                document.getElementById('applyVerificationButton').classList.remove('hidden');
                 loadNotifications(user.email);
             } else {
                 document.getElementById('userEmail').textContent = 'Placeholder';
                 document.getElementById('loginButton').classList.remove('hidden');
                 document.getElementById('logoutButton').classList.add('hidden');
+                document.getElementById('applyVerificationButton').classList.add('hidden');
             }
         });
-    </script>
-</body>
+  </script>
+ </body>
 </html>
