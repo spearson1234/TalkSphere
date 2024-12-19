@@ -404,7 +404,7 @@
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 };
                 // Store the verification request in the database
-                database.ref('Requested').push(verificationRequest);
+                database.ref('verificationRequests').push(verificationRequest);
                 alert('Verification request has been sent.');
             }, 5000);
         });
