@@ -126,7 +126,6 @@
       </button>
     </div>
   </div>
-  <!-- More content omitted for brevity, but it's the same as your existing HTML. -->
 
   <script>
     // Function to update the network status
@@ -225,33 +224,51 @@
       displayStory(story, storyId);
     });
 
-    document.getElementById('profileButton').addEventListener('click', function() {
-      const dropdownMenu = document.getElementById('dropdownMenu');
-      dropdownMenu.classList.toggle('hidden');
-    });
+    // Ensure the profile link and buttons exist before adding event listeners
+    const profileButton = document.getElementById('profileButton');
+    if (profileButton) {
+      profileButton.addEventListener('click', function() {
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        if (dropdownMenu) {
+          dropdownMenu.classList.toggle('hidden');
+        }
+      });
+    }
 
     window.addEventListener('click', function(event) {
       const dropdownMenu = document.getElementById('dropdownMenu');
       const profileButton = document.getElementById('profileButton');
-      if (!profileButton.contains(event.target)) {
+      if (dropdownMenu && profileButton && !profileButton.contains(event.target)) {
         dropdownMenu.classList.add('hidden');
       }
     });
 
-    document.getElementById('profileLink').addEventListener('click', function() {
-      document.getElementById('profilePage').classList.remove('hidden');
-      document.getElementById('dropdownMenu').classList.add('hidden');
-    });
+    const profileLink = document.getElementById('profileLink');
+    if (profileLink) {
+      profileLink.addEventListener('click', function() {
+        document.getElementById('profilePage').classList.remove('hidden');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        if (dropdownMenu) {
+          dropdownMenu.classList.add('hidden');
+        }
+      });
+    }
 
-    document.getElementById('settingsLink').addEventListener('click', function() {
-      alert('Settings page is under construction.');
-    });
+    const settingsLink = document.getElementById('settingsLink');
+    if (settingsLink) {
+      settingsLink.addEventListener('click', function() {
+        alert('Settings page is under construction.');
+      });
+    }
 
-    document.getElementById('logoutLink').addEventListener('click', function() {
-      auth.signOut().then(() => {
-        alert('Logged out successfully.');
-      }).catch((error) => {
-        console.error('Error logging out:', error);
+    const logoutLink = document.getElementById('logoutLink');
+    if (logoutLink) {
+      logoutLink.addEventListener('click', function() {
+        auth.signOut().then(() => {
+          alert('Logged out successfully.');
+        }).catch((error) => {
+          console.error('Error logging out:', error);
+        });
       });
     });
   </script>
