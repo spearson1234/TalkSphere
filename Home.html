@@ -19,14 +19,14 @@
       right: 0;
       width: 300px;
       height: 100%;
-      transform: translateX(100%); /* Start off-screen */
+      transform: translateX(100%);
       transition: transform 0.3s ease-in-out;
       z-index: 1000;
       background-color: white;
       box-shadow: -4px 0px 8px rgba(0, 0, 0, 0.1);
     }
     .sidebar-open {
-      transform: translateX(0); /* Slide in */
+      transform: translateX(0);
     }
     .status-indicator {
       position: fixed;
@@ -160,7 +160,7 @@
         networkStatus.classList.remove('hidden');
         setTimeout(() => {
           networkStatus.classList.add('hidden');
-        }, 5000); // Hide after 5 seconds
+        }, 5000);
       } else {
         networkStatus.classList.remove('online');
         networkStatus.classList.add('offline');
@@ -168,7 +168,7 @@
         networkStatus.classList.remove('hidden');
         setTimeout(() => {
           networkStatus.classList.add('hidden');
-        }, 5000); // Hide after 5 seconds
+        }, 5000);
       }
     }
 
