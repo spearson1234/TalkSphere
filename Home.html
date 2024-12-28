@@ -46,6 +46,13 @@
     .offline {
       background-color: red;
     }
+    .sidebar-close-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 24px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body class="font-roboto bg-gray-100">
@@ -134,13 +141,11 @@
   <!-- Basket Sidebar -->
   <div id="basketSidebar" class="sidebar bg-white shadow-lg">
     <div class="p-4">
+      <span class="sidebar-close-btn" id="closeSidebar">×</span>
       <h2 class="text-xl font-bold">Your Basket</h2>
       <div id="basketItems" class="mt-4">
         <!-- Items will be added here -->
       </div>
-      <button id="closeSidebar" class="text-gray-500 mt-4">
-        <i class="fas fa-times text-2xl"></i> Close
-      </button>
     </div>
   </div>
 
@@ -152,12 +157,19 @@
         networkStatus.classList.remove('offline');
         networkStatus.classList.add('online');
         networkStatus.textContent = 'You are online';
+        networkStatus.classList.remove('hidden');
+        setTimeout(() => {
+          networkStatus.classList.add('hidden');
+        }, 5000); // Hide after 5 seconds
       } else {
         networkStatus.classList.remove('online');
         networkStatus.classList.add('offline');
         networkStatus.textContent = 'You are offline';
+        networkStatus.classList.remove('hidden');
+        setTimeout(() => {
+          networkStatus.classList.add('hidden');
+        }, 5000); // Hide after 5 seconds
       }
-      networkStatus.classList.remove('hidden');
     }
 
     // Initial network status check
