@@ -7,9 +7,11 @@
   </script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet"/>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js">
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js">
   </script>
   <style>
    .slide-in {
@@ -40,16 +42,16 @@
   <!-- Top Banner for Mobile -->
   <div class="flex justify-between items-center p-4 bg-gray-800">
    <div class="flex items-center">
-    <i class="fas fa-book text-pink-500 text-2xl">
+    <i class="fas fa-book text-pink-500 text-3xl">
     </i>
-    <span class="ml-2 text-pink-500 text-2xl font-bold">
+    <span class="ml-2 text-pink-500 text-3xl font-bold">
      StoryMaker
     </span>
    </div>
    <div class="flex items-center relative">
-    <i class="fas fa-bell text-pink-500 text-2xl cursor-pointer" onclick="toggleNotifications()">
+    <i class="fas fa-bell text-pink-500 text-3xl cursor-pointer" onclick="toggleNotifications()">
     </i>
-    <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1" id="notificationCount" style="display: none;">
+    <span class="absolute top-0 right-0 bg-red-500 text-white text-sm rounded-full px-2" id="notificationCount" style="display: none;">
      0
     </span>
    </div>
@@ -70,10 +72,10 @@
   </div>
   <!-- Main Content -->
   <div class="p-4 pb-16" id="mainPage">
-   <h1 class="text-3xl text-pink-500 font-bold">
+   <h1 class="text-4xl text-pink-500 font-bold">
     Welcome to StoryMaker
    </h1>
-   <p class="mt-2">
+   <p class="mt-2 text-lg">
     Create and share your stories with the world.
    </p>
    <div id="stories">
@@ -82,23 +84,23 @@
   </div>
   <!-- Create Story Page (Hidden by default) -->
   <div class="hidden fixed inset-0 bg-gray-900 p-4 overflow-y-auto" id="createStoryPage">
-   <h2 class="text-2xl text-pink-500 font-bold">
+   <h2 class="text-3xl text-pink-500 font-bold">
     Create a New Story
    </h2>
    <div class="mt-4">
-    <label class="block text-sm font-medium text-gray-300" for="title">
+    <label class="block text-lg font-medium text-gray-300" for="title">
      Title
     </label>
-    <input class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="title" type="text"/>
+    <input class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-3 text-white text-lg" id="title" type="text"/>
    </div>
    <div class="mt-4">
-    <label class="block text-sm font-medium text-gray-300" for="story">
+    <label class="block text-lg font-medium text-gray-300" for="story">
      Story
     </label>
-    <textarea class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="story" rows="10">
+    <textarea class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-3 text-white text-lg" id="story" rows="10">
     </textarea>
    </div>
-   <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md flex items-center" onclick="publishStory()">
+   <button class="mt-4 bg-pink-500 text-white py-3 px-6 rounded-md flex items-center text-lg" onclick="publishStory()">
     <i class="fas fa-paper-plane mr-2">
     </i>
     Publish
@@ -107,34 +109,34 @@
   <!-- Profile Page (Hidden by default) -->
   <div class="hidden fixed inset-0 bg-gray-900 p-4 overflow-y-auto" id="profilePage">
    <div class="flex flex-col items-center">
-    <div class="w-20 h-20 rounded-full bg-pink-500">
+    <div class="w-24 h-24 rounded-full bg-pink-500">
     </div>
     <div class="mt-4 text-center">
-     <h2 class="text-2xl font-bold" id="username">
+     <h2 class="text-3xl font-bold" id="username">
       @username
      </h2>
-     <button class="mt-2 bg-pink-500 text-white py-1 px-3 rounded-md" id="loginButton" onclick="showLoginForm()">
+     <button class="mt-2 bg-pink-500 text-white py-2 px-4 rounded-md text-lg" id="loginButton" onclick="showLoginForm()">
       Login
      </button>
-     <button class="mt-2 bg-blue-500 text-white py-1 px-3 rounded-md" id="verifyButton" onclick="showVerifyForm()">
+     <button class="mt-2 bg-blue-500 text-white py-2 px-4 rounded-md text-lg" id="verifyButton" onclick="showVerifyForm()">
       Verify
      </button>
     </div>
    </div>
    <div class="mt-4 hidden" id="loginForm">
     <div class="mt-4">
-     <label class="block text-sm font-medium text-gray-300" for="email">
+     <label class="block text-lg font-medium text-gray-300" for="email">
       Email
      </label>
-     <input class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="email" type="email"/>
+     <input class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-3 text-white text-lg" id="email" type="email"/>
     </div>
     <div class="mt-4">
-     <label class="block text-sm font-medium text-gray-300" for="password">
+     <label class="block text-lg font-medium text-gray-300" for="password">
       Password
      </label>
-     <input class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="password" type="password"/>
+     <input class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-3 text-white text-lg" id="password" type="password"/>
     </div>
-    <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md" onclick="login()">
+    <button class="mt-4 bg-pink-500 text-white py-3 px-6 rounded-md text-lg" onclick="login()">
      Login
     </button>
    </div>
@@ -156,25 +158,25 @@
    </div>
   </div>
   <!-- Bottom Banner for Mobile -->
-  <div class="fixed bottom-0 left-0 right-0 bg-gray-800 p-2 flex justify-around">
+  <div class="fixed bottom-0 left-0 right-0 bg-gray-800 p-3 flex justify-around">
    <div class="flex flex-col items-center" onclick="showMainPage()">
-    <i class="fas fa-home text-pink-500 text-2xl">
+    <i class="fas fa-home text-pink-500 text-3xl">
     </i>
-    <span class="text-xs">
+    <span class="text-sm">
      Home
     </span>
    </div>
    <div class="flex flex-col items-center" onclick="showCreateStoryPage()">
-    <i class="fas fa-plus-circle text-pink-500 text-2xl">
+    <i class="fas fa-plus-circle text-pink-500 text-3xl">
     </i>
-    <span class="text-xs">
+    <span class="text-sm">
      Create
     </span>
    </div>
    <div class="flex flex-col items-center" onclick="showProfilePage()">
-    <i class="fas fa-user text-pink-500 text-2xl">
+    <i class="fas fa-user text-pink-500 text-3xl">
     </i>
-    <span class="text-xs">
+    <span class="text-sm">
      Profile
     </span>
    </div>
