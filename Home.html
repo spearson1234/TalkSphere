@@ -1,6 +1,10 @@
-It looks like there are a few issues in your HTML code that need to be addressed to ensure it functions correctly. Below is a revised version of your code with corrections and improvements:
+The error messages you're encountering indicate two main issues in your code:
 
-### Complete and Corrected HTML Code:
+1. **Invalid Class Name**: The error `InvalidCharacterError: Failed to execute 'add' on 'DOMTokenList': The token provided ('mt- 4') contains HTML space characters, which are not valid in tokens.` suggests that there is a space in the class name `mt- 4`. It should be `mt-4` (without the space).
+
+2. **Null Reference**: The error `TypeError: Cannot read properties of null (reading 'classList')` indicates that you're trying to access the `classList` property of an element that doesn't exist (is `null`). This could happen if the element is not rendered in the DOM when the script runs.
+
+### Here’s the corrected code with the necessary fixes:
 
 ```html
 <!DOCTYPE html>
@@ -68,7 +72,7 @@ It looks like there are a few issues in your HTML code that need to be addressed
     </div>
     <div class="mt-4">
         <label class="block text-sm font-medium text-gray-300" for="story">Story</label>
-        <textarea class="mt-1 block w-full bg-gray -800 border border-gray-700 rounded-md p-2 text-white" id="story" rows="8"></textarea>
+        <textarea class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="story" rows="8"></textarea>
     </div>
     <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md flex items-center" onclick="publishStory()">
         <i class="fas fa-paper-plane mr-2"></i>Publish
@@ -122,7 +126,7 @@ It looks like there are a few issues in your HTML code that need to be addressed
     </div>
     <div class="flex flex-col items-center cursor-pointer" onclick="showProfilePage()">
         <i class="fas fa-user text-pink-500 text-2xl"></i>
-        <span class="text-xs">Profile</span>
+        <span class ="text-xs">Profile</span>
     </div>
 </div>
 
@@ -135,7 +139,7 @@ It looks like there are a few issues in your HTML code that need to be addressed
       projectId: "login-71866",
       storageBucket: "login-71866.appspot.com",
       messagingSenderId: "434042354282",
- appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
+      appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
    };
    // Initialize Firebase
    const app = firebase.initializeApp(firebaseConfig);
@@ -229,17 +233,17 @@ It looks like there are a few issues in your HTML code that need to be addressed
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
       auth.signInWithEmailAndPassword(email, password).then((userCredential) => {
-         currentUser  = userCredential.user;
-         document.getElementById('username').innerText = currentUser .email;
-         if (currentUser .email === 'admin@gmail.com') {
+ currentUser   = userCredential.user;
+         document.getElementById('username').innerText = currentUser  .email;
+         if (currentUser  .email === 'admin@gmail.com') {
             document.getElementById('verificationBadge').classList.remove('hidden');
          }
          document.getElementById('loginButton').classList.add('hidden');
          document.getElementById('loginForm').classList.add('hidden');
          document.getElementById('verifyButton').classList.remove('hidden');
-         listenForNotifications(currentUser .email);
+         listenForNotifications(currentUser  .email);
       }).catch((error) => {
-         console.error (error);
+         console.error(error);
       });
    }
    
@@ -263,7 +267,7 @@ It looks like there are a few issues in your HTML code that need to be addressed
    }
    
    function showVerifyForm() {
-      if (!currentUser ) {
+      if (!currentUser  ) {
          alert('You must be logged in to apply for verification.');
          return;
       }
@@ -284,7 +288,7 @@ It looks like there are a few issues in your HTML code that need to be addressed
          </div>
       `;
       setTimeout(() => {
-         const userEmail = currentUser .email;
+         const userEmail = currentUser  .email;
          database.ref('verifications').push({
             user: userEmail,
             status: 'Applied'
@@ -337,6 +341,7 @@ It looks like there are a few issues in your HTML code that need to be addressed
       }, 2000);
    }
 
+ ```html
    function toggleReportPopup() {
       const reportPopup = document.getElementById('reportPopup');
       reportPopup.classList.add('hidden');
@@ -351,7 +356,7 @@ It looks like there are a few issues in your HTML code that need to be addressed
          if (stories.hasOwnProperty(key)) {
             const story = stories[key];
             const storyElement = document.createElement('div');
-            storyElement.classList.add('mt- 4', 'p-4', 'bg-gray-800', 'rounded-md');
+            storyElement.classList.add('mt-4', 'p-4', 'bg-gray-800', 'rounded-md');
             storyElement.innerHTML = `
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
@@ -389,3 +394,4 @@ It looks like there are a few issues in your HTML code that need to be addressed
 
 </body>
 </html>
+```
