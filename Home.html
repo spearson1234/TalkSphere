@@ -196,7 +196,7 @@
       <div class="flex items-center">
         <div class="w-10 h-10 rounded-full bg-pink-500 mr-2"></div>
         <h3 class="text-xl font-bold">${title}</h3>
-        <i class="fas fa-flag text-yellow-500 cursor-pointer ml-2" onclick="showReportPopup('${currentUser.email}')"></i>
+        <i class="fas fa-flag text-yellow-500 cursor-pointer absolute right-4 top-2" onclick="showReportPopup('${currentUser.email}')"></i>
       </div>
       <p class="mt-2">${story}</p>
       <p class="mt-2 text-gray-500 text-sm">Posted by ${currentUser.email}</p>
@@ -344,7 +344,7 @@
         <div class="flex items-center">
           <div class="w-10 h-10 rounded-full bg-pink-500 mr-2"></div>
           <h3 class="text-xl font-bold">${story.title}</h3>
-          <i class="fas fa-flag text-yellow-500 cursor-pointer ml-2" onclick="showReportPopup('${currentUser.email}')"></i>
+          <i class="fas fa-flag text-yellow-500 cursor-pointer absolute right-4 top-2" onclick="showReportPopup('${currentUser.email}')"></i>
         </div>
         <p class="mt-2">${story.story}</p>
         <p class="mt-2 text-gray-500 text-sm">Posted by ${story.user}</p>
@@ -356,7 +356,7 @@
 </script>
 
 <!-- Reporting Popup -->
-<div class="mt-4 hidden" id="reportPopup">
+<div class="mt-4 hidden fixed inset-0 bg-gray-900 bg-opacity-90 flex justify-center items-center" id="reportPopup">
     <div class="bg-gray-800 p-4 rounded-md w-11/12 md:w-80">
         <h2 class="text-lg md:text-xl font-bold mb-4">Report Story</h2>
         <label class="block text-sm font-medium text-gray-300" for="reportReason">Reason</label>
