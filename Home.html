@@ -1,3 +1,8 @@
+Sure! Below is the updated HTML code that includes a blue verification badge for the email `admin@gmail.com` and positions the reporting icon on the story card so that users can report the story directly.
+
+### Updated HTML Code:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -63,7 +68,7 @@
     </div>
     <div class="mt-4">
         <label class="block text-sm font-medium text-gray-300" for="story">Story</label>
-        <textarea class="mt- ```html
+        <textarea class="mt-1 block w-full bg ```html
         <textarea class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="story" rows="8"></textarea>
     </div>
     <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md flex items-center" onclick="publishStory()">
@@ -76,7 +81,7 @@
     <div class="flex flex-col items-center">
         <div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-pink-500"></div>
         <div class="mt-4 text-center">
-            <h2 class="text-lg md:text-2xl font-bold" id="username">@username <span id="verificationBadge" class="text-green-500 text-sm ml-2 hidden">✔️ Verified</span></h2>
+            <h2 class="text-lg md:text-2xl font-bold" id="username">@username <span id="verificationBadge" class="text-blue-500 text-sm ml-2 hidden">✔️ Verified</span></h2>
             <button class="mt-2 bg-pink-500 text-white py-1 px-3 rounded-md" id="loginButton" onclick="showLoginForm()">Login</button>
             <button class="mt-2 bg-blue-500 text-white py-1 px-3 rounded-md" id="verifyButton" onclick="showVerifyForm()">Verify</button>
         </div>
@@ -137,7 +142,7 @@
    const app = firebase.initializeApp(firebaseConfig);
    const auth = firebase.auth();
    const database = firebase.database();
-   let currentUser  = null;
+   let currentUser   = null;
    let notifications = ["Tips: Make Your Story Interesting!"];
    
    function showMainPage() {
@@ -156,7 +161,7 @@
    }
    
    function showCreateStoryPage() {
-      if (!currentUser ) {
+      if (!currentUser  ) {
          alert('You must be logged in to create a story.');
          return;
       }
@@ -184,7 +189,7 @@
    }
    
    function publishStory() {
-      if (!currentUser ) {
+      if (!currentUser  ) {
          alert('You must be logged in to publish a story.');
          return;
       }
@@ -199,6 +204,7 @@
             <div class="flex items-center">
                <div class="w-10 h-10 rounded-full bg-pink-500 mr-2"></div>
                <h3 class="text-xl font-bold">${title}</h3>
+               ${currentUser .email === 'admin@gmail.com' ? '<span class="text-blue-500 text-sm ml-2">✔️ Verified</span>' : ''}
             </div>
             <i class="fas fa-flag text-red-500 cursor-pointer" onclick="showReportPopup('${currentUser .email}')"></i>
          </div>
@@ -224,7 +230,7 @@
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
       auth.signInWithEmailAndPassword(email, password).then((userCredential) => {
-         currentUser  = userCredential.user;
+         currentUser   = userCredential.user;
          document.getElementById('username').innerText = currentUser .email;
          if (currentUser .email === 'admin@gmail.com') {
             document.getElementById('verificationBadge').classList.remove('hidden');
@@ -232,15 +238,14 @@
          document.getElementById('loginButton').classList.add('hidden');
          document.getElementById('loginForm').classList.add('hidden');
          document.getElementById('verifyButton').classList.remove('hidden');
-         listenForNotifications(currentUser .email);
+         listenForNotifications(currentUser  .email);
       }).catch((error) => {
          console.error(error);
       });
    }
    
    function updateNotifications() {
-      const notificationCount = ```html
-      document.getElementById('notificationCount');
+      const notificationCount = document.getElementById('notificationCount');
       notificationCount.innerText = notifications.length;
       notificationCount.style.display = notifications.length > 0 ? 'block' : 'none';
       const notificationsList = document.getElementById('notificationsList');
@@ -345,16 +350,16 @@
       storiesContainer.innerHTML = '';
       for (const key in stories) {
          if (stories.hasOwnProperty(key)) {
-            const story = stories[key];
-            const storyElement = document.createElement('div');
+            const story = stories[key const storyElement = document.createElement('div');
             storyElement.classList.add('mt-4', 'p-4', 'bg-gray-800', 'rounded-md');
             storyElement.innerHTML = `
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
                         <div class="w-10 h-10 rounded-full bg-pink-500 mr-2"></div>
                         <h3 class="text-xl font-bold">${story.title}</h3>
+                        ${story.user === 'admin@gmail.com' ? '<span class="text-blue-500 text-sm ml-2">✔️ Verified</span>' : ''}
                     </div>
-                    <i class="fas fa-flag text-red-500 cursor-pointer" onclick="showReportPopup('${currentUser .email}')"></i>
+                    <i class="fas fa-flag text-red-500 cursor-pointer" onclick="showReportPopup('${story.user}')"></i>
                 </div>
                 <p class="mt-2">${story.story}</p>
                 <p class="mt-2 text-gray-500 text-sm">Posted by ${story.user}</p>
