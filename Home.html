@@ -1,6 +1,9 @@
-Sure! Below is the updated HTML code that includes a blue verification badge for the email `admin@gmail.com` and positions the reporting icon on the story card so that users can report the story directly.
+I apologize for the confusion. Let's ensure that the HTML code is complete and functional. Below is the corrected and complete HTML code that includes:
 
-### Updated HTML Code:
+1. A blue verification badge for the email `admin@gmail.com`.
+2. A reporting icon on the story card that allows users to report the story.
+
+### Complete HTML Code:
 
 ```html
 <!DOCTYPE html>
@@ -67,8 +70,7 @@ Sure! Below is the updated HTML code that includes a blue verification badge for
         <input class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="title" type="text">
     </div>
     <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-300" for="story">Story</label>
-        <textarea class="mt-1 block w-full bg ```html
+        <label class="block text-sm font-medium text-gray-300" for ="story">Story</label>
         <textarea class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="story" rows="8"></textarea>
     </div>
     <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md flex items-center" onclick="publishStory()">
@@ -134,7 +136,7 @@ Sure! Below is the updated HTML code that includes a blue verification badge for
       authDomain: "login-71866.firebaseapp.com",
       databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
       projectId: "login-71866",
-      storageBucket: "login- 71866.appspot.com",
+      storageBucket : "login-71866.appspot.com",
       messagingSenderId: "434042354282",
       appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
    };
@@ -142,7 +144,7 @@ Sure! Below is the updated HTML code that includes a blue verification badge for
    const app = firebase.initializeApp(firebaseConfig);
    const auth = firebase.auth();
    const database = firebase.database();
-   let currentUser   = null;
+   let currentUser  = null;
    let notifications = ["Tips: Make Your Story Interesting!"];
    
    function showMainPage() {
@@ -161,7 +163,7 @@ Sure! Below is the updated HTML code that includes a blue verification badge for
    }
    
    function showCreateStoryPage() {
-      if (!currentUser  ) {
+      if (!currentUser ) {
          alert('You must be logged in to create a story.');
          return;
       }
@@ -189,7 +191,7 @@ Sure! Below is the updated HTML code that includes a blue verification badge for
    }
    
    function publishStory() {
-      if (!currentUser  ) {
+      if (!currentUser ) {
          alert('You must be logged in to publish a story.');
          return;
       }
@@ -230,15 +232,15 @@ Sure! Below is the updated HTML code that includes a blue verification badge for
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
       auth.signInWithEmailAndPassword(email, password).then((userCredential) => {
-         currentUser   = userCredential.user;
+         currentUser  = userCredential.user;
          document.getElementById('username').innerText = currentUser .email;
          if (currentUser .email === 'admin@gmail.com') {
             document.getElementById('verificationBadge').classList.remove('hidden');
          }
          document.getElementById('loginButton').classList.add('hidden');
          document.getElementById('loginForm').classList.add('hidden');
-         document.getElementById('verifyButton').classList.remove('hidden');
-         listenForNotifications(currentUser  .email);
+         document.getElementById('verifyButton').classList.remove(' hidden');
+         listenForNotifications(currentUser .email);
       }).catch((error) => {
          console.error(error);
       });
@@ -264,7 +266,7 @@ Sure! Below is the updated HTML code that includes a blue verification badge for
    }
    
    function showVerifyForm() {
-      if (!currentUser  ) {
+      if (!currentUser ) {
          alert('You must be logged in to apply for verification.');
          return;
       }
@@ -285,7 +287,7 @@ Sure! Below is the updated HTML code that includes a blue verification badge for
          </div>
       `;
       setTimeout(() => {
-         const userEmail = currentUser  .email;
+         const userEmail = currentUser .email;
          database.ref('verifications').push({
             user: userEmail,
             status: 'Applied'
