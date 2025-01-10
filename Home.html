@@ -205,7 +205,9 @@
     database.ref('stories/' + newStoryKey).set({
      title: title,
      story: story,
-     user: currentUser.email
+     user: currentUser.email,
+     likes: 0,
+     dislikes: 0
     });
     showMainPage();
    }
@@ -236,10 +238,16 @@
      return;
     }
     const storyRef = database.ref('stories/' + storyKey);
-    storyRef.once('value', (snapshot) => {
-     const story = snapshot.val();
-     const notification = `${currentUser.email} liked your story "${story.title}"`;
-     database.ref('notifications/' + story.user).push(notification);
+    storyRef.transaction((story) => {
+     if (story) {
+      if (!story.likes) {
+       story.likes = 0;
+      }
+      story.likes++;
+      const notification = `${currentUser.email} liked your story "${story.title}"`;
+      database.ref('notifications/' + story.user).push(notification);
+     }
+     return story;
     });
    }
    
@@ -249,10 +257,16 @@
      return;
     }
     const storyRef = database.ref('stories/' + storyKey);
-    storyRef.once('value', (snapshot) => {
-     const story = snapshot.val();
-     const notification = `${currentUser.email} disliked your story "${story.title}"`;
-     database.ref('notifications/' + story.user).push(notification);
+    storyRef.transaction((story) => {
+     if (story) {
+      if (!story.dislikes) {
+       story.dislikes = 0;
+      }
+      story.dislikes++;
+      const notification = `${currentUser.email} disliked your story "${story.title}"`;
+      database.ref('notifications/' + story.user).push(notification);
+     }
+     return story;
     });
    }
    
@@ -341,6 +355,8 @@
         <div class="flex items-center mt-2">
           <i class="fas fa-thumbs-up text-pink-500 cursor-pointer mr-2" onclick="likeStory('${key}', '${story.user}')"></i>
           <i class="fas fa-thumbs-down text-pink-500 cursor-pointer" onclick="dislikeStory('${key}', '${story.user}')"></i>
+          <span class="ml-2 text-gray-400">${story.likes || 0} Likes</span>
+          <span class="ml-2 text-gray-400">${story.dislikes || 0} Dislikes</span>
         </div>
       `;
       storiesContainer.appendChild(storyElement);
