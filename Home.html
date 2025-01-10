@@ -1,192 +1,112 @@
-<html>
- <head>
-  <title>
-   Professional Dark Theme Page
-  </title>
-  <script src="https://cdn.tailwindcss.com">
-  </script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-  </script>
-  <style>
-   .slide-in {
-    animation: slide-in 0.5s forwards;
-   }
-   .slide-out {
-    animation: slide-out 0.5s forwards;
-   }
-   @keyframes slide-in {
-    from {
-     transform: translateX(100%);
-    }
-    to {
-     transform: translateX(0);
-    }
-   }
-   @keyframes slide-out {
-    from {
-     transform: translateX(0);
-    }
-    to {
-     transform: translateX(100%);
-    }
-   }
-  </style>
- </head>
- <body class="bg-gray-900 text-white font-roboto">
-  <!-- Top Banner for PC and Mobile -->
-  <div class="flex justify-between items-center p-4 bg-gray-800">
-   <div class="flex items-center">
-    <i class="fas fa-book text-pink-500 text-2xl">
-    </i>
-    <span class="ml-2 text-pink-500 text-2xl font-bold">
-     StoryMaker
-    </span>
-   </div>
-   <div class="flex items-center relative">
-    <i class="fas fa-bell text-pink-500 text-2xl cursor-pointer" onclick="toggleNotifications()">
-    </i>
-    <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1" id="notificationCount" style="display: none;">
-     0
-    </span>
-   </div>
-   <div class="hidden md:flex items-center">
-    <div class="w-10 h-10 rounded-full bg-pink-500">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Dark Theme Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <style>
+        .slide-in { animation: slide-in 0.5s forwards; }
+        .slide-out { animation: slide-out 0.5s forwards; }
+        @keyframes slide-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        @keyframes slide-out { from { transform: translateX(0); } to { transform: translateX(100%); } }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-roboto">
+
+<!-- Top Banner -->
+<div class="flex justify-between items-center p-4 bg-gray-800">
+    <div class="flex items-center">
+        <i class="fas fa-book text-pink-500 text-2xl"></i>
+        <span class="ml-2 text-pink-500 text-lg md:text-2xl font-bold">StoryMaker</span>
     </div>
-    <i class="fas fa-chevron-down ml-2">
-    </i>
-   </div>
-  </div>
-  <!-- Notifications Popup -->
-  <div class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center" id="notificationsPopup">
-   <div class="bg-gray-800 p-4 rounded-md w-80 max-h-96 overflow-y-auto">
-    <h2 class="text-xl font-bold mb-4">
-     Notifications
-    </h2>
-    <div id="notificationsList">
-     <!-- Notifications will appear here -->
+    <div class="flex items-center relative">
+        <i class="fas fa-bell text-pink-500 text-2xl cursor-pointer" onclick="toggleNotifications()"></i>
+        <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1" id="notificationCount" style="display: none;">0</span>
     </div>
-    <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md" onclick="toggleNotifications()">
-     Close
-    </button>
-   </div>
-  </div>
-  <!-- Main Content -->
-  <div class="p-4 pb-16" id="mainPage">
-   <h1 class="text-3xl text-pink-500 font-bold">
-    Welcome to StoryMaker
-   </h1>
-   <p class="mt-2">
-    Create and share your stories with the world.
-   </p>
-   <div id="stories">
-    <!-- Stories will appear here -->
-   </div>
-  </div>
-  <!-- Create Story Page (Hidden by default) -->
-  <div class="hidden fixed inset-0 bg-gray-900 p-4" id="createStoryPage">
-   <h2 class="text-2xl text-pink-500 font-bold">
-    Create a New Story
-   </h2>
-   <div class="mt-4">
-    <label class="block text-sm font-medium text-gray-300" for="title">
-     Title
-    </label>
-    <input class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="title" type="text"/>
-   </div>
-   <div class="mt-4">
-    <label class="block text-sm font-medium text-gray-300" for="story">
-     Story
-    </label>
-    <textarea class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="story" rows="10">
-    </textarea>
-   </div>
-   <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md flex items-center" onclick="publishStory()">
-    <i class="fas fa-paper-plane mr-2">
-    </i>
-    Publish
-   </button>
-  </div>
-  <!-- Profile Page (Hidden by default) -->
-  <div class="hidden fixed inset-0 bg-gray-900 p-4" id="profilePage">
-   <div class="flex flex-col items-center">
-    <div class="w-20 h-20 rounded-full bg-pink-500">
+    <div class="hidden md:flex items-center">
+        <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-pink-500"></div>
+        <i class="fas fa-chevron-down ml-2"></i>
     </div>
-    <div class="mt-4 text-center">
-     <h2 class="text-2xl font-bold" id="username">
-      @username
-     </h2>
-     <button class="mt-2 bg-pink-500 text-white py-1 px-3 rounded-md" id="loginButton" onclick="showLoginForm()">
-      Login
-     </button>
-     <button class="mt-2 bg-blue-500 text-white py-1 px-3 rounded-md" id="verifyButton" onclick="showVerifyForm()">
-      Verify
-     </button>
+</div>
+
+<!-- Notifications Popup -->
+<div class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center" id="notificationsPopup">
+    <div class="bg-gray-800 p-4 rounded-md w-11/12 md:w-80 max-h-96 overflow-y-auto">
+        <h2 class="text-lg md:text-xl font-bold mb-4">Notifications</h2>
+        <div id="notificationsList"></div>
+        <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md" onclick="toggleNotifications()">Close</button>
     </div>
-   </div>
-   <div class="mt-4 hidden" id="loginForm">
+</div>
+
+<!-- Main Content -->
+<div class="p-4 pb-16" id="mainPage">
+    <h1 class="text-2xl md:text-3xl text-pink-500 font-bold">Welcome to StoryMaker</h1>
+    <p class="mt-2">Create and share your stories with the world.</p>
+    <div id="stories"></div>
+</div>
+
+<!-- Create Story Page -->
+<div class="hidden fixed inset-0 bg-gray-900 p-4" id="createStoryPage">
+    <h2 class="text-xl md:text-2xl text-pink-500 font-bold">Create a New Story</h2>
     <div class="mt-4">
-     <label class="block text-sm font-medium text-gray-300" for="email">
-      Email
-     </label>
-     <input class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="email" type="email"/>
+        <label class="block text-sm font-medium text-gray-300" for="title">Title</label>
+        <input class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="title" type="text">
     </div>
     <div class="mt-4">
-     <label class="block text-sm font-medium text-gray-300" for="password">
-      Password
-     </label>
-     <input class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="password" type="password"/>
+        <label class="block text-sm font-medium text-gray-300" for="story">Story</label>
+        <textarea class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="story" rows="8"></textarea>
     </div>
-    <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md" onclick="login()">
-     Login
+    <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md flex items-center" onclick="publishStory()">
+        <i class="fas fa-paper-plane mr-2"></i>Publish
     </button>
-   </div>
-  </div>
-  <!-- Verify Popup -->
-  <div class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center" id="verifyPopup">
-   <div class="bg-gray-800 p-4 rounded-md w-80">
-    <h2 class="text-xl font-bold mb-4">
-     Do you want to Apply for Verification?
-    </h2>
-    <div class="flex justify-between">
-     <button class="bg-green-500 text-white py-2 px-4 rounded-md" onclick="applyVerification()">
-      Yes
-     </button>
-     <button class="bg-red-500 text-white py-2 px-4 rounded-md" onclick="toggleVerifyPopup()">
-      No
-     </button>
+</div>
+
+<!-- Profile Page -->
+<div class="hidden fixed inset-0 bg-gray-900 p-4" id="profilePage">
+    <div class="flex flex-col items-center">
+        <div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-pink-500"></div>
+        <div class="mt-4 text-center">
+            <h2 class="text-lg md:text-2xl font-bold" id="username">@username</h2>
+            <button class="mt-2 bg-pink-500 text-white py-1 px-3 rounded-md" id="loginButton" onclick="showLoginForm()">Login</button>
+            <button class="mt-2 bg-blue-500 text-white py-1 px-3 rounded-md" id="verifyButton" onclick="showVerifyForm()">Verify</button>
+        </div>
     </div>
-   </div>
-  </div>
-  <!-- Bottom Banner for Mobile -->
-  <div class="fixed bottom-0 left-0 right-0 md:hidden bg-gray-800 p-2 flex justify-around">
-   <div class="flex flex-col items-center" onclick="showMainPage()">
-    <i class="fas fa-home text-pink-500 text-2xl">
-    </i>
-    <span class="text-xs">
-     Home
-    </span>
-   </div>
-   <div class="flex flex-col items-center" onclick="showCreateStoryPage()">
-    <i class="fas fa-plus-circle text-pink-500 text-2xl">
-    </i>
-    <span class="text-xs">
-     Create
-    </span>
-   </div>
-   <div class="flex flex-col items-center" onclick="showProfilePage()">
-    <i class="fas fa-user text-pink-500 text-2xl">
-    </i>
-    <span class="text-xs">
-     Profile
-    </span>
-   </div>
-  </div>
-  <script>
+    <div class="mt-4 hidden" id="loginForm">
+        <div class="mt-4">
+            <label class="block text-sm font-medium text-gray-300" for="email">Email</label>
+            <input class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="email" type="email">
+        </div>
+        <div class="mt-4">
+            <label class="block text-sm font-medium text-gray-300" for="password">Password</label>
+            <input class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="password" type="password">
+        </div>
+        <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md" onclick="login()">Login</button>
+    </div>
+</div>
+
+<!-- Bottom Banner for Mobile -->
+<div class="fixed bottom-0 left-0 right-0 bg-gray-800 p-2 flex justify-around md:hidden">
+    <div class="flex flex-col items-center cursor-pointer" onclick="showMainPage()">
+        <i class="fas fa-home text-pink-500 text-2xl"></i>
+        <span class="text-xs">Home</span>
+    </div>
+    <div class="flex flex-col items-center cursor-pointer" onclick="showCreateStoryPage()">
+        <i class="fas fa-plus-circle text-pink-500 text-2xl"></i>
+        <span class="text-xs">Create</span>
+    </div>
+    <div class="flex flex-col items-center cursor-pointer" onclick="showProfilePage()">
+        <i class="fas fa-user text-pink-500 text-2xl"></i>
+        <span class="text-xs">Profile</span>
+    </div>
+</div>
+
+<script>
    // Firebase configuration
    const firebaseConfig = {
     apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
@@ -394,6 +314,7 @@
      }
     }
    });
-  </script>
- </body>
+</script>
+
+</body>
 </html>
