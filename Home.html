@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -90,6 +89,17 @@
     </div>
 </div>
 
+<!-- Verify Popup -->
+<div class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center" id="verifyPopup">
+    <div class="bg-gray-800 p-4 rounded-md w-11/12 md:w-80">
+        <h2 class="text-lg md:text-xl font-bold mb-4">Do you want to Apply for Verification?</h2>
+        <div class="flex justify-between">
+            <button class="bg-green-500 text-white py-2 px-4 rounded-md" onclick="applyVerification()">Yes</button>
+            <button class="bg-red-500 text-white py-2 px-4 rounded-md" onclick="toggleVerifyPopup()">No</button>
+        </div>
+    </div>
+</div>
+
 <!-- Bottom Banner for Mobile -->
 <div class="fixed bottom-0 left-0 right-0 bg-gray-800 p-2 flex justify-around md:hidden">
     <div class="flex flex-col items-center cursor-pointer" onclick="showMainPage()">
@@ -123,6 +133,7 @@
    const database = firebase.database();
    let currentUser = null;
    let notifications = [];
+   
    function showMainPage() {
     const mainPage = document.getElementById('mainPage');
     const createStoryPage = document.getElementById('createStoryPage');
@@ -137,6 +148,7 @@
      profilePage.classList.remove('slide-out');
     }, 500);
    }
+   
    function showCreateStoryPage() {
     if (!currentUser) {
      alert('You must be logged in to create a story.');
@@ -152,6 +164,7 @@
      mainPage.classList.remove('slide-out');
     }, 500);
    }
+   
    function showProfilePage() {
     const mainPage = document.getElementById('mainPage');
     const profilePage = document.getElementById('profilePage');
@@ -163,6 +176,7 @@
      mainPage.classList.remove('slide-out');
     }, 500);
    }
+   
    function publishStory() {
     if (!currentUser) {
      alert('You must be logged in to publish a story.');
@@ -182,8 +196,8 @@
       <p class="mt-2">${story}</p>
       <p class="mt-2 text-gray-500 text-sm">Posted by ${currentUser.email}</p>
       <div class="flex items-center mt-2">
-        <i class="fas fa-thumbs-up text-pink-500 cursor-pointer mr-2" onclick="likeStory('${newStoryKey}')"></i>
-        <i class="fas fa-thumbs-down text-pink-500 cursor-pointer" onclick="dislikeStory('${newStoryKey}')"></i>
+        <i class="fas fa-thumbs-up text-pink-500 cursor-pointer mr-2" onclick="likeStory('${newStoryKey}', '${currentUser.email}')"></i>
+        <i class="fas fa-thumbs-down text-pink-500 cursor-pointer" onclick="dislikeStory('${newStoryKey}', '${currentUser.email}')"></i>
       </div>
     `;
     stories.appendChild(storyElement);
@@ -195,10 +209,12 @@
     });
     showMainPage();
    }
+   
    function showLoginForm() {
     const loginForm = document.getElementById('loginForm');
     loginForm.classList.remove('hidden');
    }
+   
    function login() {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
@@ -207,11 +223,14 @@
      document.getElementById('username').innerText = currentUser.email;
      document.getElementById('loginButton').classList.add('hidden');
      document.getElementById('loginForm').classList.add('hidden');
+     document.getElementById('verifyButton').classList.remove('hidden');
+     listenForNotifications(currentUser.email);
     }).catch((error) => {
      console.error(error);
     });
    }
-   function likeStory(storyKey) {
+   
+   function likeStory(storyKey, userEmail) {
     if (!currentUser) {
      alert('You must be logged in to like a story.');
      return;
@@ -220,11 +239,11 @@
     storyRef.once('value', (snapshot) => {
      const story = snapshot.val();
      const notification = `${currentUser.email} liked your story "${story.title}"`;
-     notifications.push(notification);
-     updateNotifications();
+     database.ref('notifications/' + story.user).push(notification);
     });
    }
-   function dislikeStory(storyKey) {
+   
+   function dislikeStory(storyKey, userEmail) {
     if (!currentUser) {
      alert('You must be logged in to dislike a story.');
      return;
@@ -233,10 +252,10 @@
     storyRef.once('value', (snapshot) => {
      const story = snapshot.val();
      const notification = `${currentUser.email} disliked your story "${story.title}"`;
-     notifications.push(notification);
-     updateNotifications();
+     database.ref('notifications/' + story.user).push(notification);
     });
    }
+   
    function updateNotifications() {
     const notificationCount = document.getElementById('notificationCount');
     notificationCount.innerText = notifications.length;
@@ -250,10 +269,12 @@
      notificationsList.appendChild(notificationElement);
     });
    }
+   
    function toggleNotifications() {
     const notificationsPopup = document.getElementById('notificationsPopup');
     notificationsPopup.classList.toggle('hidden');
    }
+   
    function showVerifyForm() {
     if (!currentUser) {
      alert('You must be logged in to apply for verification.');
@@ -262,14 +283,16 @@
     const verifyPopup = document.getElementById('verifyPopup');
     verifyPopup.classList.remove('hidden');
    }
+   
    function toggleVerifyPopup() {
     const verifyPopup = document.getElementById('verifyPopup');
     verifyPopup.classList.add('hidden');
    }
+   
    function applyVerification() {
     const verifyPopup = document.getElementById('verifyPopup');
     verifyPopup.innerHTML = `
-      <div class="bg-gray-800 p-4 rounded-md w-80 flex justify-center items-center">
+      <div class="bg-gray-800 p-4 rounded-md w-11/12 md:w-80 flex justify-center items-center">
         <i class="fas fa-spinner fa-spin text-white text-2xl"></i>
       </div>
     `;
@@ -280,7 +303,7 @@
       status: 'Applied'
      });
      verifyPopup.innerHTML = `
-        <div class="bg-gray-800 p-4 rounded-md w-80 text-center">
+        <div class="bg-gray-800 p-4 rounded-md w-11/12 md:w-80 text-center">
           <i class="fas fa-check-circle text-green-500 text-2xl"></i>
           <p class="mt-2 text-white">You have applied for verification. Please wait 24 hours.</p>
           <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md" onclick="toggleVerifyPopup()">Close</button>
@@ -288,6 +311,16 @@
       `;
     }, 5000);
    }
+   
+   function listenForNotifications(userEmail) {
+    const notificationsRef = database.ref('notifications/' + userEmail);
+    notificationsRef.on('child_added', (snapshot) => {
+     const notification = snapshot.val();
+     notifications.push(notification);
+     updateNotifications();
+    });
+   }
+   
    // Load stories from Firebase
    database.ref('stories').on('value', (snapshot) => {
     const stories = snapshot.val();
@@ -306,8 +339,8 @@
         <p class="mt-2">${story.story}</p>
         <p class="mt-2 text-gray-500 text-sm">Posted by ${story.user}</p>
         <div class="flex items-center mt-2">
-          <i class="fas fa-thumbs-up text-pink-500 cursor-pointer mr-2" onclick="likeStory('${key}')"></i>
-          <i class="fas fa-thumbs-down text-pink-500 cursor-pointer" onclick="dislikeStory('${key}')"></i>
+          <i class="fas fa-thumbs-up text-pink-500 cursor-pointer mr-2" onclick="likeStory('${key}', '${story.user}')"></i>
+          <i class="fas fa-thumbs-down text-pink-500 cursor-pointer" onclick="dislikeStory('${key}', '${story.user}')"></i>
         </div>
       `;
       storiesContainer.appendChild(storyElement);
