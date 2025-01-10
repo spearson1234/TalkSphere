@@ -1,322 +1,399 @@
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>Story Maker</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+<html>
+ <head>
+  <title>
+   Professional Dark Theme Page
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  </script>
   <style>
-    .hidden {
-      display: none;
+   .slide-in {
+    animation: slide-in 0.5s forwards;
+   }
+   .slide-out {
+    animation: slide-out 0.5s forwards;
+   }
+   @keyframes slide-in {
+    from {
+     transform: translateX(100%);
     }
-    .sidebar {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 300px;
-      height: 100%;
-      transform: translateX(100%);
-      transition: transform 0.3s ease-in-out;
-      z-index: 1000;
-      background-color: white;
-      box-shadow: -4px 0px 8px rgba(0, 0, 0, 0.1);
+    to {
+     transform: translateX(0);
     }
-    .sidebar-open {
-      transform: translateX(0);
+   }
+   @keyframes slide-out {
+    from {
+     transform: translateX(0);
     }
-    .status-indicator {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background-color: rgba(0, 0, 0, 0.8);
-      color: white;
-      text-align: center;
-      padding: 5px;
-      font-size: 14px;
-      z-index: 9999;
+    to {
+     transform: translateX(100%);
     }
-    .online {
-      background-color: green;
-    }
-    .offline {
-      background-color: red;
-    }
-    .sidebar-close-btn {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      font-size: 24px;
-      cursor: pointer;
-    }
+   }
   </style>
-</head>
-<body class="font-roboto bg-gray-100">
-  <!-- Network status notification -->
-  <div id="networkStatus" class="status-indicator offline hidden">
-    You are offline
-  </div>
-
-  <header class="bg-blue-600 text-white p-4">
-    <div class="container mx-auto flex justify-between items-center">
-      <h1 class="text-2xl font-bold">Story Maker</h1>
-      <div class="flex items-center space-x-6">
-        <div class="relative hidden md:block">
-          <button class="flex items-center space-x-2 focus:outline-none" id="profileButton">
-            <i class="fas fa-user-circle text-2xl"></i>
-            <i class="fas fa-chevron-down"></i>
-          </button>
-          <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2" id="dropdownMenu">
-            <a class="block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#" id="profileLink">Profile</a>
-            <a class="block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#" id="settingsLink">Settings</a>
-            <a class="block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#" id="logoutLink">Logout</a>
-          </div>
-        </div>
-        <div class="flex flex-col items-center">
-          <button class="relative focus:outline-none" id="vipButton">
-            <i class="fas fa-crown text-yellow-500 text-2xl"></i>
-          </button>
-          <span class="text-sm" id="credits">
-            <i class="fas fa-coins text-yellow-500"></i> 0
-          </span>
-        </div>
-        <div class="hidden flex-col items-center md:flex">
-          <button class="relative focus:outline-none" id="basketButton">
-            <i class="fas fa-shopping-basket text-2xl"></i>
-          </button>
-        </div>
-      </div>
+ </head>
+ <body class="bg-gray-900 text-white font-roboto">
+  <!-- Top Banner for PC and Mobile -->
+  <div class="flex justify-between items-center p-4 bg-gray-800">
+   <div class="flex items-center">
+    <i class="fas fa-book text-pink-500 text-2xl">
+    </i>
+    <span class="ml-2 text-pink-500 text-2xl font-bold">
+     StoryMaker
+    </span>
+   </div>
+   <div class="flex items-center relative">
+    <i class="fas fa-bell text-pink-500 text-2xl cursor-pointer" onclick="toggleNotifications()">
+    </i>
+    <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1" id="notificationCount" style="display: none;">
+     0
+    </span>
+   </div>
+   <div class="hidden md:flex items-center">
+    <div class="w-10 h-10 rounded-full bg-pink-500">
     </div>
-  </header>
-  
-  <main class="container mx-auto p-4 mb-16">
-    <section class="mb-8">
-      <h2 class="text-3xl font-bold mb-4">Create a New Story</h2>
-      <form class="bg-white p-6 rounded shadow-md" id="storyForm">
-        <div class="mb-4">
-          <label class="block text-gray-700" for="title">Title</label>
-          <input class="w-full p-2 border border-gray-300 rounded mt-1" id="title" required type="text"/>
-        </div>
-        <div class="mb-4">
-          <label class="block text-gray-700" for="content">Content</label>
-          <textarea class="w-full p-2 border border-gray-300 rounded mt-1" id="content" required rows="5"></textarea>
-        </div>
-        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" type="submit">Submit</button>
-      </form>
-    </section>
-    
-    <section>
-      <h2 class="text-3xl font-bold mb-4">Stories</h2>
-      <div class="space-y-4" id="stories">
-        <!-- Stories will be appended here -->
-      </div>
-    </section>
-  </main>
-
-  <div class="fixed bottom-0 left-0 right-0 bg-blue-600 text-white p-4 md:hidden">
-    <div class="flex justify-around">
-      <button class="flex flex-col items-center">
-        <i class="fas fa-home text-2xl"></i>
-        <span>Home</span>
-      </button>
-      <button class="flex flex-col items-center">
-        <i class="fas fa-cog text-2xl"></i>
-        <span>Settings</span>
-      </button>
-      <button class="flex flex-col items-center" id="mobileProfileButton">
-        <i class="fas fa-user-circle text-2xl"></i>
-        <span>Profile</span>
-      </button>
-      <button class="flex flex-col items-center" id="mobileBasketButton">
-        <i class="fas fa-shopping-basket text-2xl"></i>
-        <span>Basket</span>
-      </button>
-    </div>
+    <i class="fas fa-chevron-down ml-2">
+    </i>
+   </div>
   </div>
-
-  <!-- Basket Sidebar -->
-  <div id="basketSidebar" class="sidebar bg-white shadow-lg">
-    <div class="p-4">
-      <span class="sidebar-close-btn" id="closeSidebar">×</span>
-      <h2 class="text-xl font-bold">Your Basket</h2>
-      <div id="basketItems" class="mt-4">
-        <!-- Items will be added here -->
-      </div>
+  <!-- Notifications Popup -->
+  <div class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center" id="notificationsPopup">
+   <div class="bg-gray-800 p-4 rounded-md w-80 max-h-96 overflow-y-auto">
+    <h2 class="text-xl font-bold mb-4">
+     Notifications
+    </h2>
+    <div id="notificationsList">
+     <!-- Notifications will appear here -->
     </div>
+    <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md" onclick="toggleNotifications()">
+     Close
+    </button>
+   </div>
   </div>
-
+  <!-- Main Content -->
+  <div class="p-4 pb-16" id="mainPage">
+   <h1 class="text-3xl text-pink-500 font-bold">
+    Welcome to StoryMaker
+   </h1>
+   <p class="mt-2">
+    Create and share your stories with the world.
+   </p>
+   <div id="stories">
+    <!-- Stories will appear here -->
+   </div>
+  </div>
+  <!-- Create Story Page (Hidden by default) -->
+  <div class="hidden fixed inset-0 bg-gray-900 p-4" id="createStoryPage">
+   <h2 class="text-2xl text-pink-500 font-bold">
+    Create a New Story
+   </h2>
+   <div class="mt-4">
+    <label class="block text-sm font-medium text-gray-300" for="title">
+     Title
+    </label>
+    <input class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="title" type="text"/>
+   </div>
+   <div class="mt-4">
+    <label class="block text-sm font-medium text-gray-300" for="story">
+     Story
+    </label>
+    <textarea class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="story" rows="10">
+    </textarea>
+   </div>
+   <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md flex items-center" onclick="publishStory()">
+    <i class="fas fa-paper-plane mr-2">
+    </i>
+    Publish
+   </button>
+  </div>
+  <!-- Profile Page (Hidden by default) -->
+  <div class="hidden fixed inset-0 bg-gray-900 p-4" id="profilePage">
+   <div class="flex flex-col items-center">
+    <div class="w-20 h-20 rounded-full bg-pink-500">
+    </div>
+    <div class="mt-4 text-center">
+     <h2 class="text-2xl font-bold" id="username">
+      @username
+     </h2>
+     <button class="mt-2 bg-pink-500 text-white py-1 px-3 rounded-md" id="loginButton" onclick="showLoginForm()">
+      Login
+     </button>
+     <button class="mt-2 bg-blue-500 text-white py-1 px-3 rounded-md" id="verifyButton" onclick="showVerifyForm()">
+      Verify
+     </button>
+    </div>
+   </div>
+   <div class="mt-4 hidden" id="loginForm">
+    <div class="mt-4">
+     <label class="block text-sm font-medium text-gray-300" for="email">
+      Email
+     </label>
+     <input class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="email" type="email"/>
+    </div>
+    <div class="mt-4">
+     <label class="block text-sm font-medium text-gray-300" for="password">
+      Password
+     </label>
+     <input class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="password" type="password"/>
+    </div>
+    <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md" onclick="login()">
+     Login
+    </button>
+   </div>
+  </div>
+  <!-- Verify Popup -->
+  <div class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center" id="verifyPopup">
+   <div class="bg-gray-800 p-4 rounded-md w-80">
+    <h2 class="text-xl font-bold mb-4">
+     Do you want to Apply for Verification?
+    </h2>
+    <div class="flex justify-between">
+     <button class="bg-green-500 text-white py-2 px-4 rounded-md" onclick="applyVerification()">
+      Yes
+     </button>
+     <button class="bg-red-500 text-white py-2 px-4 rounded-md" onclick="toggleVerifyPopup()">
+      No
+     </button>
+    </div>
+   </div>
+  </div>
+  <!-- Bottom Banner for Mobile -->
+  <div class="fixed bottom-0 left-0 right-0 md:hidden bg-gray-800 p-2 flex justify-around">
+   <div class="flex flex-col items-center" onclick="showMainPage()">
+    <i class="fas fa-home text-pink-500 text-2xl">
+    </i>
+    <span class="text-xs">
+     Home
+    </span>
+   </div>
+   <div class="flex flex-col items-center" onclick="showCreateStoryPage()">
+    <i class="fas fa-plus-circle text-pink-500 text-2xl">
+    </i>
+    <span class="text-xs">
+     Create
+    </span>
+   </div>
+   <div class="flex flex-col items-center" onclick="showProfilePage()">
+    <i class="fas fa-user text-pink-500 text-2xl">
+    </i>
+    <span class="text-xs">
+     Profile
+    </span>
+   </div>
+  </div>
   <script>
-    // Function to update the network status
-    function updateNetworkStatus() {
-      const networkStatus = document.getElementById('networkStatus');
-      if (navigator.onLine) {
-        networkStatus.classList.remove('offline');
-        networkStatus.classList.add('online');
-        networkStatus.textContent = 'You are online';
-        networkStatus.classList.remove('hidden');
-        setTimeout(() => {
-          networkStatus.classList.add('hidden');
-        }, 5000);
-      } else {
-        networkStatus.classList.remove('online');
-        networkStatus.classList.add('offline');
-        networkStatus.textContent = 'You are offline';
-        networkStatus.classList.remove('hidden');
-        setTimeout(() => {
-          networkStatus.classList.add('hidden');
-        }, 5000);
-      }
-    }
-
-    // Initial network status check
-    updateNetworkStatus();
-
-    // Event listeners for online and offline events
-    window.addEventListener('online', updateNetworkStatus);
-    window.addEventListener('offline', updateNetworkStatus);
-
-    // Firebase configuration and event listeners
-    const firebaseConfig = {
-      apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
+   // Firebase configuration
+   const firebaseConfig = {
+    apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
       authDomain: "login-71866.firebaseapp.com",
       databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
       projectId: "login-71866",
       storageBucket: "login-71866.appspot.com",
       messagingSenderId: "434042354282",
       appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const database = firebase.database();
-
-    // Handle story submission
-    document.getElementById('storyForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-      const title = document.getElementById('title').value;
-      const content = document.getElementById('content').value;
-      const user = auth.currentUser;
-
-      if (user) {
-        const author = user.email;
-        const storyData = {
-          title: title,
-          content: content,
-          author: author,
-          timestamp: firebase.database.ServerValue.TIMESTAMP
-        };
-
-        database.ref('stories').push(storyData).then(() => {
-          document.getElementById('storyForm').reset();
-        }).catch((error) => {
-          console.error('Error saving story:', error);
-        });
-      } else {
-        alert('You must be logged in to submit a story.');
-      }
+   };
+   // Initialize Firebase
+   const app = firebase.initializeApp(firebaseConfig);
+   const auth = firebase.auth();
+   const database = firebase.database();
+   let currentUser = null;
+   let notifications = [];
+   function showMainPage() {
+    const mainPage = document.getElementById('mainPage');
+    const createStoryPage = document.getElementById('createStoryPage');
+    const profilePage = document.getElementById('profilePage');
+    createStoryPage.classList.add('slide-out');
+    profilePage.classList.add('slide-out');
+    setTimeout(() => {
+     createStoryPage.classList.add('hidden');
+     profilePage.classList.add('hidden');
+     mainPage.classList.remove('hidden');
+     createStoryPage.classList.remove('slide-out');
+     profilePage.classList.remove('slide-out');
+    }, 500);
+   }
+   function showCreateStoryPage() {
+    if (!currentUser) {
+     alert('You must be logged in to create a story.');
+     return;
+    }
+    const mainPage = document.getElementById('mainPage');
+    const createStoryPage = document.getElementById('createStoryPage');
+    mainPage.classList.add('slide-out');
+    setTimeout(() => {
+     mainPage.classList.add('hidden');
+     createStoryPage.classList.remove('hidden');
+     createStoryPage.classList.add('slide-in');
+     mainPage.classList.remove('slide-out');
+    }, 500);
+   }
+   function showProfilePage() {
+    const mainPage = document.getElementById('mainPage');
+    const profilePage = document.getElementById('profilePage');
+    mainPage.classList.add('slide-out');
+    setTimeout(() => {
+     mainPage.classList.add('hidden');
+     profilePage.classList.remove('hidden');
+     profilePage.classList.add('slide-in');
+     mainPage.classList.remove('slide-out');
+    }, 500);
+   }
+   function publishStory() {
+    if (!currentUser) {
+     alert('You must be logged in to publish a story.');
+     return;
+    }
+    const title = document.getElementById('title').value;
+    const story = document.getElementById('story').value;
+    const stories = document.getElementById('stories');
+    const newStoryKey = database.ref().child('stories').push().key;
+    const storyElement = document.createElement('div');
+    storyElement.classList.add('mt-4', 'p-4', 'bg-gray-800', 'rounded-md');
+    storyElement.innerHTML = `
+      <div class="flex items-center">
+        <div class="w-10 h-10 rounded-full bg-pink-500 mr-2"></div>
+        <h3 class="text-xl font-bold">${title}</h3>
+      </div>
+      <p class="mt-2">${story}</p>
+      <p class="mt-2 text-gray-500 text-sm">Posted by ${currentUser.email}</p>
+      <div class="flex items-center mt-2">
+        <i class="fas fa-thumbs-up text-pink-500 cursor-pointer mr-2" onclick="likeStory('${newStoryKey}')"></i>
+        <i class="fas fa-thumbs-down text-pink-500 cursor-pointer" onclick="dislikeStory('${newStoryKey}')"></i>
+      </div>
+    `;
+    stories.appendChild(storyElement);
+    // Save story to Firebase
+    database.ref('stories/' + newStoryKey).set({
+     title: title,
+     story: story,
+     user: currentUser.email
     });
-
-    // Display stories from Firebase
-    function displayStory(story, storyId) {
-      const storyDiv = document.createElement('div');
-      storyDiv.classList.add('bg-white', 'p-6', 'rounded', 'shadow-md');
-
-      const storyTitle = document.createElement('h3');
-      storyTitle.classList.add('text-2xl', 'font-bold', 'mb-2');
-      storyTitle.textContent = story.title;
-
-      const storyAuthor = document.createElement('p');
-      storyAuthor.classList.add('text-gray-700', 'italic', 'mb-2');
-      storyAuthor.innerHTML = `By: ${story.author}`;
-      if (story.author === 'admin@gmail.com') {
-        storyAuthor.innerHTML += ' <i class="fas fa-check-circle text-blue-500"></i>';
-      }
-
-      const storyContent = document.createElement('p');
-      storyContent.classList.add('text-gray-700');
-      storyContent.textContent = story.content;
-
-      storyDiv.appendChild(storyTitle);
-      storyDiv.appendChild(storyAuthor);
-      storyDiv.appendChild(storyContent);
-
-      document.getElementById('stories').appendChild(storyDiv);
-    }
-
-    database.ref('stories').on('child_added', function(snapshot) {
-      const story = snapshot.val();
-      const storyId = snapshot.key;
-      displayStory(story, storyId);
+    showMainPage();
+   }
+   function showLoginForm() {
+    const loginForm = document.getElementById('loginForm');
+    loginForm.classList.remove('hidden');
+   }
+   function login() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    auth.signInWithEmailAndPassword(email, password).then((userCredential) => {
+     currentUser = userCredential.user;
+     document.getElementById('username').innerText = currentUser.email;
+     document.getElementById('loginButton').classList.add('hidden');
+     document.getElementById('loginForm').classList.add('hidden');
+    }).catch((error) => {
+     console.error(error);
     });
-
-    // Basket Sidebar toggle
-    const basketButton = document.getElementById('basketButton');
-    const basketSidebar = document.getElementById('basketSidebar');
-    const closeSidebar = document.getElementById('closeSidebar');
-
-    if (basketButton) {
-      basketButton.addEventListener('click', function() {
-        basketSidebar.classList.toggle('sidebar-open');
-      });
+   }
+   function likeStory(storyKey) {
+    if (!currentUser) {
+     alert('You must be logged in to like a story.');
+     return;
     }
-
-    if (closeSidebar) {
-      closeSidebar.addEventListener('click', function() {
-        basketSidebar.classList.remove('sidebar-open');
-      });
-    }
-
-    // Ensure the profile link and buttons exist before adding event listeners
-    const profileButton = document.getElementById('profileButton');
-    if (profileButton) {
-      profileButton.addEventListener('click', function() {
-        const dropdownMenu = document.getElementById('dropdownMenu');
-        if (dropdownMenu) {
-          dropdownMenu.classList.toggle('hidden');
-        }
-      });
-    }
-
-    window.addEventListener('click', function(event) {
-      const dropdownMenu = document.getElementById('dropdownMenu');
-      const profileButton = document.getElementById('profileButton');
-      if (dropdownMenu && profileButton && !profileButton.contains(event.target)) {
-        dropdownMenu.classList.add('hidden');
-      }
+    const storyRef = database.ref('stories/' + storyKey);
+    storyRef.once('value', (snapshot) => {
+     const story = snapshot.val();
+     const notification = `${currentUser.email} liked your story "${story.title}"`;
+     notifications.push(notification);
+     updateNotifications();
     });
-
-    const profileLink = document.getElementById('profileLink');
-    if (profileLink) {
-      profileLink.addEventListener('click', function() {
-        document.getElementById('profilePage').classList.remove('hidden');
-        const dropdownMenu = document.getElementById('dropdownMenu');
-        if (dropdownMenu) {
-          dropdownMenu.classList.add('hidden');
-        }
-      });
+   }
+   function dislikeStory(storyKey) {
+    if (!currentUser) {
+     alert('You must be logged in to dislike a story.');
+     return;
     }
-
-    const settingsLink = document.getElementById('settingsLink');
-    if (settingsLink) {
-      settingsLink.addEventListener('click', function() {
-        alert('Settings page is under construction.');
-      });
+    const storyRef = database.ref('stories/' + storyKey);
+    storyRef.once('value', (snapshot) => {
+     const story = snapshot.val();
+     const notification = `${currentUser.email} disliked your story "${story.title}"`;
+     notifications.push(notification);
+     updateNotifications();
+    });
+   }
+   function updateNotifications() {
+    const notificationCount = document.getElementById('notificationCount');
+    notificationCount.innerText = notifications.length;
+    notificationCount.style.display = notifications.length > 0 ? 'block' : 'none';
+    const notificationsList = document.getElementById('notificationsList');
+    notificationsList.innerHTML = '';
+    notifications.forEach((notification) => {
+     const notificationElement = document.createElement('div');
+     notificationElement.classList.add('p-2', 'bg-gray-700', 'rounded-md', 'mb-2');
+     notificationElement.innerText = notification;
+     notificationsList.appendChild(notificationElement);
+    });
+   }
+   function toggleNotifications() {
+    const notificationsPopup = document.getElementById('notificationsPopup');
+    notificationsPopup.classList.toggle('hidden');
+   }
+   function showVerifyForm() {
+    if (!currentUser) {
+     alert('You must be logged in to apply for verification.');
+     return;
     }
-
-    const logoutLink = document.getElementById('logoutLink');
-    if (logoutLink) {
-      logoutLink.addEventListener('click', function() {
-        auth.signOut().then(() => {
-          alert('Logged out successfully.');
-        }).catch((error) => {
-          console.error('Error logging out:', error);
-        });
-      });
+    const verifyPopup = document.getElementById('verifyPopup');
+    verifyPopup.classList.remove('hidden');
+   }
+   function toggleVerifyPopup() {
+    const verifyPopup = document.getElementById('verifyPopup');
+    verifyPopup.classList.add('hidden');
+   }
+   function applyVerification() {
+    const verifyPopup = document.getElementById('verifyPopup');
+    verifyPopup.innerHTML = `
+      <div class="bg-gray-800 p-4 rounded-md w-80 flex justify-center items-center">
+        <i class="fas fa-spinner fa-spin text-white text-2xl"></i>
+      </div>
+    `;
+    setTimeout(() => {
+     const userEmail = currentUser.email;
+     database.ref('verifications').push({
+      user: userEmail,
+      status: 'Applied'
+     });
+     verifyPopup.innerHTML = `
+        <div class="bg-gray-800 p-4 rounded-md w-80 text-center">
+          <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+          <p class="mt-2 text-white">You have applied for verification. Please wait 24 hours.</p>
+          <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md" onclick="toggleVerifyPopup()">Close</button>
+        </div>
+      `;
+    }, 5000);
+   }
+   // Load stories from Firebase
+   database.ref('stories').on('value', (snapshot) => {
+    const stories = snapshot.val();
+    const storiesContainer = document.getElementById('stories');
+    storiesContainer.innerHTML = '';
+    for (const key in stories) {
+     if (stories.hasOwnProperty(key)) {
+      const story = stories[key];
+      const storyElement = document.createElement('div');
+      storyElement.classList.add('mt-4', 'p-4', 'bg-gray-800', 'rounded-md');
+      storyElement.innerHTML = `
+        <div class="flex items-center">
+          <div class="w-10 h-10 rounded-full bg-pink-500 mr-2"></div>
+          <h3 class="text-xl font-bold">${story.title}</h3>
+        </div>
+        <p class="mt-2">${story.story}</p>
+        <p class="mt-2 text-gray-500 text-sm">Posted by ${story.user}</p>
+        <div class="flex items-center mt-2">
+          <i class="fas fa-thumbs-up text-pink-500 cursor-pointer mr-2" onclick="likeStory('${key}')"></i>
+          <i class="fas fa-thumbs-down text-pink-500 cursor-pointer" onclick="dislikeStory('${key}')"></i>
+        </div>
+      `;
+      storiesContainer.appendChild(storyElement);
+     }
     }
+   });
   </script>
-</body>
+ </body>
 </html>
