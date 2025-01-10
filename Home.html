@@ -1,9 +1,6 @@
-I apologize for the confusion. Let's ensure that the HTML code is complete and functional. Below is the corrected and complete HTML code that includes:
+It looks like there are a few issues in your HTML code that need to be addressed to ensure it functions correctly. Below is a revised version of your code with corrections and improvements:
 
-1. A blue verification badge for the email `admin@gmail.com`.
-2. A reporting icon on the story card that allows users to report the story.
-
-### Complete HTML Code:
+### Complete and Corrected HTML Code:
 
 ```html
 <!DOCTYPE html>
@@ -70,8 +67,8 @@ I apologize for the confusion. Let's ensure that the HTML code is complete and f
         <input class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="title" type="text">
     </div>
     <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-300" for ="story">Story</label>
-        <textarea class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="story" rows="8"></textarea>
+        <label class="block text-sm font-medium text-gray-300" for="story">Story</label>
+        <textarea class="mt-1 block w-full bg-gray -800 border border-gray-700 rounded-md p-2 text-white" id="story" rows="8"></textarea>
     </div>
     <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md flex items-center" onclick="publishStory()">
         <i class="fas fa-paper-plane mr-2"></i>Publish
@@ -136,9 +133,9 @@ I apologize for the confusion. Let's ensure that the HTML code is complete and f
       authDomain: "login-71866.firebaseapp.com",
       databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
       projectId: "login-71866",
-      storageBucket : "login-71866.appspot.com",
+      storageBucket: "login-71866.appspot.com",
       messagingSenderId: "434042354282",
-      appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
+ appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
    };
    // Initialize Firebase
    const app = firebase.initializeApp(firebaseConfig);
@@ -239,10 +236,10 @@ I apologize for the confusion. Let's ensure that the HTML code is complete and f
          }
          document.getElementById('loginButton').classList.add('hidden');
          document.getElementById('loginForm').classList.add('hidden');
-         document.getElementById('verifyButton').classList.remove(' hidden');
+         document.getElementById('verifyButton').classList.remove('hidden');
          listenForNotifications(currentUser .email);
       }).catch((error) => {
-         console.error(error);
+         console.error (error);
       });
    }
    
@@ -352,8 +349,9 @@ I apologize for the confusion. Let's ensure that the HTML code is complete and f
       storiesContainer.innerHTML = '';
       for (const key in stories) {
          if (stories.hasOwnProperty(key)) {
-            const story = stories[key const storyElement = document.createElement('div');
-            storyElement.classList.add('mt-4', 'p-4', 'bg-gray-800', 'rounded-md');
+            const story = stories[key];
+            const storyElement = document.createElement('div');
+            storyElement.classList.add('mt- 4', 'p-4', 'bg-gray-800', 'rounded-md');
             storyElement.innerHTML = `
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
