@@ -14,6 +14,7 @@
         .slide-out { animation: slide-out 0.5s forwards; }
         @keyframes slide-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
         @keyframes slide-out { from { transform: translateX(0); } to { transform: translateX(100%); } }
+        .report-popup { animation: slide-in 0.5s forwards; }
     </style>
 </head>
 <body class="bg-gray-900 text-white font-roboto">
@@ -195,6 +196,7 @@
       <div class="flex items-center">
         <div class="w-10 h-10 rounded-full bg-pink-500 mr-2"></div>
         <h3 class="text-xl font-bold">${title}</h3>
+        <i class="fas fa-flag text-yellow-500 cursor-pointer ml-2" onclick="showReportPopup('${currentUser.email}')"></i>
       </div>
       <p class="mt-2">${story}</p>
       <p class="mt-2 text-gray-500 text-sm">Posted by ${currentUser.email}</p>
@@ -294,6 +296,40 @@
     });
    }
    
+   function showReportPopup(email) {
+        const reportPopup = document.getElementById('reportPopup');
+        reportPopup.classList.remove('hidden');
+        reportPopup.classList.add('report-popup');
+    }
+
+    function submitReport() {
+        const reportReason = document.getElementById('reportReason').value;
+        const reportDetails = document.getElementById('reportDetails').value;
+        const reportPopup = document.getElementById('reportPopup');
+
+        reportPopup.innerHTML = `
+            <div class="bg-gray-800 p-4 rounded-md w-11/12 md:w-80 flex justify-center items-center">
+                <i class="fas fa-spinner fa-spin text-white text-2xl"></i>
+            </div>
+        `;
+        
+        setTimeout(() => {
+            // Here you would handle the report submission logic (e.g., save to database)
+            reportPopup.innerHTML = `
+                <div class="bg-gray-800 p-4 rounded-md w-11/12 md:w-80 text-center">
+                    <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+                    <p class="mt-2 text-white">Your report has been submitted. Thank you!</p>
+                    <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md" onclick="toggleReportPopup()">Close</button>
+                </div>
+            `;
+        }, 2000);
+    }
+
+    function toggleReportPopup() {
+        const reportPopup = document.getElementById('reportPopup');
+        reportPopup.classList.add('hidden');
+    }
+
    // Load stories from Firebase
    database.ref('stories').on('value', (snapshot) => {
     const stories = snapshot.val();
@@ -308,6 +344,7 @@
         <div class="flex items-center">
           <div class="w-10 h-10 rounded-full bg-pink-500 mr-2"></div>
           <h3 class="text-xl font-bold">${story.title}</h3>
+          <i class="fas fa-flag text-yellow-500 cursor-pointer ml-2" onclick="showReportPopup('${currentUser.email}')"></i>
         </div>
         <p class="mt-2">${story.story}</p>
         <p class="mt-2 text-gray-500 text-sm">Posted by ${story.user}</p>
@@ -317,6 +354,23 @@
     }
    });
 </script>
+
+<!-- Reporting Popup -->
+<div class="mt-4 hidden" id="reportPopup">
+    <div class="bg-gray-800 p-4 rounded-md w-11/12 md:w-80">
+        <h2 class="text-lg md:text-xl font-bold mb-4">Report Story</h2>
+        <label class="block text-sm font-medium text-gray-300" for="reportReason">Reason</label>
+        <select id="reportReason" class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white">
+            <option value="suicide">Suicide</option>
+            <option value="spam">Spam</option>
+            <option value="inappropriate">Inappropriate Content</option>
+            <option value="other">Other</option>
+        </select>
+        <label class="block text-sm font-medium text-gray-300 mt-4" for="reportDetails">Details</label>
+        <textarea id="reportDetails" class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" rows="4"></textarea>
+        <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md" onclick="submitReport()">Submit</button>
+    </div>
+</div>
 
 </body>
 </html>
