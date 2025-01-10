@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -62,6 +63,7 @@
     </div>
     <div class="mt-4">
         <label class="block text-sm font-medium text-gray-300" for="story">Story</label>
+        <textarea class="mt- ```html
         <textarea class="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white" id="story" rows="8"></textarea>
     </div>
     <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md flex items-center" onclick="publishStory()">
@@ -123,11 +125,11 @@
 <script>
    // Firebase configuration
    const firebaseConfig = {
-    apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
+      apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
       authDomain: "login-71866.firebaseapp.com",
       databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
       projectId: "login-71866",
-      storageBucket: "login-71866.appspot.com",
+      storageBucket: "login- 71866.appspot.com",
       messagingSenderId: "434042354282",
       appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
    };
@@ -135,223 +137,231 @@
    const app = firebase.initializeApp(firebaseConfig);
    const auth = firebase.auth();
    const database = firebase.database();
-   let currentUser = null;
+   let currentUser  = null;
    let notifications = ["Tips: Make Your Story Interesting!"];
    
    function showMainPage() {
-    const mainPage = document.getElementById('mainPage');
-    const createStoryPage = document.getElementById('createStoryPage');
-    const profilePage = document.getElementById('profilePage');
-    createStoryPage.classList.add('slide-out');
-    profilePage.classList.add('slide-out');
-    setTimeout(() => {
-     createStoryPage.classList.add('hidden');
-     profilePage.classList.add('hidden');
-     mainPage.classList.remove('hidden');
-     createStoryPage.classList.remove('slide-out');
-     profilePage.classList.remove('slide-out');
-    }, 500);
+      const mainPage = document.getElementById('mainPage');
+      const createStoryPage = document.getElementById('createStoryPage');
+      const profilePage = document.getElementById('profilePage');
+      createStoryPage.classList.add('slide-out');
+      profilePage.classList.add('slide-out');
+      setTimeout(() => {
+         createStoryPage.classList.add('hidden');
+         profilePage.classList.add('hidden');
+         mainPage.classList.remove('hidden');
+         createStoryPage.classList.remove('slide-out');
+         profilePage.classList.remove('slide-out');
+      }, 500);
    }
    
    function showCreateStoryPage() {
-    if (!currentUser) {
-     alert('You must be logged in to create a story.');
-     return;
-    }
-    const mainPage = document.getElementById('mainPage');
-    const createStoryPage = document.getElementById('createStoryPage');
-    mainPage.classList.add('slide-out');
-    setTimeout(() => {
-     mainPage.classList.add('hidden');
-     createStoryPage.classList.remove('hidden');
-     createStoryPage.classList.add('slide-in');
-     mainPage.classList.remove('slide-out');
-    }, 500);
+      if (!currentUser ) {
+         alert('You must be logged in to create a story.');
+         return;
+      }
+      const mainPage = document.getElementById('mainPage');
+      const createStoryPage = document.getElementById('createStoryPage');
+      mainPage.classList.add('slide-out');
+      setTimeout(() => {
+         mainPage.classList.add('hidden');
+         createStoryPage.classList.remove('hidden');
+         createStoryPage.classList.add('slide-in');
+         mainPage.classList.remove('slide-out');
+      }, 500);
    }
    
    function showProfilePage() {
-    const mainPage = document.getElementById('mainPage');
-    const profilePage = document.getElementById('profilePage');
-    mainPage.classList.add('slide-out');
-    setTimeout(() => {
-     mainPage.classList.add('hidden');
-     profilePage.classList.remove('hidden');
-     profilePage.classList.add('slide-in');
-     mainPage.classList.remove('slide-out');
-    }, 500);
+      const mainPage = document.getElementById('mainPage');
+      const profilePage = document.getElementById('profilePage');
+      mainPage.classList.add('slide-out');
+      setTimeout(() => {
+         mainPage.classList.add('hidden');
+         profilePage.classList.remove('hidden');
+         profilePage.classList.add('slide-in');
+         mainPage.classList.remove('slide-out');
+      }, 500);
    }
    
    function publishStory() {
-    if (!currentUser) {
-     alert('You must be logged in to publish a story.');
-     return;
-    }
-    const title = document.getElementById('title').value;
-    const story = document.getElementById('story').value;
-    const stories = document.getElementById('stories');
-    const newStoryKey = database.ref().child('stories').push().key;
-    const storyElement = document.createElement('div');
-    storyElement.classList.add('mt-4', 'p-4', 'bg-gray-800', 'rounded-md');
-    storyElement.innerHTML = `
-      <div class="flex items-center">
-        <div class="w-10 h-10 rounded-full bg-pink-500 mr-2"></div>
-        <h3 class="text-xl font-bold">${title}</h3>
-        <i class="fas fa-flag text-red-500 cursor-pointer absolute right-4 top-2" onclick="showReportPopup('${currentUser.email}')"></i>
-      </div>
-      <p class="mt-2">${story}</p>
-      <p class="mt-2 text-gray-500 text-sm">Posted by ${currentUser.email}</p>
-    `;
-    stories.appendChild(storyElement);
-    // Save story to Firebase
-    database.ref('stories/' + newStoryKey).set({
-     title: title,
-     story: story,
-     user: currentUser.email
-    });
-    showMainPage();
-   }
-   
-   function showLoginForm() {
-    const loginForm = document.getElementById('loginForm');
-    loginForm.classList.remove('hidden');
-   }
-   
-   function login() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    auth.signInWithEmailAndPassword(email, password).then((userCredential) => {
-     currentUser = userCredential.user;
-     document.getElementById('username').innerText = currentUser.email;
-     document.getElementById('loginButton').classList.add('hidden');
-     document.getElementById('loginForm').classList.add('hidden');
-     document.getElementById('verifyButton').classList.remove('hidden');
-     listenForNotifications(currentUser.email);
-    }).catch((error) => {
-     console.error(error);
-    });
-   }
-   
-   function updateNotifications() {
-    const notificationCount = document.getElementById('notificationCount');
-    notificationCount.innerText = notifications.length;
-    notificationCount.style.display = notifications.length > 0 ? 'block' : 'none';
-    const notificationsList = document.getElementById('notificationsList');
-    notificationsList.innerHTML = '';
-    notifications.forEach((notification) => {
-     const notificationElement = document.createElement('div');
-     notificationElement.classList.add('p-2', 'bg-gray-700', 'rounded-md', 'mb-2');
-     notificationElement.innerText = notification;
-     notificationsList.appendChild(notificationElement);
-    });
-   }
-   
-   function toggleNotifications() {
-    const notificationsPopup = document.getElementById('notificationsPopup');
-    notificationsPopup.classList.toggle('hidden');
-   }
-   
-   function showVerifyForm() {
-    if (!currentUser) {
-     alert('You must be logged in to apply for verification.');
-     return;
-    }
-    const verifyPopup = document.getElementById('verifyPopup');
-    verifyPopup.classList.remove('hidden');
-   }
-   
-   function toggleVerifyPopup() {
-    const verifyPopup = document.getElementById('verifyPopup');
-    verifyPopup.classList.add('hidden');
-   }
-   
-   function applyVerification() {
-    const verifyPopup = document.getElementById('verifyPopup');
-    verifyPopup.innerHTML = `
-      <div class="bg-gray-800 p-4 rounded-md w-11/12 md:w-80 flex justify-center items-center">
-        <i class="fas fa-spinner fa-spin text-white text-2xl"></i>
-      </div>
-    `;
-    setTimeout(() => {
-     const userEmail = currentUser.email;
-     database.ref('verifications').push({
-      user: userEmail,
-      status: 'Applied'
-     });
-     verifyPopup.innerHTML = `
-        <div class="bg-gray-800 p-4 rounded-md w-11/12 md:w-80 text-center">
-          <i class="fas fa-check-circle text-green-500 text-2xl"></i>
-          <p class="mt-2 text-white">You have applied for verification. Please wait 24 hours.</p>
-          <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md" onclick="toggleVerifyPopup()">Close</button>
-        </div>
-      `;
-    }, 5000);
-   }
-   
-   function listenForNotifications(userEmail) {
-    const notificationsRef = database.ref('notifications/' + userEmail);
-    notificationsRef.on('child_added', (snapshot) => {
-     const notification = snapshot.val();
-     notifications.push(notification);
-     updateNotifications();
-    });
-   }
-   
-   function showReportPopup(email) {
-        const reportPopup = document.getElementById('reportPopup');
-        reportPopup.classList.remove('hidden');
-        reportPopup.classList.add('report-popup');
-    }
-
-    function submitReport() {
-        const reportReason = document.getElementById('reportReason').value;
-        const reportDetails = document.getElementById('reportDetails').value;
-        const reportPopup = document.getElementById('reportPopup');
-
-        reportPopup.innerHTML = `
-            <div class="bg-gray-800 p-4 rounded-md w-11/12 md:w-80 flex justify-center items-center">
-                <i class="fas fa-spinner fa-spin text-white text-2xl"></i>
-            </div>
-        `;
-        
-        setTimeout(() => {
-            // Here you would handle the report submission logic (e.g., save to database)
-            reportPopup.innerHTML = `
-                <div class="bg-gray-800 p-4 rounded-md w-11/12 md:w-80 text-center">
-                    <i class="fas fa-check-circle text-green-500 text-2xl"></i>
-                    <p class="mt-2 text-white">Your report has been submitted. Thank you!</p>
-                    <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md" onclick="toggleReportPopup()">Close</button>
-                </div>
-            `;
-        }, 2000);
-    }
-
-    function toggleReportPopup() {
-        const reportPopup = document.getElementById('reportPopup');
-        reportPopup.classList.add('hidden');
-    }
-
-   // Load stories from Firebase
-   database.ref('stories').on('value', (snapshot) => {
-    const stories = snapshot.val();
-    const storiesContainer = document.getElementById('stories');
-    storiesContainer.innerHTML = '';
-    for (const key in stories) {
-     if (stories.hasOwnProperty(key)) {
-      const story = stories[key];
+      if (!currentUser ) {
+         alert('You must be logged in to publish a story.');
+         return;
+      }
+      const title = document.getElementById('title').value;
+      const story = document.getElementById('story').value;
+      const stories = document.getElementById('stories');
+      const newStoryKey = database.ref().child('stories').push().key;
       const storyElement = document.createElement('div');
       storyElement.classList.add('mt-4', 'p-4', 'bg-gray-800', 'rounded-md');
       storyElement.innerHTML = `
-        <div class="flex items-center">
-          <div class="w-10 h-10 rounded-full bg-pink-500 mr-2"></div>
-          <h3 class="text-xl font-bold">${story.title}</h3>
-          <i class="fas fa-flag text-red-500 cursor-pointer absolute right-4 top-2" onclick="showReportPopup('${currentUser.email}')"></i>
-        </div>
-        <p class="mt-2">${story.story}</p>
-        <p class="mt-2 text-gray-500 text-sm">Posted by ${story.user}</p>
+         <div class="flex items-center justify-between">
+            <div class="flex items-center">
+               <div class="w-10 h-10 rounded-full bg-pink-500 mr-2"></div>
+               <h3 class="text-xl font-bold">${title}</h3>
+            </div>
+            <i class="fas fa-flag text-red-500 cursor-pointer" onclick="showReportPopup('${currentUser .email}')"></i>
+         </div>
+         <p class="mt-2">${story}</p>
+         <p class="mt-2 text-gray-500 text-sm">Posted by ${currentUser .email}</p>
       `;
-      storiesContainer.appendChild(storyElement);
-     }
-    }
+      stories.appendChild(storyElement);
+      // Save story to Firebase
+      database.ref('stories/' + newStoryKey).set({
+         title: title,
+         story: story,
+         user: currentUser .email
+      });
+      showMainPage();
+   }
+   
+   function showLoginForm() {
+      const loginForm = document.getElementById('loginForm');
+      loginForm.classList.remove('hidden');
+   }
+   
+   function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      auth.signInWithEmailAndPassword(email, password).then((userCredential) => {
+         currentUser  = userCredential.user;
+         document.getElementById('username').innerText = currentUser .email;
+         if (currentUser .email === 'admin@gmail.com') {
+            document.getElementById('verificationBadge').classList.remove('hidden');
+         }
+         document.getElementById('loginButton').classList.add('hidden');
+         document.getElementById('loginForm').classList.add('hidden');
+         document.getElementById('verifyButton').classList.remove('hidden');
+         listenForNotifications(currentUser .email);
+      }).catch((error) => {
+         console.error(error);
+      });
+   }
+   
+   function updateNotifications() {
+      const notificationCount = ```html
+      document.getElementById('notificationCount');
+      notificationCount.innerText = notifications.length;
+      notificationCount.style.display = notifications.length > 0 ? 'block' : 'none';
+      const notificationsList = document.getElementById('notificationsList');
+      notificationsList.innerHTML = '';
+      notifications.forEach((notification) => {
+         const notificationElement = document.createElement('div');
+         notificationElement.classList.add('p-2', 'bg-gray-700', 'rounded-md', 'mb-2');
+         notificationElement.innerText = notification;
+         notificationsList.appendChild(notificationElement);
+      });
+   }
+   
+   function toggleNotifications() {
+      const notificationsPopup = document.getElementById('notificationsPopup');
+      notificationsPopup.classList.toggle('hidden');
+   }
+   
+   function showVerifyForm() {
+      if (!currentUser  ) {
+         alert('You must be logged in to apply for verification.');
+         return;
+      }
+      const verifyPopup = document.getElementById('verifyPopup');
+      verifyPopup.classList.remove('hidden');
+   }
+   
+   function toggleVerifyPopup() {
+      const verifyPopup = document.getElementById('verifyPopup');
+      verifyPopup.classList.add('hidden');
+   }
+   
+   function applyVerification() {
+      const verifyPopup = document.getElementById('verifyPopup');
+      verifyPopup.innerHTML = `
+         <div class="bg-gray-800 p-4 rounded-md w-11/12 md:w-80 flex justify-center items-center">
+            <i class="fas fa-spinner fa-spin text-white text-2xl"></i>
+         </div>
+      `;
+      setTimeout(() => {
+         const userEmail = currentUser  .email;
+         database.ref('verifications').push({
+            user: userEmail,
+            status: 'Applied'
+         });
+         verifyPopup.innerHTML = `
+            <div class="bg-gray-800 p-4 rounded-md w-11/12 md:w-80 text-center">
+               <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+               <p class="mt-2 text-white">You have applied for verification. Please wait 24 hours.</p>
+               <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md" onclick="toggleVerifyPopup()">Close</button>
+            </div>
+         `;
+      }, 5000);
+   }
+   
+   function listenForNotifications(userEmail) {
+      const notificationsRef = database.ref('notifications/' + userEmail);
+      notificationsRef.on('child_added', (snapshot) => {
+         const notification = snapshot.val();
+         notifications.push(notification);
+         updateNotifications();
+      });
+   }
+   
+   function showReportPopup(email) {
+      const reportPopup = document.getElementById('reportPopup');
+      reportPopup.classList.remove('hidden');
+      reportPopup.classList.add('report-popup');
+   }
+
+   function submitReport() {
+      const reportReason = document.getElementById('reportReason').value;
+      const reportDetails = document.getElementById('reportDetails').value;
+      const reportPopup = document.getElementById('reportPopup');
+
+      reportPopup.innerHTML = `
+         <div class="bg-gray-800 p-4 rounded-md w-11/12 md:w-80 flex justify-center items-center">
+            <i class="fas fa-spinner fa-spin text-white text-2xl"></i>
+         </div>
+      `;
+      
+      setTimeout(() => {
+         // Here you would handle the report submission logic (e.g., save to database)
+         reportPopup.innerHTML = `
+            <div class="bg-gray-800 p-4 rounded-md w-11/12 md:w-80 text-center">
+               <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+               <p class="mt-2 text-white">Your report has been submitted. Thank you!</p>
+               <button class="mt-4 bg-pink-500 text-white py-2 px-4 rounded-md" onclick="toggleReportPopup()">Close</button>
+            </div>
+         `;
+      }, 2000);
+   }
+
+   function toggleReportPopup() {
+      const reportPopup = document.getElementById('reportPopup');
+      reportPopup.classList.add('hidden');
+   }
+
+   // Load stories from Firebase
+   database.ref('stories').on('value', (snapshot) => {
+      const stories = snapshot.val();
+      const storiesContainer = document.getElementById('stories');
+      storiesContainer.innerHTML = '';
+      for (const key in stories) {
+         if (stories.hasOwnProperty(key)) {
+            const story = stories[key];
+            const storyElement = document.createElement('div');
+            storyElement.classList.add('mt-4', 'p-4', 'bg-gray-800', 'rounded-md');
+            storyElement.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-pink-500 mr-2"></div>
+                        <h3 class="text-xl font-bold">${story.title}</h3>
+                    </div>
+                    <i class="fas fa-flag text-red-500 cursor-pointer" onclick="showReportPopup('${currentUser .email}')"></i>
+                </div>
+                <p class="mt-2">${story.story}</p>
+                <p class="mt-2 text-gray-500 text-sm">Posted by ${story.user}</p>
+            `;
+            storiesContainer.appendChild(storyElement);
+         }
+      }
    });
 </script>
 
