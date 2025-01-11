@@ -24,12 +24,31 @@
             0% { transform: scale(0); }
             100% { transform: scale(1); }
         }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #000;
+            border: 1px solid #333;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            z-index: 10;
+        }
+        .dropdown-menu.show {
+            display: block;
+            animation: dropdown 0.3s ease-in-out;
+        }
+        @keyframes dropdown {
+            0% { transform: translateY(-10px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
     </style>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
     <script>
         const firebaseConfig = {
-         apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
+            apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
   authDomain: "login-71866.firebaseapp.com",
   databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
   projectId: "login-71866",
@@ -134,18 +153,37 @@
         function showSettings() {
             alert('Settings clicked');
         }
+
+        function toggleDropdown() {
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            dropdownMenu.classList.toggle('show');
+        }
     </script>
 </head>
 <body class="bg-black text-white font-roboto">
     <!-- Top Banner for PC -->
-    <div class="hidden md:flex justify-between items-center bg-black text-white p-4">
+    <div class="hidden md:flex justify-between items-center bg-black text-white p-4 relative">
         <div class="flex items-center">
             <i class="fas fa-feather-alt text-2xl mr-2"></i>
             <span class="text-xl font-bold">Storymaker</span>
         </div>
-        <div class="flex items-center">
+        <div class="flex items-center relative">
             <i class="fas fa-cog text-2xl mr-2"></i>
-            <i class="fas fa-chevron-down"></i>
+            <i class="fas fa-chevron-down cursor-pointer" onclick="toggleDropdown()"></i>
+            <div id="dropdown-menu" class="dropdown-menu">
+                <div class="flex items-center p-2 cursor-pointer" onclick="showHome()">
+                    <i class="fas fa-home text-xl mr-2"></i>
+                    <span>Home</span>
+                </div>
+                <div class="flex items-center p-2 cursor-pointer" onclick="showCreate()">
+                    <i class="fas fa-plus-circle text-xl mr-2"></i>
+                    <span>Create</span>
+                </div>
+                <div class="flex items-center p-2 cursor-pointer" onclick="showSettings()">
+                    <i class="fas fa-cog text-xl mr-2"></i>
+                    <span>Settings</span>
+                </div>
+            </div>
         </div>
     </div>
     <!-- Main Content -->
