@@ -1,8 +1,11 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js"></script>
@@ -30,7 +33,7 @@
   </style>
 </head>
 <body class="bg-black text-white font-roboto">
-  <!-- Top Banner for PC -->
+  <!-- Top Banner for Larger Screens -->
   <div class="hidden md:flex justify-between items-center bg-black text-white p-4">
     <div class="flex items-center">
       <i class="fas fa-feather-alt text-2xl mr-2"></i>
@@ -43,7 +46,7 @@
   </div>
   <!-- Main Content -->
   <div id="main-content" class="flex flex-col items-center mt-4 space-y-4 slide-in">
-    <div class="bg-gray-800 shadow-lg rounded-lg p-4 w-80">
+    <div class="bg-gray-800 shadow-lg rounded-lg p-4 w-11/12 md:w-80">
       <div class="flex items-center justify-between mb-2">
         <div class="flex items-center">
           <i class="fas fa-user-circle text-2xl mr-2"></i>
@@ -63,8 +66,8 @@
   </div>
   <!-- Create Content -->
   <div id="create-content" class="hidden flex flex-col items-center mt-4 space-y-4 slide-in">
-    <div class="bg-gray-800 shadow-lg rounded-lg p-4 w-80">
-      <input id="story-title" class="bg-gray-700 text-white p-2 rounded mb-2 w-full" placeholder="Title" type="text"/>
+    <div class="bg-gray-800 shadow-lg rounded-lg p-4 w-11/12 md:w-80">
+      <input id="story-title" class="bg-gray-700 text-white p-2 rounded mb-2 w-full" placeholder="Title" type="text">
       <textarea id="story-description" class="bg-gray-700 text-white p-2 rounded mb-2 w-full" placeholder="Your story..." rows="4"></textarea>
       <button class="bg-blue-500 text-white p-2 rounded flex items-center justify-center w-full" onclick="publishStory()">
         <i class="fas fa-paper-plane mr-2"></i> Publish
@@ -73,7 +76,7 @@
   </div>
   <!-- Report Content -->
   <div id="report-content" class="hidden flex flex-col items-center justify-center h-screen slide-in">
-    <div class="bg-gray-800 shadow-lg rounded-lg p-4 w-80">
+    <div class="bg-gray-800 shadow-lg rounded-lg p-4 w-11/12 md:w-80">
       <div class="flex justify-between items-center mb-2">
         <h2 class="text-lg font-bold">Report Story</h2>
         <span id="report-count" class="text-green-500 text-sm">0/2</span>
@@ -86,14 +89,14 @@
   </div>
   <!-- Loading Content -->
   <div id="loading-content" class="hidden flex flex-col items-center justify-center h-screen slide-in">
-    <div class="bg-gray-800 shadow-lg rounded-lg p-4 w-80 flex flex-col items-center">
+    <div class="bg-gray-800 shadow-lg rounded-lg p-4 w-11/12 md:w-80 flex flex-col items-center">
       <i class="fas fa-spinner text-4xl loading mb-2"></i>
       <h2 class="text-lg font-bold mb-1">Reporting...</h2>
     </div>
   </div>
   <!-- Confirmation Content -->
   <div id="confirmation-content" class="hidden flex flex-col items-center justify-center h-screen slide-in">
-    <div class="bg-gray-800 shadow-lg rounded-lg p-4 w-80 flex flex-col items-center">
+    <div class="bg-gray-800 shadow-lg rounded-lg p-4 w-11/12 md:w-80 flex flex-col items-center">
       <i class="fas fa-check-circle text-4xl text-green-500 tick mb-2"></i>
       <h2 class="text-lg font-bold mb-1">Thank You, Our admins will review this in less than 24h!</h2>
     </div>
@@ -116,16 +119,15 @@
   <script>
     // Firebase configuration
     const firebaseConfig = {
-    apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
-  authDomain: "login-71866.firebaseapp.com",
-  databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
-  projectId: "login-71866",
-  storageBucket: "login-71866.firebasestorage.app",
-  messagingSenderId: "434042354282",
-  appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
+      apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
+      authDomain: "login-71866.firebaseapp.com",
+      databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
+      projectId: "login-71866",
+      storageBucket: "login-71866.firebasestorage.app",
+      messagingSenderId: "434042354282",
+      appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
     };
 
-    // Initialize Firebase
     const app = firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const database = firebase.database();
@@ -148,43 +150,28 @@
     });
 
     function showProfile() {
-      document.getElementById('main-content').classList.add('hidden');
-      document.getElementById('create-content').classList.add('hidden');
-      document.getElementById('report-content').classList.add('hidden');
-      document.getElementById('loading-content').classList.add('hidden');
-      document.getElementById('confirmation-content').classList.add('hidden');
-      document.getElementById('profile-content').classList.remove('hidden');
-      document.getElementById('profile-content').classList.add('slide-in');
+      toggleVisibility('profile-content');
     }
 
     function showHome() {
-      document.getElementById('profile-content').classList.add('hidden');
-      document.getElementById('create-content').classList.add('hidden');
-      document.getElementById('report-content').classList.add('hidden');
-      document.getElementById('loading-content').classList.add('hidden');
-      document.getElementById('confirmation-content').classList.add('hidden');
-      document.getElementById('main-content').classList.remove('hidden');
-      document.getElementById('main-content').classList.add('slide-in');
+      toggleVisibility('main-content');
     }
 
     function showCreate() {
-      document.getElementById('main-content').classList.add('hidden');
-      document.getElementById('profile-content').classList.add('hidden');
-      document.getElementById('report-content').classList.add('hidden');
-      document.getElementById('loading-content').classList.add('hidden');
-      document.getElementById('confirmation-content').classList.add('hidden');
-      document.getElementById('create-content').classList.remove('hidden');
-      document.getElementById('create-content').classList.add('slide-in');
+      toggleVisibility('create-content');
     }
 
-    function showReport() {
-      document.getElementById('main-content').classList.add('hidden');
-      document.getElementById('create-content').classList.add('hidden');
-      document.getElementById('profile-content').classList.add('hidden');
-      document.getElementById('loading-content').classList.add('hidden');
-      document.getElementById('confirmation-content').classList.add('hidden');
-      document.getElementById('report-content').classList.remove('hidden');
-      document.getElementById('report-content').classList.add('slide-in');
+    function toggleVisibility(contentId) {
+      const sections = ['main-content', 'profile-content', 'create-content', 'report-content', 'loading-content', 'confirmation-content'];
+      sections.forEach(id => {
+        const element = document.getElementById(id);
+        if (id === contentId) {
+          element.classList.remove('hidden');
+          element.classList.add('slide-in');
+        } else {
+          element.classList.add('hidden');
+        }
+      });
     }
 
     function submitReport() {
@@ -192,22 +179,15 @@
       const reportCountElement = document.getElementById('report-count');
       reportCountElement.innerText = `${reportCount}/2`;
       if (reportCount === 1) {
-        reportCountElement.classList.remove('text-green-500');
-        reportCountElement.classList.add('text-yellow-500');
+        reportCountElement.classList.replace('text-green-500', 'text-yellow-500');
       } else if (reportCount >= 2) {
-        reportCountElement.classList.remove('text-yellow-500');
-        reportCountElement.classList.add('text-red-500');
-        document.getElementById('submit-report-btn').disabled = true;
-        document.getElementById('submit-report-btn').classList.add('opacity-50', 'cursor-not-allowed');
+        reportCountElement.classList.replace('text-yellow-500', 'text-red-500');
+        const submitButton = document.getElementById('submit-report-btn');
+        submitButton.disabled = true;
+        submitButton.classList.add('opacity-50', 'cursor-not-allowed');
       }
-      document.getElementById('report-content').classList.add('hidden');
-      document.getElementById('loading-content').classList.remove('hidden');
-      document.getElementById('loading-content').classList.add('slide-in');
-      setTimeout(() => {
-        document.getElementById('loading-content').classList.add('hidden');
-        document.getElementById('confirmation-content').classList.remove('hidden');
-        document.getElementById('confirmation-content').classList.add('slide-in');
-      }, 5000);
+      toggleVisibility('loading-content');
+      setTimeout(() => toggleVisibility('confirmation-content'), 5000);
     }
 
     function publishStory() {
@@ -219,7 +199,7 @@
       const title = document.getElementById('story-title').value;
       const description = document.getElementById('story-description').value;
       const storyCard = document.createElement('div');
-      storyCard.className = 'bg-gray-800 shadow-lg rounded-lg p-4 w-80';
+      storyCard.className = 'bg-gray-800 shadow-lg rounded-lg p-4 w-11/12 md:w-80';
       storyCard.innerHTML = `
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center">
