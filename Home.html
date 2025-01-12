@@ -37,7 +37,7 @@
 
     <!-- Main Content -->
     <main id="main-content" class="flex-grow flex justify-center items-center mt-16 mb-16">
-        <div id="content-card" class="bg-gray-700 p-6 rounded-lg shadow-lg w-80 sm:w-full sm:max-w-md relative">
+        <div id="content-card" class="bg-gray-700 p-6 rounded-lg shadow-lg w-80 relative">
             <div class="flex items-center mb-4">
                 <i class="fas fa-moon text-white text-2xl"></i>
                 <span class="ml-2 text-blue-500"><i class="fas fa-check-circle"></i></span>
@@ -50,7 +50,7 @@
 
     <!-- Settings Page -->
     <div id="settings-page" class="hidden flex-grow flex justify-center items-center mt-16 mb-16">
-        <div class="bg-gray-700 p-6 rounded-lg shadow-lg w-80 sm:w-full sm:max-w-md">
+        <div class="bg-gray-700 p-6 rounded-lg shadow-lg w-80">
             <h2 class="text-xl font-bold mb-4">Settings</h2>
             <div class="flex items-center">
                 <label for="toggle-stars" class="mr-2">Toggle Light</label>
@@ -162,8 +162,9 @@
                     const storyCard = document.createElement('div');
                     storyCard.className = 'bg-gray-700 p-6 rounded-lg shadow-lg relative';
                     storyCard.innerHTML = `
-                        <div class="absolute top-2 right-2">
+                        <div class="absolute top-2 right-2 flex space-x-2">
                             <i class="fas fa-edit text-white cursor-pointer edit-icon"></i>
+                            <i class="fas fa-trash text-white cursor-pointer delete-icon"></i>
                         </div>
                         <h2 class="story-title text-xl font-bold mb-2">${title}</h2>
                         <p class="story-content text-gray-300">${content}</p>
@@ -179,6 +180,12 @@
                         editingStory = storyCard;
                         document.getElementById('create-page').scrollIntoView();
                     });
+
+                    storyCard.querySelector('.delete-icon').addEventListener('click', function() {
+                        storyCard.remove();
+                        updateLocalStorage();
+                    });
+
                     updateLocalStorage();
                 }
 
@@ -214,8 +221,9 @@
                 const storyCard = document.createElement('div');
                 storyCard.className = 'bg-gray-700 p-6 rounded-lg shadow-lg relative';
                 storyCard.innerHTML = `
-                    <div class="absolute top-2 right-2">
+                    <div class="absolute top-2 right-2 flex space-x-2">
                         <i class="fas fa-edit text-white cursor-pointer edit-icon"></i>
+                        <i class="fas fa-trash text-white cursor-pointer delete-icon"></i>
                     </div>
                     <h2 class="story-title text-xl font-bold mb-2">${story.title}</h2>
                     <p class="story-content text-gray-300">${story.content}</p>
@@ -230,6 +238,11 @@
                     document.getElementById('editing-label').classList.remove('hidden');
                     editingStory = storyCard;
                     document.getElementById('create-page').scrollIntoView();
+                });
+
+                storyCard.querySelector('.delete-icon').addEventListener('click', function() {
+                    storyCard.remove();
+                    updateLocalStorage();
                 });
             });
         }
