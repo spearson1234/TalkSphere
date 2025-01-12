@@ -82,8 +82,32 @@
         <i id="settings-icon" class="fas fa-cog text-white text-2xl cursor-pointer"></i>
     </footer>
 
+    <!-- Status Modal -->
+    <div id="status-modal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg w-80">
+            <h2 class="text-xl font-bold mb-4">Set Story Status</h2>
+            <div class="flex justify-around mb-4">
+                <button id="status-done" class="bg-green-600 p-2 rounded-full text-white w-12 h-12 flex items-center justify-center">
+                    <i class="fas fa-check"></i>
+                </button>
+                <button id="status-needs-finish" class="bg-yellow-600 p-2 rounded-full text-white w-12 h-12 flex items-center justify-center">
+                    <i class="fas fa-exclamation"></i>
+                </button>
+                <button id="status-come-back" class="bg-red-600 p-2 rounded-full text-white w-12 h-12 flex items-center justify-center">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="text-center">
+                <p class="text-green-500">Green: Done</p>
+                <p class="text-yellow-500">Yellow: Needs Finish</p>
+                <p class="text-red-500">Red: Come Back Later</p>
+            </div>
+        </div>
+    </div>
+
     <script>
         let editingStory = null;
+        let statusStory = null;
 
         document.getElementById('moon-icon').addEventListener('click', function() {
             this.classList.toggle('clicked');
@@ -163,6 +187,7 @@
                     storyCard.className = 'bg-gray-700 p-6 rounded-lg shadow-lg relative';
                     storyCard.innerHTML = `
                         <div class="absolute top-2 right-2 flex space-x-2">
+                            <div class="status-icon w-4 h-4 rounded-full bg-gray-500 cursor-pointer"></div>
                             <i class="fas fa-edit text-white cursor-pointer edit-icon"></i>
                             <i class="fas fa-trash text-white cursor-pointer delete-icon"></i>
                         </div>
@@ -186,6 +211,11 @@
                         updateLocalStorage();
                     });
 
+                    storyCard.querySelector('.status-icon').addEventListener('click', function() {
+                        statusStory = storyCard;
+                        document.getElementById('status-modal').classList.remove('hidden');
+                    });
+
                     updateLocalStorage();
                 }
 
@@ -197,13 +227,43 @@
             }
         });
 
+        document.getElementById('status-done').addEventListener('click', function() {
+            if (statusStory) {
+                statusStory.querySelector('.status-icon').classList.remove('bg-gray-500', 'bg-yellow-500', 'bg-red-500');
+                statusStory.querySelector('.status-icon').classList.add('bg-green-500');
+                document.getElementById('status-modal').classList.add('hidden');
+                updateLocalStorage();
+            }
+        });
+
+        document.getElementById('status-needs-finish').addEventListener('click', function() {
+            if (statusStory) {
+                statusStory.querySelector('.status-icon').classList.remove('bg-gray-500', 'bg-green-500', 'bg-red-500');
+                statusStory.querySelector('.status-icon').classList.add('bg-yellow-500');
+                document.getElementById('status-modal').classList.add('hidden');
+                updateLocalStorage();
+            }
+        });
+
+        document.getElementById('status-come-back').addEventListener('click', function() {
+            if (statusStory) {
+                statusStory.querySelector('.status-icon').classList.remove('bg-gray-500', 'bg-green-500', 'bg-yellow-500');
+                statusStory.querySelector('.status-icon').classList.add('bg-red-500');
+                document.getElementById('status-modal').classList.add('hidden');
+                updateLocalStorage();
+            }
+        });
+
         function updateLocalStorage() {
             const stories = [];
             document.querySelectorAll('#stories-container > div').forEach(storyCard => {
                 stories.push({
                     title: storyCard.querySelector('.story-title').textContent,
                     content: storyCard.querySelector('.story-content').textContent,
-                    edited: !storyCard.querySelector('.edited-label').classList.contains('hidden')
+                    edited: !storyCard.querySelector('.edited-label').classList.contains('hidden'),
+                    status: storyCard.querySelector('.status-icon').classList.contains('bg-green-500') ? 'Done' :
+                            storyCard.querySelector('.status-icon').classList.contains('bg-yellow-500') ? 'Needs Finish' :
+                            storyCard.querySelector('.status-icon').classList.contains('bg-red-500') ? 'Come Back Later' : 'Default'
                 });
             });
             localStorage.setItem('stories', JSON.stringify(stories));
@@ -222,6 +282,7 @@
                 storyCard.className = 'bg-gray-700 p-6 rounded-lg shadow-lg relative';
                 storyCard.innerHTML = `
                     <div class="absolute top-2 right-2 flex space-x-2">
+                        <div class="status-icon w-4 h-4 rounded-full cursor-pointer ${story.status === 'Done' ? 'bg-green-500' : story.status === 'Needs Finish' ? 'bg-yellow-500' : story.status === 'Come Back Later' ? 'bg-red-500' : 'bg-gray-500'}"></div>
                         <i class="fas fa-edit text-white cursor-pointer edit-icon"></i>
                         <i class="fas fa-trash text-white cursor-pointer delete-icon"></i>
                     </div>
@@ -243,6 +304,11 @@
                 storyCard.querySelector('.delete-icon').addEventListener('click', function() {
                     storyCard.remove();
                     updateLocalStorage();
+                });
+
+                storyCard.querySelector('.status-icon').addEventListener('click', function() {
+                    statusStory = storyCard;
+                    document.getElementById('status-modal').classList.remove('hidden');
                 });
             });
         }
