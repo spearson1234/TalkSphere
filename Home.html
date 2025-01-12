@@ -1,261 +1,241 @@
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoonScoped</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        .slide-in {
-            transition: transform 0.5s ease-in-out;
+        .spin {
+            transition: transform 0.5s;
         }
-        .hidden {
-            display: none;
+        .spin.clicked {
+            transform: rotate(360deg);
         }
-        .loading {
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .tick {
-            animation: tick 0.5s ease-in-out;
-        }
-        @keyframes tick {
-            0% { transform: scale(0); }
-            100% { transform: scale(1); }
-        }
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background-color: #000;
-            border: 1px solid #333;
-            border-radius: 0.5rem;
-            overflow: hidden;
-            z-index: 10;
-        }
-        .dropdown-menu.show {
-            display: block;
-            animation: dropdown 0.3s ease-in-out;
-        }
-        @keyframes dropdown {
-            0% { transform: translateY(-10px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
+        .stars {
+            background: url('https://placehold.co/15x15/ffffff/ffffff.png?text=*') repeat;
         }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
-  authDomain: "login-71866.firebaseapp.com",
-  databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
-  projectId: "login-71866",
-  storageBucket: "login-71866.firebasestorage.app",
-  messagingSenderId: "434042354282",
-  appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
-        };
-
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database(app);
-
-        function publishStory() {
-            const title = document.querySelector('#create-content input').value;
-            const description = document.querySelector('#create-content textarea').value;
-
-            if (title && description) {
-                const newStoryRef = database.ref('stories').push();
-                newStoryRef.set({
-                    title: title,
-                    description: description,
-                    timestamp: Date.now()
-                });
-
-                const storyCard = document.createElement('div');
-                storyCard.className = 'bg-gray-800 shadow-lg rounded-lg p-4 w-80';
-                storyCard.innerHTML = `
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="flex items-center">
-                            <i class="fas fa-user-circle text-2xl mr-2"></i>
-                        </div>
-                        <i class="fas fa-flag text-red-500 cursor-pointer" onclick="showReport()"></i>
-                    </div>
-                    <h2 class="text-lg font-bold mb-1">${title}</h2>
-                    <p class="text-gray-400">${description}</p>
-                `;
-                document.getElementById('main-content').appendChild(storyCard);
-                showHome();
-            }
-        }
-
-        function submitReport() {
-            const reason = document.querySelector('#report-content textarea').value;
-
-            if (reason) {
-                const newReportRef = database.ref('reports').push();
-                newReportRef.set({
-                    reason: reason,
-                    timestamp: Date.now()
-                });
-
-                document.getElementById('report-content').classList.add('hidden');
-                document.getElementById('loading-content').classList.remove('hidden');
-                document.getElementById('loading-content').classList.add('slide-in');
-                setTimeout(() => {
-                    document.getElementById('loading-content').classList.add('hidden');
-                    document.getElementById('confirmation-content').classList.remove('hidden');
-                    document.getElementById('confirmation-content').classList.add('slide-in');
-                }, 5000);
-            }
-        }
-
-        function showProfile() {
-            document.getElementById('main-content').classList.add('hidden');
-            document.getElementById('create-content').classList.add('hidden');
-            document.getElementById('report-content').classList.add('hidden');
-            document.getElementById('loading-content').classList.add('hidden');
-            document.getElementById('confirmation-content').classList.add('hidden');
-            document.getElementById('profile-content').classList.remove('hidden');
-            document.getElementById('profile-content').classList.add('slide-in');
-        }
-
-        function showHome() {
-            document.getElementById('profile-content').classList.add('hidden');
-            document.getElementById('create-content').classList.add('hidden');
-            document.getElementById('report-content').classList.add('hidden');
-            document.getElementById('loading-content').classList.add('hidden');
-            document.getElementById('confirmation-content').classList.add('hidden');
-            document.getElementById('main-content').classList.remove('hidden');
-            document.getElementById('main-content').classList.add('slide-in');
-        }
-
-        function showCreate() {
-            document.getElementById('main-content').classList.add('hidden');
-            document.getElementById('profile-content').classList.add('hidden');
-            document.getElementById('report-content').classList.add('hidden');
-            document.getElementById('loading-content').classList.add('hidden');
-            document.getElementById('confirmation-content').classList.add('hidden');
-            document.getElementById('create-content').classList.remove('hidden');
-            document.getElementById('create-content').classList.add('slide-in');
-        }
-
-        function showReport() {
-            document.getElementById('main-content').classList.add('hidden');
-            document.getElementById('create-content').classList.add('hidden');
-            document.getElementById('profile-content').classList.add('hidden');
-            document.getElementById('loading-content').classList.add('hidden');
-            document.getElementById('confirmation-content').classList.add('hidden');
-            document.getElementById('report-content').classList.remove('hidden');
-            document.getElementById('report-content').classList.add('slide-in');
-        }
-
-        function showSettings() {
-            alert('Settings clicked');
-        }
-
-        function toggleDropdown() {
-            const dropdownMenu = document.getElementById('dropdown-menu');
-            dropdownMenu.classList.toggle('show');
-        }
-    </script>
 </head>
-<body class="bg-black text-white font-roboto">
-    <!-- Top Banner for PC -->
-    <div class="hidden md:flex justify-between items-center bg-black text-white p-4 relative">
+<body class="bg-gray-900 text-white font-roboto flex flex-col min-h-screen">
+    <!-- Top Banner -->
+    <header class="bg-gray-800 p-4 flex justify-between items-center fixed top-0 left-0 right-0 z-10">
         <div class="flex items-center">
-            <i class="fas fa-feather-alt text-2xl mr-2"></i>
-            <span class="text-xl font-bold">Storymaker</span>
+            <i id="moon-icon" class="fas fa-moon text-white text-2xl spin cursor-pointer"></i>
+            <h1 class="text-white text-2xl ml-2">MoonScoped</h1>
         </div>
-        <div class="flex items-center relative">
-            <i class="fas fa-cog text-2xl mr-2"></i>
-            <i class="fas fa-chevron-down cursor-pointer" onclick="toggleDropdown()"></i>
-            <div id="dropdown-menu" class="dropdown-menu">
-                <div class="flex items-center p-2 cursor-pointer" onclick="showHome()">
-                    <i class="fas fa-home text-xl mr-2"></i>
-                    <span>Home</span>
-                </div>
-                <div class="flex items-center p-2 cursor-pointer" onclick="showCreate()">
-                    <i class="fas fa-plus-circle text-xl mr-2"></i>
-                    <span>Create</span>
-                </div>
-                <div class="flex items-center p-2 cursor-pointer" onclick="showSettings()">
-                    <i class="fas fa-cog text-xl mr-2"></i>
-                    <span>Settings</span>
-                </div>
-            </div>
+        <div class="relative">
+            <select id="page-selector" class="bg-gray-800 text-white border border-gray-600 rounded p-2">
+                <option value="welcome">Welcome</option>
+                <option value="updates">Updates</option>
+                <option value="features">Features</option>
+                <option value="storys">Storys</option>
+            </select>
         </div>
-    </div>
+    </header>
+
     <!-- Main Content -->
-    <div id="main-content" class="flex flex-col items-center mt-4 space-y-4 slide-in">
-        <div class="bg-gray-800 shadow-lg rounded-lg p-4 w-80">
-            <div class="flex items-center justify-between mb-2">
-                <div class="flex items-center">
-                    <i class="fas fa-user-circle text-2xl mr-2"></i>
-                    <i class="fas fa-check-circle text-blue-500"></i>
-                </div>
+    <main id="main-content" class="flex-grow flex justify-center items-center mt-16 mb-16">
+        <div id="content-card" class="bg-gray-700 p-6 rounded-lg shadow-lg w-80 sm:w-full sm:max-w-md relative">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-moon text-white text-2xl"></i>
+                <span class="ml-2 text-blue-500"><i class="fas fa-check-circle"></i></span>
             </div>
-            <h2 class="text-lg font-bold mb-1">Testing Story Title</h2>
-            <p class="text-gray-400">This is a description of the testing story. It provides a brief overview of the content.</p>
+            <h2 id="card-title" class="text-xl font-bold mb-2">Welcome</h2>
+            <p id="card-content" class="text-gray-300">Welcome to MoonScoped! We're glad to have you here. Explore the app and enjoy your stay.</p>
+            <span class="absolute bottom-2 right-2 text-gray-500 text-sm">Published by MoonScoped</span>
+        </div>
+    </main>
+
+    <!-- Settings Page -->
+    <div id="settings-page" class="hidden flex-grow flex justify-center items-center mt-16 mb-16">
+        <div class="bg-gray-700 p-6 rounded-lg shadow-lg w-80 sm:w-full sm:max-w-md">
+            <h2 class="text-xl font-bold mb-4">Settings</h2>
+            <div class="flex items-center">
+                <label for="toggle-stars" class="mr-2">Toggle Light</label>
+                <input type="checkbox" id="toggle-stars" class="form-checkbox h-5 w-5 text-blue-600">
+            </div>
         </div>
     </div>
-    <!-- Profile Content -->
-    <div id="profile-content" class="hidden flex flex-col items-center mt-4 space-y-4 slide-in">
-        <div class="flex flex-col items-center mt-4">
-            <i class="fas fa-user-circle text-6xl mb-2"></i>
-            <h2 class="text-lg font-bold mb-1">@User</h2>
-        </div>
-    </div>
-    <!-- Create Content -->
-    <div id="create-content" class="hidden flex flex-col items-center mt-4 space-y-4 slide-in">
-        <div class="bg-gray-800 shadow-lg rounded-lg p-4 w-80">
-            <input class="bg-gray-700 text-white p-2 rounded mb-2 w-full" placeholder="Title" type="text"/>
-            <textarea class="bg-gray-700 text-white p-2 rounded mb-2 w-full" placeholder="Your story..." rows="4"></textarea>
-            <button class="bg-blue-500 text-white p-2 rounded flex items-center justify-center w-full" onclick="publishStory()">
-                <i class="fas fa-paper-plane mr-2"></i>
-                Publish
+
+    <!-- Create Page -->
+    <div id="create-page" class="hidden flex-grow flex flex-col items-center p-4 mt-16 mb-16">
+        <div class="bg-gray-700 p-6 rounded-lg shadow-lg w-full max-w-md mb-4 relative">
+            <h2 class="text-xl font-bold mb-4">Create Story <span id="editing-label" class="text-gray-500 hidden">(Editing)</span></h2>
+            <input type="text" id="story-title" class="w-full p-2 mb-4 bg-gray-800 text-white rounded" placeholder="Title">
+            <textarea id="story-content" class="w-full p-2 mb-4 bg-gray-800 text-white rounded" rows="5" placeholder="Your story..."></textarea>
+            <button id="publish-button" class="bg-blue-600 p-2 rounded text-white w-full flex justify-center items-center">
+                <i class="fas fa-paper-plane mr-2"></i> Publish
             </button>
         </div>
-    </div>
-    <!-- Report Content -->
-    <div id="report-content" class="hidden flex flex-col items-center mt-4 space-y-4 slide-in">
-        <div class="bg-gray-800 shadow-lg rounded-lg p-4 w-80 flex flex-col items-center">
-            <h2 class="text-lg font-bold mb-2">Report Story</h2>
-            <textarea class="bg-gray-700 text-white p-2 rounded mb-2 w-full" placeholder="Reason for reporting..." rows="4"></textarea>
-            <button class="bg-red-500 text-white p-2 rounded flex items-center justify-center w-full" onclick="submitReport()">
-                <i class="fas fa-flag mr-2"></i>
-                Submit Report
-            </button>
+        <!-- Stories Container -->
+        <div id="stories-container" class="w-full max-w-md space-y-4">
+            <h2 class="text-xl font-bold mb-4">Your Stories</h2>
         </div>
     </div>
-    <!-- Loading Content -->
-    <div id="loading-content" class="hidden flex flex-col items-center mt-4 space-y-4 slide-in">
-        <div class="bg-gray-800 shadow-lg rounded-lg p-4 w-80 flex flex-col items-center">
-            <i class="fas fa-spinner text-4xl loading mb-2"></i>
-            <h2 class="text-lg font-bold mb-1">Reporting...</h2>
-        </div>
-    </div>
-    <!-- Confirmation Content -->
-    <div id="confirmation-content" class="hidden flex flex-col items-center mt-4 space-y-4 slide-in">
-        <div class="bg-gray-800 shadow-lg rounded-lg p-4 w-80 flex flex-col items-center">
-            <i class="fas fa-check-circle text-4xl text-green-500 tick mb-2"></i>
-            <h2 class="text-lg font-bold mb-1">Thank You, Our admins will review this in less than 24h!</h2>
-        </div>
-    </div>
-    <!-- Bottom Banner for Mobile -->
-    <div class="fixed bottom-0 left-0 right-0 bg-black text-white flex justify-around items-center p-2 md:hidden">
-        <div class="flex flex-col items-center" onclick="showHome()">
-            <i class="fas fa-home text-xl"></i>
-            <span class="text-xs">Home</span>
-        </div>
-        <div class="flex flex-col items-center" onclick="showCreate()">
-            <i class="fas fa-plus-circle text-xl"></i>
-            <span class="text-xs">Create</span>
-        </div>
-        <div class="flex flex-col items-center" onclick="showSettings()">
-            <i class="fas fa-cog text-xl"></i>
-            <span class="text-xs">Settings</span>
-        </div>
-    </div>
+
+    <!-- Bottom Banner -->
+    <footer class="bg-gray-800 p-4 flex justify-around items-center fixed bottom-0 left-0 right-0 z-10">
+        <i id="home-icon" class="fas fa-home text-white text-2xl cursor-pointer"></i>
+        <i id="create-icon" class="fas fa-plus-circle text-white text-2xl cursor-pointer"></i>
+        <i id="settings-icon" class="fas fa-cog text-white text-2xl cursor-pointer"></i>
+    </footer>
+
+    <script>
+        let editingStory = null;
+
+        document.getElementById('moon-icon').addEventListener('click', function() {
+            this.classList.toggle('clicked');
+        });
+
+        document.getElementById('page-selector').addEventListener('change', function() {
+            const cardTitle = document.getElementById('card-title');
+            const cardContent = document.getElementById('card-content');
+            switch (this.value) {
+                case 'welcome':
+                    cardTitle.textContent = 'Welcome';
+                    cardContent.textContent = "Welcome to MoonScoped! We're glad to have you here. Explore the app and enjoy your stay.";
+                    break;
+                case 'updates':
+                    cardTitle.textContent = 'Updates';
+                    cardContent.textContent = "Stay tuned for updates to the app. With each new release, you'll receive notifications in the options menu.";
+                    break;
+                case 'features':
+                    cardTitle.textContent = 'Features';
+                    cardContent.textContent = "Discover the latest features of MoonScoped. We continuously add new functionalities to enhance your experience.";
+                    break;
+                case 'storys':
+                    cardTitle.textContent = 'Storys';
+                    cardContent.textContent = "Read the latest stories and updates from our community. Stay connected and informed.";
+                    break;
+            }
+        });
+
+        document.getElementById('home-icon').addEventListener('click', function() {
+            document.getElementById('page-selector').value = 'welcome';
+            const cardTitle = document.getElementById('card-title');
+            const cardContent = document.getElementById('card-content');
+            cardTitle.textContent = 'Welcome';
+            cardContent.textContent = "Welcome to MoonScoped! We're glad to have you here. Explore the app and enjoy your stay.";
+            document.getElementById('main-content').classList.remove('hidden');
+            document.getElementById('settings-page').classList.add('hidden');
+            document.getElementById('create-page').classList.add('hidden');
+        });
+
+        document.getElementById('settings-icon').addEventListener('click', function() {
+            document.getElementById('main-content').classList.add('hidden');
+            document.getElementById('settings-page').classList.remove('hidden');
+            document.getElementById('create-page').classList.add('hidden');
+        });
+
+        document.getElementById('create-icon').addEventListener('click', function() {
+            document.getElementById('main-content').classList.add('hidden');
+            document.getElementById('settings-page').classList.add('hidden');
+            document.getElementById('create-page').classList.remove('hidden');
+            document.getElementById('editing-label').classList.add('hidden');
+            editingStory = null;
+        });
+
+        document.getElementById('toggle-stars').addEventListener('change', function() {
+            const mainContent = document.getElementById('main-content');
+            if (this.checked) {
+                mainContent.classList.add('stars');
+                localStorage.setItem('starsEnabled', 'true');
+            } else {
+                mainContent.classList.remove('stars');
+                localStorage.setItem('starsEnabled', 'false');
+            }
+        });
+
+        document.getElementById('publish-button').addEventListener('click', function() {
+            const title = document.getElementById('story-title').value;
+            const content = document.getElementById('story-content').value;
+
+            if (title && content) {
+                if (editingStory) {
+                    editingStory.querySelector('.story-title').textContent = title;
+                    editingStory.querySelector('.story-content').textContent = content;
+                    editingStory.querySelector('.edited-label').classList.remove('hidden');
+                    updateLocalStorage();
+                } else {
+                    const storyCard = document.createElement('div');
+                    storyCard.className = 'bg-gray-700 p-6 rounded-lg shadow-lg relative';
+                    storyCard.innerHTML = `
+                        <div class="absolute top-2 right-2">
+                            <i class="fas fa-edit text-white cursor-pointer edit-icon"></i>
+                        </div>
+                        <h2 class="story-title text-xl font-bold mb-2">${title}</h2>
+                        <p class="story-content text-gray-300">${content}</p>
+                        <span class="absolute bottom-2 right-2 text-gray-500 text-sm">Published by You</span>
+                        <span class="edited-label absolute bottom-2 left-2 text-gray-500 text-sm hidden">(Edited)</span>
+                    `;
+                    document.getElementById('stories-container').appendChild(storyCard);
+
+                    storyCard.querySelector('.edit-icon').addEventListener('click', function() {
+                        document.getElementById('story-title').value = title;
+                        document.getElementById('story-content').value = content;
+                        document.getElementById('editing-label').classList.remove('hidden');
+                        editingStory = storyCard;
+                        document.getElementById('create-page').scrollIntoView();
+                    });
+                    updateLocalStorage();
+                }
+
+                // Clear the input fields
+                document.getElementById('story-title').value = '';
+                document.getElementById('story-content').value = '';
+                document.getElementById('editing-label').classList.add('hidden');
+                editingStory = null;
+            }
+        });
+
+        function updateLocalStorage() {
+            const stories = [];
+            document.querySelectorAll('#stories-container > div').forEach(storyCard => {
+                stories.push({
+                    title: storyCard.querySelector('.story-title').textContent,
+                    content: storyCard.querySelector('.story-content').textContent,
+                    edited: !storyCard.querySelector('.edited-label').classList.contains('hidden')
+                });
+            });
+            localStorage.setItem('stories', JSON.stringify(stories));
+        }
+
+        function loadFromLocalStorage() {
+            const starsEnabled = localStorage.getItem('starsEnabled');
+            if (starsEnabled === 'true') {
+                document.getElementById('toggle-stars').checked = true;
+                document.getElementById('main-content').classList.add('stars');
+            }
+
+            const stories = JSON.parse(localStorage.getItem('stories') || '[]');
+            stories.forEach(story => {
+                const storyCard = document.createElement('div');
+                storyCard.className = 'bg-gray-700 p-6 rounded-lg shadow-lg relative';
+                storyCard.innerHTML = `
+                    <div class="absolute top-2 right-2">
+                        <i class="fas fa-edit text-white cursor-pointer edit-icon"></i>
+                    </div>
+                    <h2 class="story-title text-xl font-bold mb-2">${story.title}</h2>
+                    <p class="story-content text-gray-300">${story.content}</p>
+                    <span class="absolute bottom-2 right-2 text-gray-500 text-sm">Published by You</span>
+                    <span class="edited-label absolute bottom-2 left-2 text-gray-500 text-sm ${story.edited ? '' : 'hidden'}">(Edited)</span>
+                `;
+                document.getElementById('stories-container').appendChild(storyCard);
+
+                storyCard.querySelector('.edit-icon').addEventListener('click', function() {
+                    document.getElementById('story-title').value = story.title;
+                    document.getElementById('story-content').value = story.content;
+                    document.getElementById('editing-label').classList.remove('hidden');
+                    editingStory = storyCard;
+                    document.getElementById('create-page').scrollIntoView();
+                });
+            });
+        }
+
+        // Load data from localStorage on page load
+        window.addEventListener('load', loadFromLocalStorage);
+    </script>
 </body>
 </html>
