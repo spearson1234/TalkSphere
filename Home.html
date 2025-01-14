@@ -16,6 +16,10 @@
         .stars {
             background: url('https://placehold.co/15x15/ffffff/ffffff.png?text=*') repeat;
         }
+        .highlight {
+            background-color: yellow;
+            color: black;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white font-roboto flex flex-col min-h-screen">
@@ -25,18 +29,26 @@
             <i id="moon-icon" class="fas fa-moon text-white text-2xl spin cursor-pointer"></i>
             <h1 class="text-white text-2xl ml-2">MoonScoped</h1>
         </div>
-        <div class="relative">
-            <select id="page-selector" class="bg-gray-800 text-white border border-gray-600 rounded p-2">
-                <option value="welcome">Welcome</option>
-                <option value="updates">Updates</option>
-                <option value="features">Features</option>
-                <option value="storys">Storys</option>
-            </select>
+        <div class="relative hidden md:flex items-center">
+            <input type="text" id="search-bar" class="bg-gray-800 text-white border border-gray-600 rounded p-2" placeholder="Search...">
+            <button id="search-button" class="ml-2 bg-blue-600 p-2 rounded text-white">
+                <i class="fas fa-search"></i>
+            </button>
+            <div id="suggestions" class="absolute top-full left-0 w-full bg-gray-800 text-white border border-gray-600 rounded mt-1 hidden"></div>
         </div>
     </header>
 
+    <!-- Mobile Search Bar -->
+    <div class="relative md:hidden mt-16 p-4 flex items-center">
+        <input type="text" id="mobile-search-bar" class="bg-gray-800 text-white border border-gray-600 rounded p-2 w-full" placeholder="Search...">
+        <button id="mobile-search-button" class="ml-2 bg-blue-600 p-2 rounded text-white">
+            <i class="fas fa-search"></i>
+        </button>
+        <div id="mobile-suggestions" class="absolute top-full left-0 w-full bg-gray-800 text-white border border-gray-600 rounded mt-1 hidden"></div>
+    </div>
+
     <!-- Main Content -->
-    <main id="main-content" class="flex-grow flex justify-center items-center mt-16 mb-16">
+    <main id="main-content" class="flex-grow flex justify-center items-center mt-4 md:mt-16 mb-16">
         <div id="content-card" class="bg-gray-700 p-6 rounded-lg shadow-lg w-80 relative">
             <div class="flex items-center mb-4">
                 <i class="fas fa-moon text-white text-2xl"></i>
@@ -113,31 +125,7 @@
             this.classList.toggle('clicked');
         });
 
-        document.getElementById('page-selector').addEventListener('change', function() {
-            const cardTitle = document.getElementById('card-title');
-            const cardContent = document.getElementById('card-content');
-            switch (this.value) {
-                case 'welcome':
-                    cardTitle.textContent = 'Welcome';
-                    cardContent.textContent = "Welcome to MoonScoped! We're glad to have you here. Explore the app and enjoy your stay.";
-                    break;
-                case 'updates':
-                    cardTitle.textContent = 'Updates';
-                    cardContent.textContent = "Stay tuned for updates to the app. With each new release, you'll receive notifications in the options menu.";
-                    break;
-                case 'features':
-                    cardTitle.textContent = 'Features';
-                    cardContent.textContent = "Discover the latest features of MoonScoped. We continuously add new functionalities to enhance your experience.";
-                    break;
-                case 'storys':
-                    cardTitle.textContent = 'Storys';
-                    cardContent.textContent = "Read the latest stories and updates from our community. Stay connected and informed.";
-                    break;
-            }
-        });
-
         document.getElementById('home-icon').addEventListener('click', function() {
-            document.getElementById('page-selector').value = 'welcome';
             const cardTitle = document.getElementById('card-title');
             const cardContent = document.getElementById('card-content');
             cardTitle.textContent = 'Welcome';
@@ -313,8 +301,60 @@
             });
         }
 
-        // Load data from localStorage on page load
-        window.addEventListener('load', loadFromLocalStorage);
+        function highlightText(text) {
+            const contentCard = document.getElementById('content-card');
+            const regex = new RegExp(`(${text})`, 'gi');
+            contentCard.innerHTML = contentCard.innerHTML.replace(/<span class="highlight">|<\/span>/g, '');
+            contentCard.innerHTML = contentCard.innerHTML.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        function showSuggestions(inputId, suggestionsId) {
+            const input = document.getElementById(inputId);
+            const suggestions = document.getElementById(suggestionsId);
+            const query = input.value.toLowerCase();
+            const stories = JSON.parse(localStorage.getItem('stories') || '[]');
+            const matches = stories.filter(story => story.title.toLowerCase().includes(query) || story.content.toLowerCase().includes(query));
+
+            if (query && matches.length > 0) {
+                suggestions.innerHTML = matches.map(match => `<div class="p-2 cursor-pointer hover:bg-gray-600">${match.title}</div>`).join('');
+                suggestions.classList.remove('hidden');
+            } else {
+                suggestions.classList.add('hidden');
+            }
+
+            suggestions.querySelectorAll('div').forEach((suggestion, index) => {
+                suggestion.addEventListener('click', () => {
+                    input.value = matches[index].title;
+                    suggestions.classList.add('hidden');
+                    highlightText(matches[index].title);
+                });
+            });
+        }
+
+        document.getElementById('search-bar').addEventListener('input', () => showSuggestions('search-bar', 'suggestions'));
+        document.getElementById('mobile-search-bar').addEventListener('input', () => showSuggestions('mobile-search-bar', 'mobile-suggestions'));
+
+        document.getElementById('search-button').addEventListener('click', () => {
+            const query = document.getElementById('search-bar').value;
+            highlightText(query);
+        });
+
+               document.getElementById('mobile-search-button').addEventListener('click', () => {
+            const query = document.getElementById('mobile-search-bar').value;
+            highlightText(query);
+        });
+
+        // Close modal if the backdrop is clicked
+        document.getElementById('status-modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                document.getElementById('status-modal').classList.add('hidden');
+            }
+        });
+
+        // Load saved data from localStorage when the page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            loadFromLocalStorage();
+        });
     </script>
 </body>
 </html>
