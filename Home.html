@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -17,7 +18,7 @@
             background: url('https://placehold.co/15x15/ffffff/ffffff.png?text=*') repeat;
         }
         .highlight {
-            background-color: yellow;
+            background-color: white;
             color: black;
         }
     </style>
@@ -302,10 +303,12 @@
         }
 
         function highlightText(text) {
-            const contentCard = document.getElementById('content-card');
-            const regex = new RegExp(`(${text})`, 'gi');
-            contentCard.innerHTML = contentCard.innerHTML.replace(/<span class="highlight">|<\/span>/g, '');
-            contentCard.innerHTML = contentCard.innerHTML.replace(regex, '<span class="highlight">$1</span>');
+            const stories = document.querySelectorAll('.story-title');
+            stories.forEach(story => {
+                const regex = new RegExp(`(${text})`, 'gi');
+                story.innerHTML = story.innerHTML.replace(/<span class="highlight">|<\/span>/g, '');
+                story.innerHTML = story.innerHTML.replace(regex, '<span class="highlight">$1</span>');
+            });
         }
 
         function showSuggestions(inputId, suggestionsId) {
@@ -336,22 +339,40 @@
 
         document.getElementById('search-button').addEventListener('click', () => {
             const query = document.getElementById('search-bar').value;
-            highlightText(query);
+            const stories = JSON.parse(localStorage.getItem('stories') || '[]');
+            const matchedStory = stories.find(story => story.title.toLowerCase() === query.toLowerCase());
+
+            if (matchedStory) {
+                document.getElementById('main-content').classList.add('hidden');
+                document.getElementById('settings-page').classList.add('hidden');
+                document.getElementById('create-page').classList.remove('hidden');
+                
+                document.getElementById('story-title').value = matchedStory.title;
+                document.getElementById('story-content').value = matchedStory.content;
+            }
         });
 
-               document.getElementById('mobile-search-button').addEventListener('click', () => {
+        document.getElementById('mobile-search-button').addEventListener('click', () => {
             const query = document.getElementById('mobile-search-bar').value;
-            highlightText(query);
+            const stories = JSON.parse(localStorage.getItem('stories') || '[]');
+            const matchedStory = stories.find(story => story.title.toLowerCase() === query.toLowerCase());
+
+            if (matchedStory) {
+                document.getElementById('main-content').classList.add('hidden');
+                document.getElementById('settings-page').classList.add('hidden');
+                document.getElementById('create-page').classList.remove('hidden');
+                
+                document.getElementById('story-title').value = matchedStory.title;
+                document.getElementById('story-content').value = matchedStory.content;
+            }
         });
 
-        // Close modal if the backdrop is clicked
         document.getElementById('status-modal').addEventListener('click', (e) => {
             if (e.target === e.currentTarget) {
                 document.getElementById('status-modal').classList.add('hidden');
             }
         });
 
-        // Load saved data from localStorage when the page loads
         window.addEventListener('DOMContentLoaded', () => {
             loadFromLocalStorage();
         });
