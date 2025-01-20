@@ -41,6 +41,10 @@
                 transform: translateY(0);
             }
         }
+        .disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body class="bg-gray-100 h-screen flex items-center justify-center">
@@ -71,7 +75,7 @@
                         <div class="p-2 cursor-pointer hover:bg-gray-100 flex items-center">
                             <i class="fas fa-cog mr-2"></i> Settings
                         </div>
-                        <div class="p-2 cursor-pointer hover:bg-gray-100 flex items-center" id="logoutButton" onclick="logout()" disabled>
+                        <div class="p-2 cursor-pointer hover:bg-gray-100 flex items-center disabled" id="logoutButton" onclick="logout()">
                             <i class="fas fa-sign-out-alt mr-2"></i> Logout
                         </div>
                     </div>
@@ -211,11 +215,11 @@
             auth.onAuthStateChanged(user => {
                 if (user) {
                     document.getElementById('loginButton').classList.add('hidden');
-                    document.getElementById('logoutButton').removeAttribute('disabled');
+                    document.getElementById('logoutButton').classList.remove('disabled');
                     showProfile();
                 } else {
                     document.getElementById('loginButton').classList.remove('hidden');
-                    document.getElementById('logoutButton').setAttribute('disabled', 'true');
+                    document.getElementById('logoutButton').classList.add('disabled');
                 }
             });
         }
