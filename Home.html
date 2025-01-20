@@ -223,8 +223,7 @@
         // Logout function
         function logout() {
             auth.signOut().then(() => {
-                checkLoginStatus();
-                showChatWindow();
+                window.location.href = 'login.html';
             });
         }
 
