@@ -196,12 +196,24 @@
             }
         });
 
+        // Listen for typing indicator
+        const typingRef = db.ref('typing');
+        typingRef.on('value', (snapshot) => {
+            const typingData = snapshot.val();
+            if (typingData && typingData.isTyping && typingData.username !== getCurrentUsername()) {
+                showTypingIndicator(typingData.username);
+            } else {
+                hideTypingIndicator();
+            }
+        });
+
         // Display message
         function displayMessage(text, sender, status, messageId) {
             const messagesDiv = document.getElementById('messages');
+            const isAdmin = sender === 'admin';
             const messageElement = document.createElement('div');
             messageElement.className = sender === getCurrentUsername() ? 'p-2 mb-2 bg-green-100 rounded-lg self-end' : 'p-2 mb-2 bg-blue-100 rounded-lg self-start';
-            messageElement.innerHTML = `<strong>${sender}:</strong> ${text} <br><small id="status-${messageId}" class="${sender === getCurrentUsername() ? '' : 'hidden'}">${status}</small>`;
+            messageElement.innerHTML = `<strong>${sender}${isAdmin ? ' <i class="fas fa-check-circle text-blue-500"></i>' : ''}:</strong> ${text} <br><small id="status-${messageId}" class="${sender === getCurrentUsername() ? '' : 'hidden'}">${status}</small>`;
             messagesDiv.appendChild(messageElement);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
@@ -238,19 +250,20 @@
                 messagesRef.push({ text, sender, status: 'Delivered', chat: currentChat });
                 messageInput.value = '';
                 hideTypingIndicator();
+                typingRef.set({ isTyping: false, username: getCurrentUsername() });
             }
         });
 
         // Show typing indicator
-        function showTypingIndicator() {
+        function showTypingIndicator(username) {
             clearTimeout(typingTimeout);
             const typingIndicator = document.getElementById('typingIndicator');
             if (!typingIndicator) {
                 const messagesDiv = document.getElementById('messages');
                 const typingElement = document.createElement('div');
                 typingElement.id = 'typingIndicator';
-                typingElement.className = 'p-2 mb-2 bg-gray-200 rounded-lg self-end';
-                typingElement.innerHTML = `<span class="typing-indicator"></span><span class="typing-indicator"></span><span class="typing-indicator"></span>`;
+                typingElement.className = 'p-2 mb-2 bg-gray-200 rounded-lg self-start';
+                typingElement.innerHTML = `<strong>${username} is typing</strong> <span class="typing-indicator"></span><span class="typing-indicator"></span><span class="typing-indicator"></span>`;
                 messagesDiv.appendChild(typingElement);
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
             }
