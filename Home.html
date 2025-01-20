@@ -64,6 +64,32 @@
                 opacity: 1;
             }
         }
+        .typing-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            margin-right: 2px;
+            background-color: #ccc;
+            border-radius: 50%;
+            animation: typing 1s infinite;
+        }
+        .typing-indicator:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-indicator:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes typing {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100 h-screen flex items-center justify-center">
@@ -156,12 +182,12 @@
         let unreadMessages = 0;
         let isChatOpen = false;
 
-        // Listen for new messages
+        // Listen for new messages in Group Chat
         messagesRef.on('child_added', (snapshot) => {
             const message = snapshot.val();
-            if (message.chat === currentChat) {
+            if (message.chat === 'Group Chat') {
                 displayMessage(message.text, message.sender, message.status, snapshot.key);
-                if (!isChatOpen) {
+                if (!isChatOpen && currentChat === 'Group Chat') {
                     unreadMessages++;
                     updateNotificationBadge();
                 }
@@ -199,10 +225,39 @@
             if (text) {
                 const user = auth.currentUser;
                 const sender = user ? user.email.split('@')[0] : 'guest';
-                messagesRef.push({ text, sender, status: 'Delivered', chat: currentChat });
+                if (currentChat === 'Group Chat') {
+                    messagesRef.push({ text, sender, status: 'Delivered', chat: currentChat });
+                } else if (currentChat === 'Customer Service') {
+                    handleCustomerServiceMessage(text, sender);
+                }
                 messageInput.value = '';
             }
         });
+
+        // Handle Customer Service messages
+        function handleCustomerServiceMessage(text, sender) {
+            const messagesDiv = document.getElementById('messages');
+            displayMessage(text, sender, 'Delivered', 'user-msg');
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'p-2 mb-2 bg-gray-200 rounded-lg self-start';
+            typingIndicator.innerHTML = `<span class="typing-indicator"></span><span class="typing-indicator"></span><span class="typing-indicator"></span>`;
+            messagesDiv.appendChild(typingIndicator);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            setTimeout(() => {
+                messagesDiv.removeChild(typingIndicator);
+                if (text.toLowerCase().includes('report a user')) {
+                    displayMessage('Please enter the username and reason for reporting the user so we can look into it further.', 'Customer Service', 'Delivered', 'cs-1');
+                } else {
+                    displayMessage('Please choose an option below:', 'Customer Service', 'Delivered', 'cs-2');
+                    const button = document.createElement('button');
+                    button.className = 'mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600';
+                    button.textContent = 'Report a user';
+                    button.onclick = () => handleCustomerServiceMessage('report a user', 'user');
+                    messagesDiv.appendChild(button);
+                }
+            }, 5000);
+        }
 
         // Open sidebar
         function openSidebar() {
@@ -225,12 +280,21 @@
         function loadMessages() {
             const messagesDiv = document.getElementById('messages');
             messagesDiv.innerHTML = '';
-            messagesRef.orderByChild('chat').equalTo(currentChat).once('value', (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    const message = childSnapshot.val();
-                    displayMessage(message.text, message.sender, message.status, childSnapshot.key);
+            if (currentChat === 'Group Chat') {
+                messagesRef.orderByChild('chat').equalTo(currentChat).once('value', (snapshot) => {
+                    snapshot.forEach((childSnapshot) => {
+                        const message = childSnapshot.val();
+                        displayMessage(message.text, message.sender, message.status, childSnapshot.key);
+                    });
                 });
-            });
+            } else {
+                // Load messages for Customer Service from a different source if needed
+                // For now, just display a placeholder message
+                const messageElement = document.createElement('div');
+                messageElement.className = 'p-2 mb-2 bg-blue-100 rounded-lg self-start';
+                messageElement.innerHTML = `<strong>Customer Service:</strong> How can we help you today?`;
+                messagesDiv.appendChild(messageElement);
+            }
         }
 
         // Update notification badge
