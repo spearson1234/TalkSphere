@@ -130,7 +130,7 @@
                 <!-- Messages will be dynamically added here -->
             </div>
             <form class="flex p-4 border-t" id="messageForm">
-                <input class="flex-1 p-2 border rounded-l-lg focus:outline-none" id="messageInput" placeholder="Type a message..." type="text" oninput="showTypingIndicator()"/>
+                <input class="flex-1 p-2 border rounded-l-lg focus:outline-none" id="messageInput" placeholder="Type a message..." type="text" oninput="sendTypingIndicator()"/>
                 <button class="bg-blue-500 text-white p-2 rounded-r-lg hover:bg-blue-600 focus:outline-none" type="submit">
                     <i class="fas fa-paper-plane"></i>
                 </button>
@@ -172,6 +172,7 @@
 
         let currentChat = 'Group Chat';
         const messagesRef = db.ref('messages');
+        const typingRef = db.ref('typing');
         let unreadMessages = 0;
         let isChatOpen = false;
         let typingTimeout;
@@ -197,7 +198,6 @@
         });
 
         // Listen for typing indicator
-        const typingRef = db.ref('typing');
         typingRef.on('value', (snapshot) => {
             const typingData = snapshot.val();
             if (typingData && typingData.isTyping && typingData.username !== getCurrentUsername()) {
@@ -254,9 +254,17 @@
             }
         });
 
+        // Send typing indicator
+        function sendTypingIndicator() {
+            typingRef.set({ isTyping: true, username: getCurrentUsername() });
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                typingRef.set({ isTyping: false, username: getCurrentUsername() });
+            }, 3000);
+        }
+
         // Show typing indicator
         function showTypingIndicator(username) {
-            clearTimeout(typingTimeout);
             const typingIndicator = document.getElementById('typingIndicator');
             if (!typingIndicator) {
                 const messagesDiv = document.getElementById('messages');
@@ -267,7 +275,6 @@
                 messagesDiv.appendChild(typingElement);
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
             }
-            typingTimeout = setTimeout(hideTypingIndicator, 3000);
         }
 
         // Hide typing indicator
@@ -332,7 +339,8 @@
             const user = auth.currentUser;
             const email = user ? user.email : "user@example.com"; // Replace with actual email
             const username = email.split('@')[0];
-            document.getElementById('usernamePlaceholder').textContent = username;
+            const isAdmin = email === "admin@gmail.com";
+            document.getElementById('usernamePlaceholder').innerHTML = `${username}${isAdmin ? ' <i class="fas fa-check-circle text-blue-500"></i>' : ''}`;
         }
 
         // Show chat window
