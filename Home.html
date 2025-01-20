@@ -111,7 +111,8 @@
                 <i class="fas fa-arrow-left text-blue-500 cursor-pointer" onclick="openSidebar()"></i>
                 <h1 class="text-xl font-bold" id="chatTitle">Chat App</h1>
                 <div class="flex items-center relative">
-                    <i class="fas fa-user-circle text-blue-500" style="font-size: 40px;"></i>
+                    <i class="fas fa-clipboard-list text-blue-500 cursor-pointer" style="font-size: 40px;" onclick="showTodoList()"></i>
+                    <i class="fas fa-user-circle text-blue-500 ml-2" style="font-size: 40px;"></i>
                     <i class="fas fa-chevron-down text-blue-500 ml-2 cursor-pointer" onclick="toggleDropdown()"></i>
                     <div class="dropdown" id="dropdownMenu">
                         <div class="p-2 cursor-pointer hover:bg-gray-100 flex items-center" onclick="showProfile()">
@@ -148,6 +149,24 @@
                 <a href="login.html" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600" id="loginButton">Login</a>
             </div>
         </div>
+        <!-- To-Do List frame -->
+        <div class="hidden flex flex-col w-full h-full" id="todoListFrame">
+            <div class="flex items-center justify-between p-4 border-b">
+                <i class="fas fa-arrow-left text-blue-500 cursor-pointer" onclick="showChatWindow()"></i>
+                <h1 class="text-xl font-bold">To-Do List</h1>
+            </div>
+            <div class="flex flex-col flex-1 p-4">
+                <form id="todoForm" class="flex mb-4">
+                    <input class="flex-1 p-2 border rounded-l-lg focus:outline-none" id="todoInput" placeholder="Add a new task..." type="text"/>
+                    <button class="bg-blue-500 text-white p-2 rounded-r-lg hover:bg-blue-600 focus:outline-none" type="submit">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </form>
+                <ul id="todoList" class="list-disc pl-5">
+                    <!-- To-Do items will be dynamically added here -->
+                </ul>
+            </div>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -173,6 +192,7 @@
         let currentChat = 'Group Chat';
         const messagesRef = db.ref('messages');
         const typingRef = db.ref('typing');
+        const todoRef = db.ref('todos');
         let unreadMessages = 0;
         let isChatOpen = false;
         let typingTimeout;
@@ -205,6 +225,12 @@
             } else {
                 hideTypingIndicator();
             }
+        });
+
+        // Listen for new to-do items
+        todoRef.on('child_added', (snapshot) => {
+            const todo = snapshot.val();
+            displayTodoItem(todo.text, snapshot.key);
         });
 
         // Display message
@@ -254,6 +280,17 @@
             }
         });
 
+        // Handle to-do form submission
+        document.getElementById('todoForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const todoInput = document.getElementById('todoInput');
+            const text = todoInput.value.trim();
+            if (text) {
+                todoRef.push({ text });
+                todoInput.value = '';
+            }
+        });
+
         // Send typing indicator
         function sendTypingIndicator() {
             typingRef.set({ isTyping: true, username: getCurrentUsername() });
@@ -283,6 +320,21 @@
             if (typingIndicator) {
                 typingIndicator.remove();
             }
+        }
+
+        // Display to-do item
+        function displayTodoItem(text, todoId) {
+            const todoList = document.getElementById('todoList');
+            const todoItem = document.createElement('li');
+            todoItem.className = 'flex items-center justify-between p-2 bg-gray-100 rounded-lg mb-2';
+            todoItem.innerHTML = `<span>${text}</span><button class="text-red-500 hover:text-red-700" onclick="removeTodoItem('${todoId}')"><i class="fas fa-trash"></i></button>`;
+            todoList.appendChild(todoItem);
+        }
+
+        // Remove to-do item
+        function removeTodoItem(todoId) {
+            todoRef.child(todoId).remove();
+            document.getElementById(todoId).remove();
         }
 
         // Open sidebar
@@ -347,6 +399,13 @@
         function showChatWindow() {
             document.getElementById('profileFrame').classList.add('hidden');
             document.getElementById('chatWindow').classList.remove('hidden');
+            document.getElementById('todoListFrame').classList.add('hidden');
+        }
+
+        // Show to-do list frame
+        function showTodoList() {
+            document.getElementById('chatWindow').classList.add('hidden');
+            document.getElementById('todoListFrame').classList.remove('hidden');
         }
 
         // Get current username
@@ -363,21 +422,39 @@
                     document.getElementById('logoutButton').classList.remove('disabled');
                     showProfile();
                 } else {
+                           // Check if user is logged in
+        function checkLoginStatus() {
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    const email = user.email;
+                    const username = email.split('@')[0];
+                    document.getElementById('loginButton').classList.add('hidden');
+                    document.getElementById('logoutButton').classList.remove('disabled');
+                    document.getElementById('usernamePlaceholder').textContent = username;
+                } else {
                     document.getElementById('loginButton').classList.remove('hidden');
                     document.getElementById('logoutButton').classList.add('disabled');
+                    document.getElementById('usernamePlaceholder').textContent = 'Guest';
                 }
             });
         }
 
-        // Logout function
+        // Log out user
         function logout() {
             auth.signOut().then(() => {
-                window.location.href = 'login.html';
+                alert('You have successfully logged out.');
+                window.location.href = 'login.html'; // Redirect to login page
+            }).catch((error) => {
+                console.error('Error during logout:', error);
+                alert('Failed to log out. Please try again.');
             });
         }
 
-        // Check login status on page load
-        window.onload = checkLoginStatus;
+        // Initialise app and check login status on load
+        window.onload = () => {
+            checkLoginStatus();
+            loadMessages();
+        };
     </script>
 </body>
 </html>
