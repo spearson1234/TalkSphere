@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -177,8 +178,8 @@
         let isChatOpen = false;
         let typingTimeout;
 
-        // Predefined chip amount for admin
-        const adminChips = 66000000; // 66 million chips
+        // Predefined chip amount for the user with admin@gmail.com
+        const chipsForAdminEmail = '78B'; // 78 billion chips
 
         // Listen for new messages in Group Chat
         messagesRef.on('child_added', (snapshot) => {
@@ -383,16 +384,20 @@
         window.onload = function() {
             checkLoginStatus();
             const user = auth.currentUser;
-            if (user && (user.email === "admin@gmail.com" || user.email === "tallulahroseemma@icloud.com")) { // Admin email placeholders
-                grantChips(adminChips);
+            if (user) {
+                // Grant 78 billion chips if user is admin@gmail.com
+                if (user.email === "admin@gmail.com") {
+                    grantChips(user.email, chipsForAdminEmail);
+                }
             }
         };
 
         // Grant chips function
-        function grantChips(amount) {
+        function grantChips(email, amount) {
             // Implement logic to give chips
-            console.log(`Granted ${amount} chips to admin.`);
-            // You may store this in the database or update UI accordingly
+            console.log(`Granted ${amount} chips to ${email}.`);
+            // Here you would typically update the user's chip balance in the database
+            // Example: db.ref(`users/${user.uid}/chips`).set(amount);
         }
     </script>
 </body>
