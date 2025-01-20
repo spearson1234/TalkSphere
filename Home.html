@@ -121,10 +121,7 @@
                             <i class="fas fa-cog mr-2"></i> Settings
                         </div>
                         <div class="p-2 cursor-pointer hover:bg-gray-100 flex items-center">
-                            <i class="fas fa-clipboard-list mr-2"></i> Chip icons <span class="text-gray-400">Chips: 0</span>
-                        </div>
-                        <div class="p-2 cursor-pointer hover:bg-gray-100 flex items-center">
-                            <i class="fas fa-infinity mr-2"></i> Give Admin@gmail.com Unlimited icon
+                            <i class="fas fa-coins mr-2 text-gray-400"></i> Chips: 0
                         </div>
                         <div class="p-2 cursor-pointer hover:bg-gray-100 flex items-center disabled" id="logoutButton" onclick="logout()">
                             <i class="fas fa-sign-out-alt mr-2"></i> Logout
@@ -180,6 +177,9 @@
         let isChatOpen = false;
         let typingTimeout;
 
+        // Predefined chip amount for admin
+        const adminChips = 100000000; // 100 million chips
+
         // Listen for new messages in Group Chat
         messagesRef.on('child_added', (snapshot) => {
             const message = snapshot.val();
@@ -213,9 +213,10 @@
         // Display message
         function displayMessage(text, sender, status, messageId) {
             const messagesDiv = document.getElementById('messages');
-            const isAdmin = sender === 'admin' || sender === 'tallulahroseemma';
+            const isAdmin = sender === 'admin';
             const messageElement = document.createElement('div');
             messageElement.className = sender === getCurrentUsername() ? 'p-2 mb-2 bg-green-100 rounded-lg self-end' : 'p-2 mb-2 bg-blue-100 rounded-lg self-start';
+            
             messageElement.innerHTML = `<strong>${sender}${isAdmin ? ' <i class="fas fa-check-circle text-blue-500"></i>' : ''}:</strong> ${text} <br><small id="status-${messageId}" class="${sender === getCurrentUsername() ? '' : 'hidden'}">${status}</small>`;
             messagesDiv.appendChild(messageElement);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
@@ -378,8 +379,21 @@
             });
         }
 
-        // Check login status on page load
-        window.onload = checkLoginStatus;
+        // Check login status and assign chips on page load
+        window.onload = function() {
+            checkLoginStatus();
+            const user = auth.currentUser;
+            if (user && (user.email === "admin@gmail.com" || user.email === "tallulahroseemma@icloud.com")) { // Admin email placeholders
+                grantChips(adminChips);
+            }
+        };
+
+        // Grant chips function
+        function grantChips(amount) {
+            // Implement logic to give chips
+            console.log(`Granted ${amount} chips to admin.`);
+            // You may store this in the database or update UI accordingly
+        }
     </script>
 </body>
 </html>
