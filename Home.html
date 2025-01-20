@@ -414,7 +414,7 @@
             return user ? user.email.split('@')[0] : 'guest';
         }
 
-             // Check if user is logged in
+            // Check if user is logged in
         function checkLoginStatus() {
             auth.onAuthStateChanged((user) => {
                 if (user) {
@@ -431,21 +431,23 @@
             });
         }
 
-        // Log out user
+        // Logout function
         function logout() {
             auth.signOut().then(() => {
-                alert('You have successfully logged out.');
-                window.location.href = 'login.html'; // Redirect to login page
+                // Reset any relevant UI elements after logout
+                document.getElementById('loginButton').classList.remove('hidden');
+                document.getElementById('logoutButton').classList.add('disabled');
+                document.getElementById('usernamePlaceholder').textContent = 'Guest';
+                // Optionally redirect to login page
+                window.location.href = 'login.html';
             }).catch((error) => {
-                console.error('Error during logout:', error);
-                alert('Failed to log out. Please try again.');
+                console.error('Error logging out:', error);
             });
         }
 
-        // Initialise app and check login status on load
-        window.onload = () => {
+        // Run checkLoginStatus on page load
+        window.onload = function() {
             checkLoginStatus();
-            loadMessages();
         };
     </script>
 </body>
