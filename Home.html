@@ -5,10 +5,9 @@
     <title>Real-time Chat App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <style>
         .sidebar {
             transform: translateX(-100%);
@@ -104,6 +103,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script>
         // Your Firebase configuration
         const firebaseConfig = {
@@ -119,6 +119,7 @@
         // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        const auth = firebase.auth();
 
         const messagesRef = db.ref('messages');
         let unreadMessages = 0;
@@ -150,7 +151,9 @@
             const messageInput = document.getElementById('messageInput');
             const text = messageInput.value.trim();
             if (text) {
-                messagesRef.push({ text, sender: 'user' });
+                const user = auth.currentUser;
+                const sender = user ? user.email.split('@')[0] : 'guest';
+                messagesRef.push({ text, sender });
                 messageInput.value = '';
             }
         });
@@ -191,7 +194,8 @@
             document.getElementById('chatWindow').classList.add('hidden');
             document.getElementById('profileFrame').classList.remove('hidden');
             // Set username from login.html (assuming you have a way to get the username)
-            const email = localStorage.getItem('userEmail') || "user@example.com"; // Replace with actual email
+            const user = auth.currentUser;
+            const email = user ? user.email : "user@example.com"; // Replace with actual email
             const username = email.split('@')[0];
             document.getElementById('usernamePlaceholder').textContent = username;
         }
@@ -204,22 +208,24 @@
 
         // Check if user is logged in
         function checkLoginStatus() {
-            const email = localStorage.getItem('userEmail');
-            if (email) {
-                document.getElementById('loginButton').classList.add('hidden');
-                document.getElementById('logoutButton').removeAttribute('disabled');
-                showProfile();
-            } else {
-                document.getElementById('loginButton').classList.remove('hidden');
-                document.getElementById('logoutButton').setAttribute('disabled', 'true');
-            }
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    document.getElementById('loginButton').classList.add('hidden');
+                    document.getElementById('logoutButton').removeAttribute('disabled');
+                    showProfile();
+                } else {
+                    document.getElementById('loginButton').classList.remove('hidden');
+                    document.getElementById('logoutButton').setAttribute('disabled', 'true');
+                }
+            });
         }
 
         // Logout function
         function logout() {
-            localStorage.removeItem('userEmail');
-            checkLoginStatus();
-            showChatWindow();
+            auth.signOut().then(() => {
+                checkLoginStatus();
+                showChatWindow();
+            });
         }
 
         // Check login status on page load
