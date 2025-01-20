@@ -104,13 +104,6 @@
                 </div>
                 <div id="notificationBadge" class="bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center text-xs hidden">0</div>
             </div>
-            <div class="flex items-center justify-between mb-4 cursor-pointer" onclick="openChat('Customer Service')">
-                <div class="flex items-center">
-                    <i class="fas fa-headset text-blue-500" style="font-size: 40px;"></i>
-                    <span class="ml-2">Customer Service</span>
-                </div>
-                <div id="notificationBadgeCS" class="bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center text-xs hidden">0</div>
-            </div>
         </div>
         <!-- Chat window -->
         <div class="flex flex-col w-full h-full" id="chatWindow">
@@ -137,7 +130,7 @@
                 <!-- Messages will be dynamically added here -->
             </div>
             <form class="flex p-4 border-t" id="messageForm">
-                <input class="flex-1 p-2 border rounded-l-lg focus:outline-none" id="messageInput" placeholder="Type a message..." type="text"/>
+                <input class="flex-1 p-2 border rounded-l-lg focus:outline-none" id="messageInput" placeholder="Type a message..." type="text" oninput="showTypingIndicator()"/>
                 <button class="bg-blue-500 text-white p-2 rounded-r-lg hover:bg-blue-600 focus:outline-none" type="submit">
                     <i class="fas fa-paper-plane"></i>
                 </button>
@@ -181,6 +174,7 @@
         const messagesRef = db.ref('messages');
         let unreadMessages = 0;
         let isChatOpen = false;
+        let typingTimeout;
 
         // Listen for new messages in Group Chat
         messagesRef.on('child_added', (snapshot) => {
@@ -194,12 +188,20 @@
             }
         });
 
+        // Listen for message updates (e.g., status changes)
+        messagesRef.on('child_changed', (snapshot) => {
+            const message = snapshot.val();
+            if (message.chat === 'Group Chat') {
+                updateMessageStatus(snapshot.key, message.status);
+            }
+        });
+
         // Display message
         function displayMessage(text, sender, status, messageId) {
             const messagesDiv = document.getElementById('messages');
             const messageElement = document.createElement('div');
             messageElement.className = sender === getCurrentUsername() ? 'p-2 mb-2 bg-green-100 rounded-lg self-end' : 'p-2 mb-2 bg-blue-100 rounded-lg self-start';
-            messageElement.innerHTML = `<strong>${sender}:</strong> ${text} <br><small id="status-${messageId}">${status}</small>`;
+            messageElement.innerHTML = `<strong>${sender}:</strong> ${text} <br><small id="status-${messageId}" class="${sender === getCurrentUsername() ? '' : 'hidden'}">${status}</small>`;
             messagesDiv.appendChild(messageElement);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
@@ -217,6 +219,14 @@
             }
         }
 
+        // Update message status
+        function updateMessageStatus(messageId, status) {
+            const statusElement = document.getElementById(`status-${messageId}`);
+            if (statusElement) {
+                statusElement.textContent = status;
+            }
+        }
+
         // Handle form submission
         document.getElementById('messageForm').addEventListener('submit', (e) => {
             e.preventDefault();
@@ -225,38 +235,34 @@
             if (text) {
                 const user = auth.currentUser;
                 const sender = user ? user.email.split('@')[0] : 'guest';
-                if (currentChat === 'Group Chat') {
-                    messagesRef.push({ text, sender, status: 'Delivered', chat: currentChat });
-                } else if (currentChat === 'Customer Service') {
-                    handleCustomerServiceMessage(text, sender);
-                }
+                messagesRef.push({ text, sender, status: 'Delivered', chat: currentChat });
                 messageInput.value = '';
+                hideTypingIndicator();
             }
         });
 
-        // Handle Customer Service messages
-        function handleCustomerServiceMessage(text, sender) {
-            const messagesDiv = document.getElementById('messages');
-            displayMessage(text, sender, 'Delivered', 'user-msg');
-            const typingIndicator = document.createElement('div');
-            typingIndicator.className = 'p-2 mb-2 bg-gray-200 rounded-lg self-start';
-            typingIndicator.innerHTML = `<span class="typing-indicator"></span><span class="typing-indicator"></span><span class="typing-indicator"></span>`;
-            messagesDiv.appendChild(typingIndicator);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        // Show typing indicator
+        function showTypingIndicator() {
+            clearTimeout(typingTimeout);
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (!typingIndicator) {
+                const messagesDiv = document.getElementById('messages');
+                const typingElement = document.createElement('div');
+                typingElement.id = 'typingIndicator';
+                typingElement.className = 'p-2 mb-2 bg-gray-200 rounded-lg self-end';
+                typingElement.innerHTML = `<span class="typing-indicator"></span><span class="typing-indicator"></span><span class="typing-indicator"></span>`;
+                messagesDiv.appendChild(typingElement);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
+            typingTimeout = setTimeout(hideTypingIndicator, 3000);
+        }
 
-            setTimeout(() => {
-                messagesDiv.removeChild(typingIndicator);
-                if (text.toLowerCase().includes('report a user')) {
-                    displayMessage('Please enter the username and reason for reporting the user so we can look into it further.', 'Customer Service', 'Delivered', 'cs-1');
-                } else {
-                    displayMessage('Please choose an option below:', 'Customer Service', 'Delivered', 'cs-2');
-                    const button = document.createElement('button');
-                    button.className = 'mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600';
-                    button.textContent = 'Report a user';
-                    button.onclick = () => handleCustomerServiceMessage('report a user', 'user');
-                    messagesDiv.appendChild(button);
-                }
-            }, 5000);
+        // Hide typing indicator
+        function hideTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
         }
 
         // Open sidebar
@@ -280,21 +286,12 @@
         function loadMessages() {
             const messagesDiv = document.getElementById('messages');
             messagesDiv.innerHTML = '';
-            if (currentChat === 'Group Chat') {
-                messagesRef.orderByChild('chat').equalTo(currentChat).once('value', (snapshot) => {
-                    snapshot.forEach((childSnapshot) => {
-                        const message = childSnapshot.val();
-                        displayMessage(message.text, message.sender, message.status, childSnapshot.key);
-                    });
+            messagesRef.orderByChild('chat').equalTo(currentChat).once('value', (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    const message = childSnapshot.val();
+                    displayMessage(message.text, message.sender, message.status, childSnapshot.key);
                 });
-            } else {
-                // Load messages for Customer Service from a different source if needed
-                // For now, just display a placeholder message
-                const messageElement = document.createElement('div');
-                messageElement.className = 'p-2 mb-2 bg-blue-100 rounded-lg self-start';
-                messageElement.innerHTML = `<strong>Customer Service:</strong> How can we help you today?`;
-                messagesDiv.appendChild(messageElement);
-            }
+            });
         }
 
         // Update notification badge
