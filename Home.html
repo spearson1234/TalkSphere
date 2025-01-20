@@ -172,8 +172,7 @@
                             <p class="text-gray-500">200 Chips</p>
                         </div>
                     </div>
-                    <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none" onclick="buyVIP()">Buy</button>
-                    <div class="absolute bottom-2 right-2 text-gray-400 text-xs">Made By Moonscoped</div>
+                    <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none">Buy</button>
                 </div>
             </div>
         </div>
@@ -240,10 +239,9 @@
         function displayMessage(text, sender, status, messageId) {
             const messagesDiv = document.getElementById('messages');
             const isAdmin = sender === 'admin' || sender === 'tallulahroseemma';
-            const isVIP = sender === 'vip';
             const messageElement = document.createElement('div');
             messageElement.className = sender === getCurrentUsername() ? 'p-2 mb-2 bg-green-100 rounded-lg self-end' : 'p-2 mb-2 bg-blue-100 rounded-lg self-start';
-            messageElement.innerHTML = `<strong>${sender}${isAdmin ? ' <i class="fas fa-check-circle text-blue-500"></i>' : ''}${isVIP ? ' <i class="fas fa-crown text-yellow-500"></i>' : ''}:</strong> ${text} <br><small id="status-${messageId}" class="${sender === getCurrentUsername() ? '' : 'hidden'}">${status}</small>`;
+            messageElement.innerHTML = `<strong>${sender}${isAdmin ? ' <i class="fas fa-check-circle text-blue-500"></i>' : ''}:</strong> ${text} <br><small id="status-${messageId}" class="${sender === getCurrentUsername() ? '' : 'hidden'}">${status}</small>`;
             messagesDiv.appendChild(messageElement);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
@@ -371,8 +369,7 @@
             const email = user ? user.email : "user@example.com"; // Replace with actual email
             const username = email.split('@')[0];
             const isAdmin = email === "admin@gmail.com" || email === "tallulahroseemma@icloud.com";
-            const isVIP = email === "vip@gmail.com";
-            document.getElementById('usernamePlaceholder').innerHTML = `${username}${isAdmin ? ' <i class="fas fa-check-circle text-blue-500"></i>' : ''}${isVIP ? ' <i class="fas fa-crown text-yellow-500"></i>' : ''}`;
+            document.getElementById('usernamePlaceholder').innerHTML = `${username}${isAdmin ? ' <i class="fas fa-check-circle text-blue-500"></i>' : ''}`;
             document.getElementById('chipsCount').innerHTML = isAdmin ? '<i class="fas fa-infinity"></i>' : '0';
         }
 
@@ -407,4 +404,19 @@
                 } else {
                     document.getElementById('loginButton').classList.remove('hidden');
                     document.getElementById('logoutButton').classList.add('disabled');
-               
+                }
+            });
+        }
+
+        // Logout function
+        function logout() {
+            auth.signOut().then(() => {
+                window.location.href = 'login.html';
+            });
+        }
+
+        // Check login status on page load
+        window.onload = checkLoginStatus;
+    </script>
+</body>
+</html>
