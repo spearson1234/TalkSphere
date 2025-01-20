@@ -150,9 +150,6 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script>
         // Your Firebase configuration
         const firebaseConfig = {
@@ -335,9 +332,8 @@
         function showProfile() {
             document.getElementById('chatWindow').classList.add('hidden');
             document.getElementById('profileFrame').classList.remove('hidden');
-            // Set username from login.html (assuming you have a way to get the username)
             const user = auth.currentUser;
-            const email = user ? user.email : "user@example.com"; // Replace with actual email
+            const email = user ? user.email : "smithpearson79@gmail..com"; // Updated placeholder
             const username = email.split('@')[0];
             const isAdmin = email === "admin@gmail.com" || email === "tallulahroseemma@icloud.com";
             document.getElementById('usernamePlaceholder').innerHTML = `${username}${isAdmin ? ' <i class="fas fa-check-circle text-blue-500"></i>' : ''}`;
