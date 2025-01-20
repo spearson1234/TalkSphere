@@ -45,6 +45,25 @@
             pointer-events: none;
             opacity: 0.5;
         }
+        .fade-out {
+            animation: fadeOut 0.5s forwards;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s forwards;
+        }
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+            }
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100 h-screen flex items-center justify-center">
@@ -52,14 +71,14 @@
         <!-- Sidebar for contacts -->
         <div class="sidebar absolute top-0 left-0 w-full h-full bg-white z-10 p-4 border-r" id="sidebar">
             <h2 class="text-xl font-bold mb-4">Contacts</h2>
-            <div class="flex items-center justify-between mb-4 cursor-pointer" onclick="openChat()">
+            <div class="flex items-center justify-between mb-4 cursor-pointer" onclick="openChat('Group Chat')">
                 <div class="flex items-center">
                     <i class="fas fa-users text-blue-500" style="font-size: 40px;"></i>
                     <span class="ml-2">Group Chat</span>
                 </div>
                 <div id="notificationBadge" class="bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center text-xs hidden">0</div>
             </div>
-            <div class="flex items-center justify-between mb-4 cursor-pointer" onclick="openChat()">
+            <div class="flex items-center justify-between mb-4 cursor-pointer" onclick="openChat('Customer Service')">
                 <div class="flex items-center">
                     <i class="fas fa-headset text-blue-500" style="font-size: 40px;"></i>
                     <span class="ml-2">Customer Service</span>
@@ -71,7 +90,7 @@
         <div class="flex flex-col w-full h-full" id="chatWindow">
             <div class="flex items-center justify-between p-4 border-b relative">
                 <i class="fas fa-arrow-left text-blue-500 cursor-pointer" onclick="openSidebar()"></i>
-                <h1 class="text-xl font-bold">Chat App</h1>
+                <h1 class="text-xl font-bold" id="chatTitle">Chat App</h1>
                 <div class="flex items-center relative">
                     <i class="fas fa-user-circle text-blue-500" style="font-size: 40px;"></i>
                     <i class="fas fa-chevron-down text-blue-500 ml-2 cursor-pointer" onclick="toggleDropdown()"></i>
@@ -132,6 +151,7 @@
         const db = firebase.database();
         const auth = firebase.auth();
 
+        let currentChat = 'Group Chat';
         const messagesRef = db.ref('messages');
         let unreadMessages = 0;
         let isChatOpen = false;
@@ -139,21 +159,36 @@
         // Listen for new messages
         messagesRef.on('child_added', (snapshot) => {
             const message = snapshot.val();
-            displayMessage(message.text, message.sender, message.status);
-            if (!isChatOpen) {
-                unreadMessages++;
-                updateNotificationBadge();
+            if (message.chat === currentChat) {
+                displayMessage(message.text, message.sender, message.status, snapshot.key);
+                if (!isChatOpen) {
+                    unreadMessages++;
+                    updateNotificationBadge();
+                }
             }
         });
 
         // Display message
-        function displayMessage(text, sender, status) {
+        function displayMessage(text, sender, status, messageId) {
             const messagesDiv = document.getElementById('messages');
             const messageElement = document.createElement('div');
             messageElement.className = sender === getCurrentUsername() ? 'p-2 mb-2 bg-green-100 rounded-lg self-end' : 'p-2 mb-2 bg-blue-100 rounded-lg self-start';
-            messageElement.innerHTML = `<strong>${sender}:</strong> ${text} <br><small>${status}</small>`;
+            messageElement.innerHTML = `<strong>${sender}:</strong> ${text} <br><small id="status-${messageId}">${status}</small>`;
             messagesDiv.appendChild(messageElement);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            if (sender !== getCurrentUsername() && status === 'Delivered') {
+                setTimeout(() => {
+                    const statusElement = document.getElementById(`status-${messageId}`);
+                    statusElement.classList.add('fade-out');
+                    setTimeout(() => {
+                        statusElement.textContent = 'Read';
+                        statusElement.classList.remove('fade-out');
+                        statusElement.classList.add('fade-in');
+                        messagesRef.child(messageId).update({ status: 'Read' });
+                    }, 500);
+                }, 1000);
+            }
         }
 
         // Handle form submission
@@ -164,7 +199,7 @@
             if (text) {
                 const user = auth.currentUser;
                 const sender = user ? user.email.split('@')[0] : 'guest';
-                messagesRef.push({ text, sender, status: 'Delivered' });
+                messagesRef.push({ text, sender, status: 'Delivered', chat: currentChat });
                 messageInput.value = '';
             }
         });
@@ -176,11 +211,26 @@
         }
 
         // Open chat window
-        function openChat() {
+        function openChat(chat) {
+            currentChat = chat;
+            document.getElementById('chatTitle').textContent = chat;
             document.getElementById('sidebar').classList.remove('sidebar-open');
             isChatOpen = true;
             unreadMessages = 0;
             updateNotificationBadge();
+            loadMessages();
+        }
+
+        // Load messages for the current chat
+        function loadMessages() {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = '';
+            messagesRef.orderByChild('chat').equalTo(currentChat).once('value', (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    const message = childSnapshot.val();
+                    displayMessage(message.text, message.sender, message.status, childSnapshot.key);
+                });
+            });
         }
 
         // Update notification badge
