@@ -90,6 +90,40 @@
                 transform: translateY(0);
             }
         }
+        .report-frame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+        }
+        .report-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        .loading-icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid #ccc;
+            border-top-color: #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100 h-screen flex items-center justify-center">
@@ -111,6 +145,7 @@
                 <i class="fas fa-arrow-left text-blue-500 cursor-pointer" onclick="openSidebar()"></i>
                 <h1 class="text-xl font-bold" id="chatTitle">Chat App</h1>
                 <div class="flex items-center relative">
+                    <i class="fas fa-flag text-red-500 cursor-pointer mr-4" onclick="openReportFrame()"></i>
                     <i class="fas fa-user-circle text-blue-500" style="font-size: 40px;"></i>
                     <i class="fas fa-chevron-down text-blue-500 ml-2 cursor-pointer" onclick="toggleDropdown()"></i>
                     <div class="dropdown" id="dropdownMenu">
@@ -148,6 +183,25 @@
                 <a href="login.html" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600" id="loginButton">Login</a>
             </div>
         </div>
+        <!-- Report frame -->
+        <div class="hidden report-frame" id="reportFrame">
+            <div class="report-content">
+                <i class="fas fa-exclamation-triangle text-red-500" style="font-size: 40px;"></i>
+                <h2 class="text-xl font-bold mt-4">Who would you like to report?</h2>
+                <input type="text" id="reportUsername" class="mt-4 p-2 border rounded w-full" placeholder="Username">
+                <input type="text" id="reportReason" class="mt-4 p-2 border rounded w-full" placeholder="Reason">
+                <button class="bg-red-500 text-white px-4 py-2 rounded-lg mt-4 hover:bg-red-600" onclick="submitReport()">
+                    <i class="fas fa-paper-plane"></i> Submit
+                </button>
+                <div class="mt-4 hidden" id="reportLoading">
+                    <div class="loading-icon"></div>
+                </div>
+                <div class="mt-4 hidden" id="reportConfirmation">
+                    <i class="fas fa-check-circle text-green-500" style="font-size: 40px;"></i>
+                    <p class="mt-2">Report complete. We'll have a look!</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -173,6 +227,7 @@
         let currentChat = 'Group Chat';
         const messagesRef = db.ref('messages');
         const typingRef = db.ref('typing');
+        const reportsRef = db.ref('reports');
         let unreadMessages = 0;
         let isChatOpen = false;
         let typingTimeout;
@@ -349,35 +404,33 @@
             document.getElementById('chatWindow').classList.remove('hidden');
         }
 
-        // Get current username
-        function getCurrentUsername() {
-            const user = auth.currentUser;
-            return user ? user.email.split('@')[0] : 'guest';
+        // Open report frame
+        function openReportFrame() {
+            document.getElementById('reportFrame').classList.remove('hidden');
         }
 
-        // Check if user is logged in
-        function checkLoginStatus() {
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    document.getElementById('loginButton').classList.add('hidden');
-                    document.getElementById('logoutButton').classList.remove('disabled');
-                    showProfile();
-                } else {
-                    document.getElementById('loginButton').classList.remove('hidden');
-                    document.getElementById('logoutButton').classList.add('disabled');
-                }
-            });
+        // Close report frame
+        function closeReportFrame() {
+            document.getElementById('reportFrame').classList.add('hidden');
         }
 
-        // Logout function
-        function logout() {
-            auth.signOut().then(() => {
-                window.location.href = 'login.html';
-            });
+        // Submit report
+        function submitReport() {
+            const reportUsername = document.getElementById('reportUsername').value.trim();
+            const reportReason = document.getElementById('reportReason').value.trim();
+            if (reportUsername && reportReason) {
+                document.getElementById('reportLoading').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('reportLoading').classList.add('hidden');
+                    document.getElementById('reportConfirmation').classList.remove('hidden');
+                    reportsRef.push({ username: reportUsername, reason: reportReason, status: 'Pending' });
+                    setTimeout(() => {
+                        closeReportFrame();
+                        document.getElementById('reportConfirmation').classList.add('hidden');
+                    }, 3000);
+                }, 5000);
+            }
         }
-
-        // Check login status on page load
-        window.onload = checkLoginStatus;
     </script>
 </body>
 </html>
