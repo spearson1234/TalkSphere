@@ -123,6 +123,9 @@
                         <div class="p-2 cursor-pointer hover:bg-gray-100 flex items-center disabled" id="logoutButton" onclick="logout()">
                             <i class="fas fa-sign-out-alt mr-2"></i> Logout
                         </div>
+                        <div class="p-2 text-gray-500 flex items-center">
+                            <i class="fas fa-coins mr-2"></i> Chips: <span id="chipsCount">0</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -341,6 +344,7 @@
             const username = email.split('@')[0];
             const isAdmin = email === "admin@gmail.com" || email === "tallulahroseemma@icloud.com";
             document.getElementById('usernamePlaceholder').innerHTML = `${username}${isAdmin ? ' <i class="fas fa-check-circle text-blue-500"></i>' : ''}`;
+            document.getElementById('chipsCount').innerHTML = isAdmin ? '<i class="fas fa-infinity"></i>' : '0';
         }
 
         // Show chat window
