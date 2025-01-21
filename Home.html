@@ -1,10 +1,11 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Real-time Chat App</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
@@ -127,7 +128,7 @@
                         <div class="p-2 cursor-pointer hover:bg-gray-100 flex items-center">
                             <i class="fas fa-cog mr-2"></i> Settings
                         </div>
-                        <div class="p-2 cursor-pointer hover:bg-gray-100 flex items-center disabled" id="logoutButton" onclick="logout()">
+                        <div class="p-2 cursor-pointer hover:bg-gray-100 flex items-center hidden" id="logoutButton" onclick="logout()">
                             <i class="fas fa-sign-out-alt mr-2"></i> Logout
                         </div>
                         <div class="p-2 cursor-default text-gray-500 flex items-center">
@@ -208,7 +209,7 @@
         let typingTimeout;
 
         // Ban user
-        function banUser(email) {
+        function banUser (email) {
             bannedUsersRef.child(email.replace('.', ',')).set(true);
         }
 
@@ -218,7 +219,7 @@
         }
 
         // Ban smithpearson79@gmail.com
-        banUser('smithpearson79@gmail.com');
+        banUser ('smithpearson79@gmail.com');
 
         // Listen for new messages in Group Chat
         messagesRef.on('child_added', (snapshot) => {
@@ -294,7 +295,7 @@
             const messageInput = document.getElementById('messageInput');
             const text = messageInput.value.trim();
             if (text) {
-                const user = auth.currentUser;
+                const user = auth.currentUser ;
                 const sender = user ? user.email.split('@')[0] : 'guest';
                 messagesRef.push({ text, sender, status: 'Delivered', chat: currentChat });
                 messageInput.value = '';
@@ -418,7 +419,7 @@
             const badge = document.getElementById('notificationBadge');
             if (unreadMessages > 0) {
                 badge.textContent = unreadMessages > 99 ? '99+' : unreadMessages;
-                               badge.classList.remove('hidden');
+                badge.classList.remove('hidden');
             } else {
                 badge.classList.add('hidden');
             }
@@ -444,7 +445,7 @@
 
         // Get current username
         function getCurrentUsername() {
-            const user = auth.currentUser;
+            const user = auth.currentUser ;
             return user ? user.email.split('@')[0] : 'guest';
         }
 
@@ -468,9 +469,11 @@
             if (user) {
                 document.getElementById('usernamePlaceholder').textContent = user.email.split('@')[0];
                 document.getElementById('loginButton').classList.add('hidden');
+                document.getElementById('logoutButton').classList.remove('hidden'); // Show logout button
             } else {
                 document.getElementById('usernamePlaceholder').textContent = 'Guest';
                 document.getElementById('loginButton').classList.remove('hidden');
+                document.getElementById('logoutButton').classList.add('hidden'); // Hide logout button
             }
         });
 
