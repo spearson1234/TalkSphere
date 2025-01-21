@@ -104,6 +104,12 @@
                 </div>
                 <div id="notificationBadge" class="bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center text-xs hidden">0</div>
             </div>
+            <div class="flex items-center justify-between mb-4 cursor-pointer" onclick="openChat('Customer Service')">
+                <div class="flex items-center">
+                    <i class="fas fa-headset text-blue-500" style="font-size: 40px;"></i>
+                    <span class="ml-2">Customer Service</span>
+                </div>
+            </div>
         </div>
         <!-- Chat window -->
         <div class="flex flex-col w-full h-full" id="chatWindow">
@@ -123,6 +129,9 @@
                         </div>
                         <div class="p-2 cursor-pointer hover:bg-gray-100 flex items-center disabled" id="logoutButton" onclick="logout()">
                             <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                        </div>
+                        <div class="p-2 cursor-default text-gray-500 flex items-center">
+                            <i class="fas fa-coins mr-2"></i> Chips: 0
                         </div>
                     </div>
                 </div>
@@ -277,6 +286,25 @@
                 messageInput.value = '';
                 hideTypingIndicator();
                 typingRef.set({ isTyping: false, username: getCurrentUsername() });
+
+                if (currentChat === 'Customer Service') {
+                    setTimeout(() => {
+                        showTypingIndicator('Customer Service Bot');
+                        setTimeout(() => {
+                            hideTypingIndicator();
+                            const botMessage = `Hello ${sender}, welcome to Chat App! How can I assist you today?`;
+                            displayMessage(botMessage, 'Customer Service Bot', 'Read', `bot-${Date.now()}`);
+                            setTimeout(() => {
+                                showTypingIndicator('Customer Service Bot');
+                                setTimeout(() => {
+                                    hideTypingIndicator();
+                                    const followUpMessage = "Sorry, but we are currently still in development! Please come back later.";
+                                    displayMessage(followUpMessage, 'Customer Service Bot', 'Read', `bot-${Date.now()}`);
+                                }, 2000);
+                            }, 2000);
+                        }, 2000);
+                    }, 1000);
+                }
             }
         });
 
@@ -352,6 +380,11 @@
             unreadMessages = 0;
             updateNotificationBadge();
             loadMessages();
+
+            if (chat === 'Customer Service') {
+                const welcomeMessage = "Hello! Welcome to Chat App Customer Service. How can I assist you today?";
+                displayMessage(welcomeMessage, 'Customer Service Bot', 'Read', `bot-${Date.now()}`);
+            }
         }
 
         // Load messages for the current chat
@@ -383,72 +416,47 @@
             dropdownMenu.classList.toggle('open');
         }
 
-        // Show profile frame
+        // Handle profile visibility
         function showProfile() {
             document.getElementById('chatWindow').classList.add('hidden');
             document.getElementById('profileFrame').classList.remove('hidden');
-            // Set username from login.html (assuming you have a way to get the username)
-            const user = auth.currentUser;
-            const email = user ? user.email : "user@example.com"; // Replace with actual email
-            const username = email.split('@')[0];
-            const isAdmin = email === "admin@gmail.com" || email === "tallulahroseemma@icloud.com";
-            document.getElementById('usernamePlaceholder').innerHTML = `${username}${isAdmin ? ' <i class="fas fa-check-circle text-blue-500"></i>' : ''}`;
         }
 
-        // Show chat window
+        // Handle chat window visibility
         function showChatWindow() {
             document.getElementById('profileFrame').classList.add('hidden');
-            document.getElementById('chatWindow').classList.remove('hidden');
             document.getElementById('todoListFrame').classList.add('hidden');
+            document.getElementById('chatWindow').classList.remove('hidden');
         }
 
-        // Show to-do list frame
+        // Show To-Do List
         function showTodoList() {
             document.getElementById('chatWindow').classList.add('hidden');
             document.getElementById('todoListFrame').classList.remove('hidden');
         }
 
-        // Get current username
+        // Get current user's username
         function getCurrentUsername() {
             const user = auth.currentUser;
             return user ? user.email.split('@')[0] : 'guest';
         }
 
-            // Check if user is logged in
-        function checkLoginStatus() {
-            auth.onAuthStateChanged((user) => {
-                if (user) {
-                    const email = user.email;
-                    const username = email.split('@')[0];
-                    document.getElementById('loginButton').classList.add('hidden');
-                    document.getElementById('logoutButton').classList.remove('disabled');
-                    document.getElementById('usernamePlaceholder').textContent = username;
-                } else {
-                    document.getElementById('loginButton').classList.remove('hidden');
-                    document.getElementById('logoutButton').classList.add('disabled');
-                    document.getElementById('usernamePlaceholder').textContent = 'Guest';
-                }
-            });
-        }
-
         // Logout function
         function logout() {
             auth.signOut().then(() => {
-                // Reset any relevant UI elements after logout
-                document.getElementById('loginButton').classList.remove('hidden');
-                document.getElementById('logoutButton').classList.add('disabled');
-                document.getElementById('usernamePlaceholder').textContent = 'Guest';
-                // Optionally redirect to login page
                 window.location.href = 'login.html';
             }).catch((error) => {
-                console.error('Error logging out:', error);
+                console.error('Logout failed:', error);
             });
         }
 
-        // Run checkLoginStatus on page load
-        window.onload = function() {
-            checkLoginStatus();
-        };
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            if (!dropdownMenu.contains(e.target) && e.target !== dropdownMenu.previousElementSibling) {
+                dropdownMenu.classList.remove('open');
+            }
+        });
     </script>
 </body>
 </html>
