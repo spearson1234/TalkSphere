@@ -1,191 +1,23 @@
-<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-time Chat App</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <style>
-        .sidebar {
-            transform: translateX(-100%);
-            transition: transform 0.3s ease-in-out;
-        }
-        .sidebar-open {
-            transform: translateX(0);
-        }
-        .dropdown {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 60px;
-            background-color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            overflow: hidden;
-            z-index: 10;
-        }
-        .dropdown.open {
-            display: block;
-            animation: slideDown 0.3s ease-in-out;
-        }
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .disabled {
-            pointer-events: none;
-            opacity: 0.5;
-        }
-        .fade-out {
-            animation: fadeOut 0.5s forwards;
-        }
-        .fade-in {
-            animation: fadeIn 0.5s forwards;
-        }
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-            }
-        }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-        .typing-indicator {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            margin-right: 2px;
-            background-color: #ccc;
-            border-radius: 50%;
-            animation: typing 1s infinite;
-        }
-        .typing-indicator:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-        .typing-indicator:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-        @keyframes typing {
-            0% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-5px);
-            }
-            100% {
-                transform: translateY(0);
-            }
-        }
-    </style>
-</head>
-<body class="bg-gray-100 h-screen flex items-center justify-center">
-    <div class="w-full h-full max-w-md bg-white rounded-lg shadow-md flex flex-col relative">
-        <!-- Sidebar for contacts -->
-        <div class="sidebar absolute top-0 left-0 w-full h-full bg-white z-10 p-4 border-r" id="sidebar">
-            <h2 class="text-xl font-bold mb-4">Contacts</h2>
-            <div class="flex items-center justify-between mb-4 cursor-pointer" onclick="openChat('Group Chat')">
-                <div class="flex items-center">
-                    <i class="fas fa-users text-blue-500" style="font-size: 40px;"></i>
-                    <span class="ml-2">Group Chat</span>
-                </div>
-                <div id="notificationBadge" class="bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center text-xs hidden">0</div>
-            </div>
-            <div class="flex items-center justify-between mb-4 cursor-pointer" onclick="openChat('Customer Service')">
-                <div class="flex items-center">
-                    <i class="fas fa-headset text-blue-500" style="font-size: 40px;"></i>
-                    <span class="ml-2">Customer Service</span>
-                </div>
-            </div>
-        </div>
-        <!-- Chat window -->
-        <div class="flex flex-col w-full h-full" id="chatWindow">
-            <div class="flex items-center justify-between p-4 border-b relative">
-                <i class="fas fa-arrow-left text-blue-500 cursor-pointer" onclick="openSidebar()"></i>
-                <h1 class="text-xl font-bold" id="chatTitle">Chat App</h1>
-                <div class="flex items-center relative">
-                    <i class="fas fa-clipboard-list text-blue-500 cursor-pointer" style="font-size: 40px;" onclick="showTodoList()"></i>
-                    <i class="fas fa-user-circle text-blue-500 ml-2" style="font-size: 40px;"></i>
-                    <i class="fas fa-chevron-down text-blue-500 ml-2 cursor-pointer" onclick="toggleDropdown()"></i>
-                    <div class="dropdown" id="dropdownMenu">
-                        <div class="p-2 cursor-pointer hover:bg-gray-100 flex items-center" onclick="showProfile()">
-                            <i class="fas fa-user mr-2"></i> Profile
-                        </div>
-                        <div class="p-2 cursor-pointer hover:bg-gray-100 flex items-center">
-                            <i class="fas fa-cog mr-2"></i> Settings
-                        </div>
-                        <div class="p-2 cursor-pointer hover:bg-gray-100 flex items-center hidden" id="logoutButton" onclick="logout()">
-                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                        </div>
-                        <div class="p-2 cursor-default text-gray-500 flex items-center">
-                            <i class="fas fa-coins mr-2"></i> Chips: 0
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="flex-1 overflow-y-auto p-4 bg-gray-50" id="messages">
-                <!-- Messages will be dynamically added here -->
-            </div>
-            <form class="flex p-4 border-t" id="messageForm">
-                <input class="flex-1 p-2 border rounded-l-lg focus:outline-none" id="messageInput" placeholder="Type a message..." type="text" oninput="sendTypingIndicator()"/>
-                <button class="bg-blue-500 text-white p-2 rounded-r-lg hover:bg-blue-600 focus:outline-none" type="submit">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </form>
-        </div>
-        <!-- Profile frame -->
-        <div class="hidden flex flex-col w-full h-full" id="profileFrame">
-            <div class="flex items-center justify-between p-4 border-b">
-                <i class="fas fa-arrow-left text-blue-500 cursor-pointer" onclick="showChatWindow()"></i>
-                <h1 class="text-xl font-bold">Profile</h1>
-            </div>
-            <div class="flex flex-col items-center justify-center flex-1 p-4">
-                <i class="fas fa-user-circle text-blue-500" style="font-size: 100px;"></i>
-                <div class="mt-4 text-xl" id="usernamePlaceholder">Username</div>
-                <a href="login.html" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600" id="loginButton">Login</a>
-            </div>
-        </div>
-        <!-- To-Do List frame -->
-        <div class="hidden flex flex-col w-full h-full" id="todoListFrame">
-            <div class="flex items-center justify-between p-4 border-b">
-                <i class="fas fa-arrow-left text-blue-500 cursor-pointer" onclick="showChatWindow()"></i>
-                <h1 class="text-xl font-bold">To-Do List</h1>
-            </div>
-            <div class="flex flex-col flex-1 p-4">
-                <form id="todoForm" class="flex mb-4">
-                    <input class="flex-1 p-2 border rounded-l-lg focus:outline-none" id="todoInput" placeholder="Add a new task..." type="text"/>
-                    <button class="bg-blue-500 text-white p-2 rounded-r-lg hover:bg-blue-600 focus:outline-none" type="submit">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </form>
-                <ul id="todoList" class="list-disc pl-5">
-                    <!-- To-Do items will be dynamically added here -->
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script>
-        // Your Firebase configuration
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Chat Interface
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js">
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js">
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js">
+  </script>
+  <script>
+   // Your web app's Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
+          apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
             authDomain: "login-71866.firebaseapp.com",
             databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
             projectId: "login-71866",
@@ -196,295 +28,288 @@
 
         // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
         const auth = firebase.auth();
+        const database = firebase.database();
 
-        let currentChat = 'Group Chat';
-        const messagesRef = db.ref('messages');
-        const typingRef = db.ref('typing');
-        const todoRef = db.ref('todos');
-        const bannedUsersRef = db.ref('bannedUsers');
-        let unreadMessages = 0;
-        let isChatOpen = false;
-        let typingTimeout;
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('chat-form');
+            const input = document.getElementById('message-input');
+            const chatContainer = document.getElementById('chat-container');
+            const messageCountLabel = document.getElementById('message-count');
+            const alertBox = document.getElementById('alert-box');
+            const shopButton = document.getElementById('shop-button');
+            const sidebar = document.getElementById('sidebar');
+            const closeSidebarButton = document.getElementById('close-sidebar');
+            const profilePicture = document.getElementById('profile-picture');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            const buyButton = document.getElementById('buy-button');
+            const loadingIcon = document.getElementById('loading-icon');
+            const coinCount = document.getElementById('coin-count');
+            const profileLink = document.getElementById('profile-link');
+            const profilePage = document.getElementById('profile-page');
+            const chatPage = document.getElementById('chat-page');
+            let messageCount = 0;
+            const messageLimit = 3;
+            let coins = 50;
+            let isVIP = false;
 
-        // Ban user
-        function banUser (email) {
-            bannedUsersRef.child(email.replace('.', ',')).set(true);
-        }
-
-        // Check if user is banned
-        function checkIfBanned(email) {
-            return bannedUsersRef.child(email.replace('.', ',')).once('value').then(snapshot => snapshot.exists());
-        }
-
-        // Ban smithpearson79@gmail.com
-        banUser ('smithpearson79@gmail.com');
-
-        // Listen for new messages in Group Chat
-        messagesRef.on('child_added', (snapshot) => {
-            const message = snapshot.val();
-            if (message.chat === 'Group Chat') {
-                displayMessage(message.text, message.sender, message.status, snapshot.key);
-                if (!isChatOpen && currentChat === 'Group Chat') {
-                    unreadMessages++;
-                    updateNotificationBadge();
+            const updateMessageCountLabel = () => {
+                if (messageCount === 0) {
+                    messageCountLabel.classList.remove('text-yellow-500', 'text-red-500');
+                    messageCountLabel.classList.add('text-green-500');
+                } else if (messageCount < messageLimit) {
+                    messageCountLabel.classList.remove('text-green-500', 'text-red-500');
+                    messageCountLabel.classList.add('text-yellow-500');
+                } else {
+                    messageCountLabel.classList.remove('text-green-500', 'text-yellow-500');
+                    messageCountLabel.classList.add('text-red-500');
                 }
-            }
-        });
+                messageCountLabel.textContent = `${messageCount}/${messageLimit}`;
+            };
 
-        // Listen for message updates (e.g., status changes)
-        messagesRef.on('child_changed', (snapshot) => {
-            const message = snapshot.val();
-            if (message.chat === 'Group Chat') {
-                updateMessageStatus(snapshot.key, message.status);
-            }
-        });
+            const updateCoinCount = () => {
+                coinCount.textContent = `Coins: ${coins}`;
+            };
 
-        // Listen for typing indicator
-        typingRef.on('value', (snapshot) => {
-            const typingData = snapshot.val();
-            if (typingData && typingData.isTyping && typingData.username !== getCurrentUsername()) {
-                showTypingIndicator(typingData.username);
-            } else {
-                hideTypingIndicator();
-            }
-        });
+            const updateProfileBadge = () => {
+                const badge = document.getElementById('profile-badge');
+                if (isVIP) {
+                    badge.innerHTML = '<i class="fas fa-crown text-yellow-500"></i>';
+                } else {
+                    badge.innerHTML = '<i class="fas fa-check text-white"></i>';
+                }
+            };
 
-        // Listen for new to-do items
-        todoRef.on('child_added', (snapshot) => {
-            const todo = snapshot.val();
-            displayTodoItem(todo.text, snapshot.key);
-        });
-
-        // Display message
-        function displayMessage(text, sender, status, messageId) {
-            const messagesDiv = document.getElementById('messages');
-            const isAdmin = sender === 'admin' || sender === 'tallulahroseemma';
-            const messageElement = document.createElement('div');
-            messageElement.className = sender === getCurrentUsername() ? 'p-2 mb-2 bg-green-100 rounded-lg self-end' : 'p-2 mb-2 bg-blue-100 rounded-lg self-start';
-            messageElement.innerHTML = `<strong>${sender}${isAdmin ? ' <i class="fas fa-check-circle text-blue-500"></i>' : ''}:</strong> ${text} <br><small id="status-${messageId}" class="${sender === getCurrentUsername() ? '' : 'hidden'}">${status}</small>`;
-            messagesDiv.appendChild(messageElement);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-            if (sender !== getCurrentUsername() && status === 'Delivered') {
-                setTimeout(() => {
-                    const statusElement = document.getElementById(`status-${messageId}`);
-                    statusElement.classList.add('fade-out');
-                    setTimeout(() => {
-                        statusElement.textContent = 'Read';
-                        statusElement.classList.remove('fade-out');
-                        statusElement.classList.add('fade-in');
-                        messagesRef.child(messageId).update({ status: 'Read' });
-                    }, 500);
-                }, 1000);
-            }
-        }
-
-        // Update message status
-        function updateMessageStatus(messageId, status) {
-            const statusElement = document.getElementById(`status-${messageId}`);
-            if (statusElement) {
-                statusElement.textContent = status;
-            }
-        }
-
-        // Handle form submission
-        document.getElementById('messageForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const messageInput = document.getElementById('messageInput');
-            const text = messageInput.value.trim();
-            if (text) {
-                const user = auth.currentUser ;
-                const sender = user ? user.email.split('@')[0] : 'guest';
-                messagesRef.push({ text, sender, status: 'Delivered', chat: currentChat });
-                messageInput.value = '';
-                hideTypingIndicator();
-                typingRef.set({ isTyping: false, username: getCurrentUsername() });
-
-                if (currentChat === 'Customer Service') {
-                    setTimeout(() => {
-                        showTypingIndicator('Customer Service Bot');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const message = input.value.trim();
+                if (message) {
+                    if (messageCount < messageLimit) {
+                        const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        const messageElement = document.createElement('div');
+                        messageElement.classList.add('mb-4');
+                        messageElement.innerHTML = `
+                            <div class="flex items-center justify-end">
+                                <div class="bg-green-200 text-green-800 px-4 py-2 rounded-lg inline-block relative">
+                                    ${message}
+                                    <span class="absolute -top-2 -right-2 bg-blue-500 text-white rounded-full p-1 text-xs" id="profile-badge">
+                                        ${isVIP ? '<i class="fas fa-crown text-yellow-500"></i>' : '<i class="fas fa-check text-white"></i>'}
+                                    </span>
+                                    <div class="text-xs text-gray-500 mt-1 text-right">${timestamp}</div>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-500 text-right mt-1">me</div>
+                        `;
+                        chatContainer.appendChild(messageElement);
+                        input.value = '';
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                        messageCount++;
+                        updateMessageCountLabel();
+                    } else {
+                        alertBox.classList.remove('hidden');
+                        alertBox.classList.add('animate-slide-down');
                         setTimeout(() => {
-                            hideTypingIndicator();
-                            const botMessage = `Hello ${sender}, welcome to Chat App! How can I assist you today?`;
-                            displayMessage(botMessage, 'Customer Service Bot', 'Read', `bot-${Date.now()}`);
-                            setTimeout(() => {
-                                showTypingIndicator('Customer Service Bot');
-                                setTimeout(() => {
-                                    hideTypingIndicator();
-                                    const followUpMessage = "Sorry, but we are currently still in development! Please come back later.";
-                                    displayMessage(followUpMessage, 'Customer Service Bot', 'Read', `bot-${Date.now()}`);
-                                }, 2000);
-                            }, 2000);
-                        }, 2000);
-                    }, 1000);
+                            alertBox.classList.add('hidden');
+                            alertBox.classList.remove('animate-slide-down');
+                        }, 3000);
+                    }
                 }
-            }
-        });
-
-        // Handle to-do form submission
-        document.getElementById('todoForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const todoInput = document.getElementById('todoInput');
-            const text = todoInput.value.trim();
-            if (text) {
-                todoRef.push({ text });
-                todoInput.value = '';
-            }
-        });
-
-        // Send typing indicator
-        function sendTypingIndicator() {
-            typingRef.set({ isTyping: true, username: getCurrentUsername() });
-            clearTimeout(typingTimeout);
-            typingTimeout = setTimeout(() => {
-                typingRef.set({ isTyping: false, username: getCurrentUsername() });
-            }, 3000);
-        }
-
-        // Show typing indicator
-        function showTypingIndicator(username) {
-            const typingIndicator = document.getElementById('typingIndicator');
-            if (!typingIndicator) {
-                const messagesDiv = document.getElementById('messages');
-                const typingElement = document.createElement('div');
-                typingElement.id = 'typingIndicator';
-                typingElement.className = 'p-2 mb-2 bg-gray-200 rounded-lg self-start';
-                typingElement.innerHTML = `<strong>${username} is typing</strong> <span class="typing-indicator"></span><span class="typing-indicator"></span><span class="typing-indicator"></span>`;
-                messagesDiv.appendChild(typingElement);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            }
-        }
-
-        // Hide typing indicator
-        function hideTypingIndicator() {
-            const typingIndicator = document.getElementById('typingIndicator');
-            if (typingIndicator) {
-                typingIndicator.remove();
-            }
-        }
-
-        // Display to-do item
-        function displayTodoItem(text, todoId) {
-            const todoList = document.getElementById('todoList');
-            const todoItem = document.createElement('li');
-            todoItem.className = 'flex items-center justify-between p-2 bg-gray-100 rounded-lg mb-2';
-            todoItem.innerHTML = `<span>${text}</span><button class="text-red-500 hover:text-red-700" onclick="removeTodoItem('${todoId}')"><i class="fas fa-trash"></i></button>`;
-            todoList.appendChild(todoItem);
-        }
-
-        // Remove to-do item
-        function removeTodoItem(todoId) {
-            todoRef.child(todoId).remove();
-            document.getElementById(todoId).remove();
-        }
-
-        // Open sidebar
-        function openSidebar() {
-            document.getElementById('sidebar').classList.add('sidebar-open');
-            isChatOpen = false;
-        }
-
-        // Open chat window
-        function openChat(chat) {
-            currentChat = chat;
-            document.getElementById('chatTitle').textContent = chat;
-            document.getElementById('sidebar').classList.remove('sidebar-open');
-            isChatOpen = true;
-            unreadMessages = 0;
-            updateNotificationBadge();
-            loadMessages();
-
-            if (chat === 'Customer Service') {
-                const welcomeMessage = "Hello! Welcome to Chat App Customer Service. How can I assist you today?";
-                displayMessage(welcomeMessage, 'Customer Service Bot', 'Read', `bot-${Date.now()}`);
-            }
-        }
-
-        // Load messages for the current chat
-        function loadMessages() {
-            const messagesDiv = document.getElementById('messages');
-            messagesDiv.innerHTML = '';
-            messagesRef.orderByChild('chat').equalTo(currentChat).once('value', (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    const message = childSnapshot.val();
-                    displayMessage(message.text, message.sender, message.status, childSnapshot.key);
-                });
             });
-        }
 
-        // Update notification badge
-        function updateNotificationBadge() {
-            const badge = document.getElementById('notificationBadge');
-            if (unreadMessages > 0) {
-                badge.textContent = unreadMessages > 99 ? '99+' : unreadMessages;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
+            shopButton.addEventListener('click', () => {
+                sidebar.classList.remove('hidden');
+                sidebar.classList.add('animate-slide-in');
+            });
+
+            closeSidebarButton.addEventListener('click', () => {
+                sidebar.classList.remove('animate-slide-in');
+                sidebar.classList.add('animate-slide-out');
+                setTimeout(() => {
+                    sidebar.classList.add('hidden');
+                    sidebar.classList.remove('animate-slide-out');
+                }, 500);
+            });
+
+            profilePicture.addEventListener('click', () => {
+                dropdownMenu.classList.toggle('hidden');
+                dropdownMenu.classList.add('animate-slide-down');
+            });
+
+            buyButton.addEventListener('click', () => {
+                if (coins >= 10) {
+                    buyButton.disabled = true;
+                    loadingIcon.classList.remove('hidden');
+                    loadingIcon.classList.add('animate-spin');
+                    setTimeout(() => {
+                        loadingIcon.classList.remove('animate-spin');
+                        loadingIcon.classList.add('hidden');
+                        buyButton.disabled = false;
+                        coins -= 10;
+                        isVIP = true;
+                        updateCoinCount();
+                        updateProfileBadge();
+                        buyButton.textContent = 'Owned';
+                        alert('Purchase successful!');
+                    }, 3000);
+                } else {
+                    alert('Not enough coins!');
+                }
+            });
+
+            profileLink.addEventListener('click', () => {
+                chatPage.classList.add('hidden');
+                profilePage.classList.remove('hidden');
+                profilePage.classList.add('animate-slide-in');
+            });
+
+            updateMessageCountLabel();
+            updateCoinCount();
+        });
+  </script>
+  <style>
+   @keyframes slide-down {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
             }
         }
-
-        // Show profile frame
-        function showProfile() {
-            document.getElementById('profileFrame').classList.remove('hidden');
-            document.getElementById('chatWindow').classList.add('hidden');
+        .animate-slide-down {
+            animation: slide-down 0.5s ease-out;
         }
 
-        // Show chat window
-        function showChatWindow() {
-            document.getElementById('profileFrame').classList.add('hidden');
-            document.getElementById('chatWindow').classList.remove('hidden');
-        }
-
-        // Show to-do list frame
-        function showTodoList() {
-            document.getElementById('todoListFrame').classList.remove('hidden');
-            document.getElementById('chatWindow').classList.add('hidden');
-        }
-
-        // Get current username
-        function getCurrentUsername() {
-            const user = auth.currentUser ;
-            return user ? user.email.split('@')[0] : 'guest';
-        }
-
-        // Toggle dropdown menu
-        function toggleDropdown() {
-            const dropdown = document.getElementById('dropdownMenu');
-            dropdown.classList.toggle('open');
-        }
-
-        // Logout user
-        function logout() {
-            auth.signOut().then(() => {
-                window.location.href = 'login.html';
-            }).catch((error) => {
-                console.error('Error during logout:', error);
-            });
-        }
-
-        // Update UI with user profile
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                document.getElementById('usernamePlaceholder').textContent = user.email.split('@')[0];
-                document.getElementById('loginButton').classList.add('hidden');
-                document.getElementById('logoutButton').classList.remove('hidden'); // Show logout button
-            } else {
-                document.getElementById('usernamePlaceholder').textContent = 'Guest';
-                document.getElementById('loginButton').classList.remove('hidden');
-                document.getElementById('logoutButton').classList.add('hidden'); // Hide logout button
+        @keyframes slide-in {
+            0% {
+                transform: translateX(100%);
+                opacity: 0;
             }
-        });
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .animate-slide-in {
+            animation: slide-in 0.5s ease-out;
+        }
 
-        // Firebase Authentication
-        document.getElementById('loginButton').addEventListener('click', () => {
-            const email = prompt('Enter your email:');
-            const password = prompt('Enter your password:');
-            auth.signInWithEmailAndPassword(email, password).catch((error) => {
-                alert('Login failed: ' + error.message);
-            });
-        });
-    </script>
-</body>
+        @keyframes slide-out {
+            0% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        .animate-slide-out {
+            animation: slide-out 0.5s ease-out;
+        }
+
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+  </style>
+ </head>
+ <body class="bg-gray-100 flex items-center justify-center h-screen">
+  <div class="bg-white w-full h-full max-h-screen border rounded-lg shadow-lg flex flex-col relative">
+   <div class="flex items-center justify-between p-4 border-b rounded-t-lg">
+    <h1 class="text-lg font-semibold flex items-center">
+     <i class="fas fa-moon mr-2">
+     </i>
+     MoonScoped
+    </h1>
+    <div class="flex items-center relative">
+     <span class="mr-2" id="message-count">
+      0/3
+     </span>
+     <img alt="Default profile picture icon" class="w-10 h-10 rounded-full cursor-pointer" height="40" id="profile-picture" src="https://storage.googleapis.com/a1aa/image/tJPesxcwT6N41aUoGaMEzLnehWulJf41eozcASCmdgc.jpg" width="40"/>
+    </div>
+   </div>
+   <div class="flex-1 p-4 overflow-y-auto hidden" id="profile-page">
+    <div class="flex flex-col items-center justify-center h-full">
+     <img alt="Default profile picture icon" class="w-24 h-24 rounded-full mb-4" height="96" src="https://storage.googleapis.com/a1aa/image/tJPesxcwT6N41aUoGaMEzLnehWulJf41eozcASCmdgc.jpg" width="96"/>
+     <p class="text-lg font-semibold">
+      @username
+     </p>
+    </div>
+   </div>
+   <div class="flex-1 p-4 overflow-y-auto" id="chat-page">
+    <!-- Messages will be appended here -->
+   </div>
+   <form class="border-t p-4 flex items-center rounded-b-lg" id="chat-form">
+    <input class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" id="message-input" placeholder="Enter message" type="text"/>
+    <button class="ml-2 text-blue-500" type="submit">
+     <i class="fas fa-paper-plane">
+     </i>
+    </button>
+    <button class="ml-2 text-blue-500" id="shop-button" type="button">
+     <i class="fas fa-shopping-cart">
+     </i>
+    </button>
+   </form>
+   <div class="absolute top-0 left-0 right-0 bg-red-500 bg-opacity-75 text-white text-center py-2 hidden" id="alert-box">
+    Sorry, you've reached our chat limit.
+   </div>
+   <div class="fixed top-0 right-0 w-64 h-full bg-white shadow-lg hidden" id="sidebar">
+    <div class="p-4 border-b flex justify-between items-center">
+     <h2 class="text-lg font-semibold">
+      Shop
+     </h2>
+     <button class="text-gray-500" id="close-sidebar">
+      <i class="fas fa-times">
+      </i>
+     </button>
+    </div>
+    <div class="p-4">
+     <div class="bg-gray-100 p-4 rounded-lg shadow-md">
+      <div class="flex justify-center items-center mb-4">
+       <i class="fas fa-crown text-4xl text-yellow-500">
+       </i>
+      </div>
+      <h3 class="text-lg font-semibold mb-2 text-center">
+       VIP Membership
+      </h3>
+      <p class="text-gray-700 mb-2 text-center">
+       Get exclusive access to premium features with our VIP membership.
+      </p>
+      <p class="text-gray-700 mb-4 text-center flex items-center justify-center">
+       <i class="fas fa-coins text-gray-500 mr-2">
+       </i>
+       10
+      </p>
+      <button class="bg-blue-500 text-white px-4 py-2 rounded-lg w-full flex items-center justify-center" id="buy-button">
+       <i class="fas fa-moon mr-2 hidden" id="loading-icon">
+       </i>
+       Buy Now
+      </button>
+     </div>
+    </div>
+   </div>
+   <div class="absolute top-16 right-4 w-48 bg-white border rounded-lg shadow-lg hidden" id="dropdown-menu">
+    <div class="p-4 flex items-center text-gray-500">
+     <i class="fas fa-coins text-gray-500 mr-2">
+     </i>
+     <span id="coin-count">
+      Coins: 50
+     </span>
+    </div>
+    <div class="p-4 text-gray-500 cursor-pointer" id="profile-link">
+     Profile
+    </div>
+   </div>
+  </div>
+ </body>
 </html>
