@@ -42,11 +42,20 @@
             const profileLink = document.getElementById('profile-link');
             const profilePage = document.getElementById('profile-page');
             const chatPage = document.getElementById('chat-page');
+            const loginButton = document.getElementById('login-button');
+            const loginForm = document.getElementById('login-form');
+            const loginEmail = document.getElementById('login-email');
+            const loginPassword = document.getElementById('login-password');
+            const loginSubmit = document.getElementById('login-submit');
+            const usernameDisplay = document.getElementById('username-display');
             let messageCount = 0;
             const messageLimit = 3;
             let coins = 50;
             let isVIP = false;
+            let isLoggedIn = false;
+            let currentUser = null;
 
+            // Update Message count label
             const updateMessageCountLabel = () => {
                 if (messageCount === 0) {
                     messageCountLabel.classList.remove('text-yellow-500', 'text-red-500');
@@ -61,10 +70,12 @@
                 messageCountLabel.textContent = `${messageCount}/${messageLimit}`;
             };
 
+            // Update Coin count display
             const updateCoinCount = () => {
                 coinCount.textContent = `Coins: ${coins}`;
             };
 
+            // Update Profile Badge
             const updateProfileBadge = () => {
                 const badge = document.getElementById('profile-badge');
                 if (isVIP) {
@@ -74,29 +85,48 @@
                 }
             };
 
+            // Update Username display
+            const updateUsernameDisplay = (username) => {
+                usernameDisplay.textContent = username;
+            };
+
+            // Load messages from Firebase
+            const loadMessages = () => {
+                database.ref('messages').on('child_added', (snapshot) => {
+                    const messageData = snapshot.val();
+                    const messageElement = document.createElement('div');
+                    messageElement.classList.add('mb-4');
+                    messageElement.innerHTML = 
+                        `<div class="flex items-center ${messageData.user === currentUser.email ? 'justify-end' : 'justify-start'}">
+                            <div class="bg-${messageData.user === currentUser.email ? 'green' : 'blue'}-200 text-${messageData.user === currentUser.email ? 'green' : 'blue'}-800 px-4 py-2 rounded-lg inline-block relative">
+                                ${messageData.message}
+                                <span class="absolute -top-2 -right-2 bg-blue-500 text-white rounded-full p-1 text-xs" id="profile-badge">
+                                    ${messageData.isVIP ? '<i class="fas fa-crown text-yellow-500"></i>' : '<i class="fas fa-check text-white"></i>'}
+                                </span>
+                                <div class="text-xs text-gray-500 mt-1 text-right">${messageData.timestamp}</div>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-500 text-right mt-1">${messageData.user === currentUser.email ? 'me' : messageData.user}</div>`;
+                    chatContainer.appendChild(messageElement);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                });
+            };
+
+            // Handle message submission
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const message = input.value.trim();
                 if (message) {
                     if (messageCount < messageLimit) {
                         const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                        const messageElement = document.createElement('div');
-                        messageElement.classList.add('mb-4');
-                        messageElement.innerHTML = `
-                            <div class="flex items-center justify-end">
-                                <div class="bg-green-200 text-green-800 px-4 py-2 rounded-lg inline-block relative">
-                                    ${message}
-                                    <span class="absolute -top-2 -right-2 bg-blue-500 text-white rounded-full p-1 text-xs" id="profile-badge">
-                                        ${isVIP ? '<i class="fas fa-crown text-yellow-500"></i>' : '<i class="fas fa-check text-white"></i>'}
-                                    </span>
-                                    <div class="text-xs text-gray-500 mt-1 text-right">${timestamp}</div>
-                                </div>
-                            </div>
-                            <div class="text-sm text-gray-500 text-right mt-1">me</div>
-                        `;
-                        chatContainer.appendChild(messageElement);
+                        const messageData = {
+                            message: message,
+                            timestamp: timestamp,
+                            user: currentUser.email,
+                            isVIP: isVIP
+                        };
+                        database.ref('messages').push(messageData);
                         input.value = '';
-                        chatContainer.scrollTop = chatContainer.scrollHeight;
                         messageCount++;
                         updateMessageCountLabel();
                     } else {
@@ -110,6 +140,7 @@
                 }
             });
 
+            // Sidebar toggle for shop
             shopButton.addEventListener('click', () => {
                 sidebar.classList.remove('hidden');
                 sidebar.classList.add('animate-slide-in');
@@ -124,11 +155,13 @@
                 }, 500);
             });
 
+            // Dropdown menu toggle for profile
             profilePicture.addEventListener('click', () => {
                 dropdownMenu.classList.toggle('hidden');
                 dropdownMenu.classList.add('animate-slide-down');
             });
 
+            // VIP membership purchase
             buyButton.addEventListener('click', () => {
                 if (coins >= 10) {
                     buyButton.disabled = true;
@@ -150,10 +183,41 @@
                 }
             });
 
+            // Profile page navigation
             profileLink.addEventListener('click', () => {
                 chatPage.classList.add('hidden');
                 profilePage.classList.remove('hidden');
                 profilePage.classList.add('animate-slide-in');
+            });
+
+            // Login form toggle
+            loginButton.addEventListener('click', () => {
+                loginForm.classList.toggle('hidden');
+                loginForm.classList.add('animate-fade-in');
+            });
+
+            // Login form submission
+            loginSubmit.addEventListener('click', (e) => {
+                e.preventDefault();
+                const email = loginEmail.value.trim();
+                const password = loginPassword.value.trim();
+                if (email && password) {
+                    auth.signInWithEmailAndPassword(email, password)
+                        .then((userCredential) => {
+                            currentUser = userCredential.user;
+                            isLoggedIn = true;
+                            updateUsernameDisplay(currentUser.email);
+                            loginForm.classList.add('hidden');
+                            loginButton.classList.add('hidden');
+                            profilePage.classList.add('hidden');
+                            chatPage.classList.remove('hidden');
+                            loadMessages();
+                            alert('Login successful!');
+                        })
+                        .catch((error) => {
+                            alert('Login failed: ' + error.message);
+                        });
+                }
             });
 
             updateMessageCountLabel();
@@ -161,6 +225,7 @@
         });
     </script>
     <style>
+        /* Animations and other styling */
         @keyframes slide-down {
             0% {
                 transform: translateY(-100%);
@@ -203,6 +268,18 @@
             animation: slide-out 0.5s ease-out;
         }
 
+        @keyframes fade-in {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.5s ease-out;
+        }
+
         .animate-spin {
             animation: spin 1s linear infinite;
         }
@@ -226,61 +303,33 @@
             </h1>
             <div class="flex items-center relative">
                 <span class="mr-2" id="message-count">0/3</span>
-                <img alt="Default profile picture icon" class="w-10 h-10 rounded-full cursor-pointer" height="40" id="profile-picture" src="https://storage.googleapis.com/a1aa/image/tJPesxcwT6N41aUoGaMEzLnehWulJf41eozcASCmdgc.jpg" width="40"/>
-            </div>
-        </div>
-        <div class="flex-1 p-4 overflow-y-auto hidden" id="profile-page">
-            <div class="flex flex-col items-center justify-center h-full">
-                <img alt="Default profile picture icon" class="w-24 h-24 rounded-full mb-4" height="96" src="https://storage.googleapis.com/a1aa/image/tJPesxcwT6N41aUoGaMEzLnehWulJf41eozcASCmdgc.jpg" width="96"/>
-                <p class="text-lg font-semibold">@username</p>
-            </div>
-        </div>
-        <div class="flex-1 p-4 overflow-y-auto" id="chat-page">
-            <!-- Messages will be appended here -->
-        </div>
-        <form class="border-t p-4 flex items-center rounded-b-lg" id="chat-form">
-            <input class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" id="message-input" placeholder="Enter message" type="text"/>
-            <button class="ml-2 text-blue-500" type="submit">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-            <button class="ml-2 text-blue-500" id="shop-button" type="button">
-                <i class="fas fa-shopping-cart"></i>
-            </button>
-        </form>
-        <div class="absolute top-0 left-0 right-0 bg-red-500 bg-opacity-75 text-white text-center py-2 hidden" id="alert-box">
-            Sorry, you've reached our chat limit.
-        </div>
-        <div class="fixed top-0 right-0 w-64 h-full bg-white shadow-lg hidden" id="sidebar">
-            <div class="p-4 border-b flex justify-between items-center">
-                <h2 class="text-lg font-semibold">Shop</h2>
-                <button class="text-gray-500" id="close-sidebar">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="p-4">
-                <div class="bg-gray-100 p-4 rounded-lg shadow-md">
-                    <div class="flex justify-center items-center mb-4">
-                        <i class="fas fa-crown text-4xl text-yellow-500"></i>
-                    </div>
-                    <h3 class="text-lg font-semibold mb-2 text-center">VIP Membership</h3>
-                    <p class="text-gray-700 mb-2 text-center">Get exclusive access to premium features with our VIP membership.</p>
-                    <p class="text-gray-700 mb-4 text-center flex items-center justify-center">
-                        <i class="fas fa-coins text-gray-500 mr-2"></i>
-                        10
-                    </p>
-                    <button class="bg-blue-500 text-white px-4 py-2 rounded-lg w-full flex items-center justify-center" id="buy-button">
-                        <i class="fas fa-moon mr-2 hidden" id="loading-icon"></i>
-                        Buy Now
-                    </button>
+                <img alt="Default profile picture icon" class="w-10 h-10 rounded-full cursor-pointer" height="40" id="profile-picture" width="40"/>
+                <div class="hidden absolute top-0 right-0 bg-white shadow-lg rounded-lg w-32 mt-10 p-3" id="dropdown-menu">
+                    <ul>
+                        <li><a href="#" class="block text-sm py-1">Profile</a></li>
+                        <li><a href="#" class="block text-sm py-1">Logout</a></li>
+                    </ul>
                 </div>
             </div>
         </div>
-        <div class="absolute top-16 right-4 w-48 bg-white border rounded-lg shadow-lg hidden" id="dropdown-menu">
-            <div class="p-4 flex items-center text-gray-500">
-                <i class="fas fa-coins text-gray-500 mr-2"></i>
-                <span id="coin-count">Coins: 50</span>
+        <div class="p-4 flex-grow overflow-y-auto" id="chat-page">
+            <div id="alert-box" class="hidden text-center text-red-500 p-2 bg-red-100 mb-4 rounded-md">
+                You've reached the message limit.
             </div>
-            <div class="p-4 text-gray-500 cursor-pointer" id="profile-link">Profile</div>
+            <div class="mb-4" id="chat-container"></div>
+            <form class="flex items-center" id="chat-form">
+                <input type="text" id="message-input" placeholder="Type a message..." class="flex-grow p-2 border rounded-lg"/>
+                <button type="submit" class="ml-2 p-2 bg-blue-500 text-white rounded-lg">
+                    Send
+                </button>
+            </form>
+        </div>
+        <div class="hidden p-4" id="profile-page">
+            <h2 class="text-xl font-semibold mb-4">Profile</h2>
+            <p id="username-display"></p>
+            <p id="coin-count" class="mt-4">Coins: 0</p>
+            <p id="vip-status" class="mt-4">VIP Status: <span id="vip-badge"></span></p>
+            <button id="buy-button" class="mt-4 p-2 bg-green-500 text-white rounded-lg">Buy VIP</button>
         </div>
     </div>
 </body>
