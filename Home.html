@@ -1,336 +1,348 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Chat Interface</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Dearest Lover</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script>
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAHSW4ettEHj3Y562zYSI_n0Z1OwFaGsgw",
-            authDomain: "login-71866.firebaseapp.com",
-            databaseURL: "https://login-71866-default-rtdb.firebaseio.com",
-            projectId: "login-71866",
-            storageBucket: "login-71866.appspot.com",
-            messagingSenderId: "434042354282",
-            appId: "1:434042354282:web:fbc98eaefe2ef6513a2813"
-        };
-
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const database = firebase.database();
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const form = document.getElementById('chat-form');
-            const input = document.getElementById('message-input');
-            const chatContainer = document.getElementById('chat-page');
-            const messageCountLabel = document.getElementById('message-count');
-            const alertBox = document.getElementById('alert-box');
-            const shopButton = document.getElementById('shop-button');
-            const sidebar = document.getElementById('sidebar');
-            const closeSidebarButton = document.getElementById('close-sidebar');
-            const profilePicture = document.getElementById('profile-picture');
-            const dropdownMenu = document.getElementById('dropdown-menu');
-            const buyButton = document.getElementById('buy-button');
-            const loadingIcon = document.getElementById('loading-icon');
-            const coinCount = document.getElementById('coin-count');
-            const profileLink = document.getElementById('profile-link');
-            const profilePage = document.getElementById('profile-page');
-            const chatPage = document.getElementById('chat-page');
-            const loginButton = document.getElementById('login-button');
-            const loginForm = document.getElementById('login-form');
-            const loginEmail = document.getElementById('login-email');
-            const loginPassword = document.getElementById('login-password');
-            const loginSubmit = document.getElementById('login-submit');
-            const usernameDisplay = document.getElementById('username-display');
-            let messageCount = 0;
-            const messageLimit = 3;
-            let coins = 50;
-            let isVIP = false;
-            let isLoggedIn = false;
-            let currentUser = null;
-
-            // Update Message count label
-            const updateMessageCountLabel = () => {
-                if (messageCount === 0) {
-                    messageCountLabel.classList.remove('text-yellow-500', 'text-red-500');
-                    messageCountLabel.classList.add('text-green-500');
-                } else if (messageCount < messageLimit) {
-                    messageCountLabel.classList.remove('text-green-500', 'text-red-500');
-                    messageCountLabel.classList.add('text-yellow-500');
-                } else {
-                    messageCountLabel.classList.remove('text-green-500', 'text-yellow-500');
-                    messageCountLabel.classList.add('text-red-500');
-                }
-                messageCountLabel.textContent = `${messageCount}/${messageLimit}`;
-            };
-
-            // Update Coin count display
-            const updateCoinCount = () => {
-                coinCount.textContent = `Coins: ${coins}`;
-            };
-
-            // Update Profile Badge
-            const updateProfileBadge = () => {
-                const badge = document.getElementById('profile-badge');
-                if (isVIP) {
-                    badge.innerHTML = '<i class="fas fa-crown text-yellow-500"></i>';
-                } else {
-                    badge.innerHTML = '<i class="fas fa-check text-white"></i>';
-                }
-            };
-
-            // Update Username display
-            const updateUsernameDisplay = (username) => {
-                usernameDisplay.textContent = username;
-            };
-
-            // Load messages from Firebase
-            const loadMessages = () => {
-                database.ref('messages').on('child_added', (snapshot) => {
-                    const messageData = snapshot.val();
-                    const messageElement = document.createElement('div');
-                    messageElement.classList.add('mb-4');
-                    messageElement.innerHTML = 
-                        `<div class="flex items-center ${messageData.user === currentUser.email ? 'justify-end' : 'justify-start'}">
-                            <div class="bg-${messageData.user === currentUser.email ? 'green' : 'blue'}-200 text-${messageData.user === currentUser.email ? 'green' : 'blue'}-800 px-4 py-2 rounded-lg inline-block relative">
-                                ${messageData.message}
-                                <span class="absolute -top-2 -right-2 bg-blue-500 text-white rounded-full p-1 text-xs" id="profile-badge">
-                                    ${messageData.isVIP ? '<i class="fas fa-crown text-yellow-500"></i>' : '<i class="fas fa-check text-white"></i>'}
-                                </span>
-                                <div class="text-xs text-gray-500 mt-1 text-right">${messageData.timestamp}</div>
-                            </div>
-                        </div>
-                        <div class="text-sm text-gray-500 text-right mt-1">${messageData.user === currentUser.email ? 'me' : messageData.user}</div>`;
-                    chatContainer.appendChild(messageElement);
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                });
-            };
-
-            // Handle message submission
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const message = input.value.trim();
-                if (message) {
-                    if (messageCount < messageLimit) {
-                        const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                        const messageData = {
-                            message: message,
-                            timestamp: timestamp,
-                            user: currentUser.email,
-                            isVIP: isVIP
-                        };
-                        database.ref('messages').push(messageData);
-                        input.value = '';
-                        messageCount++;
-                        updateMessageCountLabel();
-                    } else {
-                        alertBox.classList.remove('hidden');
-                        alertBox.classList.add('animate-slide-down');
-                        setTimeout(() => {
-                            alertBox.classList.add('hidden');
-                            alertBox.classList.remove('animate-slide-down');
-                        }, 3000);
-                    }
-                }
-            });
-
-            // Sidebar toggle for shop
-            shopButton.addEventListener('click', () => {
-                sidebar.classList.remove('hidden');
-                sidebar.classList.add('animate-slide-in');
-            });
-
-            closeSidebarButton.addEventListener('click', () => {
-                sidebar.classList.remove('animate-slide-in');
-                sidebar.classList.add('animate-slide-out');
-                setTimeout(() => {
-                    sidebar.classList.add('hidden');
-                    sidebar.classList.remove('animate-slide-out');
-                }, 500);
-            });
-
-            // Dropdown menu toggle for profile
-            profilePicture.addEventListener('click', () => {
-                dropdownMenu.classList.toggle('hidden');
-                dropdownMenu.classList.add('animate-slide-down');
-            });
-
-            // VIP membership purchase
-            buyButton.addEventListener('click', () => {
-                if (coins >= 10) {
-                    buyButton.disabled = true;
-                    loadingIcon.classList.remove('hidden');
-                    loadingIcon.classList.add('animate-spin');
-                    setTimeout(() => {
-                        loadingIcon.classList.remove('animate-spin');
-                        loadingIcon.classList.add('hidden');
-                        buyButton.disabled = false;
-                        coins -= 10;
-                        isVIP = true;
-                        updateCoinCount();
-                        updateProfileBadge();
-                        buyButton.textContent = 'Owned';
-                        alert('Purchase successful!');
-                    }, 3000);
-                } else {
-                    alert('Not enough coins!');
-                }
-            });
-
-            // Profile page navigation
-            profileLink.addEventListener('click', () => {
-                chatPage.classList.add('hidden');
-                profilePage.classList.remove('hidden');
-                profilePage.classList.add('animate-slide-in');
-            });
-
-            // Login form toggle
-            loginButton.addEventListener('click', () => {
-                loginForm.classList.toggle('hidden');
-                loginForm.classList.add('animate-fade-in');
-            });
-
-            // Login form submission
-            loginSubmit.addEventListener('click', (e) => {
-                e.preventDefault();
-                const email = loginEmail.value.trim();
-                const password = loginPassword.value.trim();
-                if (email && password) {
-                    auth.signInWithEmailAndPassword(email, password)
-                        .then((userCredential) => {
-                            currentUser = userCredential.user;
-                            isLoggedIn = true;
-                            updateUsernameDisplay(currentUser.email);
-                            loginForm.classList.add('hidden');
-                            loginButton.classList.add('hidden');
-                            profilePage.classList.add('hidden');
-                            chatPage.classList.remove('hidden');
-                            loadMessages();
-                            alert('Login successful!');
-                        })
-                        .catch((error) => {
-                            alert('Login failed: ' + error.message);
-                        });
-                }
-            });
-
-            updateMessageCountLabel();
-            updateCoinCount();
-        });
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
     <style>
-        /* Animations and other styling */
-        @keyframes slide-down {
-            0% {
-                transform: translateY(-100%);
-                opacity: 0;
-            }
-            100% {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        .animate-slide-down {
-            animation: slide-down 0.5s ease-out;
+        body {
+            background-color: #000;
+            color: white;
+            font-family: 'Quicksand', sans-serif;
+            overflow: hidden;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        @keyframes slide-in {
-            0% {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            100% {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        .animate-slide-in {
-            animation: slide-in 0.5s ease-out;
-        }
+        .fade-in { animation: fadeIn 1.5s ease-in forwards; }
+        .fade-out { animation: fadeOut 1.5s ease-out forwards; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 
-        @keyframes slide-out {
-            0% {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            100% {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-        .animate-slide-out {
-            animation: slide-out 0.5s ease-out;
-        }
-
-        @keyframes fade-in {
-            0% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 1;
-            }
-        }
-        .animate-fade-in {
-            animation: fade-in 0.5s ease-out;
-        }
-
-        .animate-spin {
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: #ff4d6d;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+        .heart {
+            position: absolute;
+            color: #ff4d6d;
+            font-size: 20px;
+            pointer-events: none;
+            z-index: 50;
+            animation: flyUp 3s linear forwards;
+        }
+        @keyframes flyUp {
+            0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(calc(-100px + 200px * var(--r))) scale(1.5) rotate(360deg); opacity: 0; }
+        }
+
+        .valentine-bg {
+            background: radial-gradient(circle, #2d0a10 0%, #000000 100%);
+        }
+
+        .signature {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            opacity: 0;
+        }
+        .signature.animate {
+            animation: write 2s ease-in-out forwards;
+        }
+        @keyframes write {
+            from { opacity: 0; filter: blur(5px); transform: translateX(-20px); }
+            to { opacity: 1; filter: blur(0); transform: translateX(0); }
+        }
+
+        /* Rip Animation Styles */
+        .ticket-container {
+            perspective: 1000px;
+            position: relative;
+            width: 350px;
+            height: 500px;
+        }
+
+        .ticket-part {
+            position: absolute;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(135deg, #ff1b6b 0%, #45caff 100%);
+            border: 4px dashed #fff;
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backface-visibility: hidden;
+            overflow: hidden;
+        }
+
+        .ticket-top {
+            top: 0;
+            border-bottom: none;
+            border-radius: 20px 20px 0 0;
+            transform-origin: top;
+        }
+
+        .ticket-bottom {
+            bottom: 0;
+            border-top: 2px dashed rgba(255,255,255,0.5);
+            border-radius: 0 0 20px 20px;
+            transform-origin: bottom;
+        }
+
+        .ripped .ticket-top {
+            transform: translateY(-60px) rotateX(20deg);
+            opacity: 0.8;
+        }
+
+        .ripped .ticket-bottom {
+            transform: translateY(60px) rotateX(-20deg);
+            opacity: 0.8;
+        }
+
+        .inner-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 1s 0.5s;
+        }
+
+        .ripped .inner-content {
+            opacity: 1;
+        }
+
+        .btn-love {
+            background: #ff4d6d;
+            transition: all 0.3s;
+        }
+        .btn-love:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px #ff4d6d;
+        }
+
+        .petal {
+            position: absolute;
+            background: #ff4d6d;
+            width: 10px;
+            height: 10px;
+            border-radius: 50% 0 50% 0;
+            animation: fall 5s linear infinite;
+            opacity: 0.6;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(720deg); }
+        }
+
+        .rip-line {
+            width: 100%;
+            height: 2px;
+            background: repeating-linear-gradient(to right, transparent, transparent 5px, white 5px, white 10px);
+            position: absolute;
+            bottom: 0;
         }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
-    <div class="bg-white w-full h-full max-h-screen border rounded-lg shadow-lg flex flex-col relative">
-        <div class="flex items-center justify-between p-4 border-b rounded-t-lg">
-            <h1 class="text-lg font-semibold flex items-center">
-                <i class="fas fa-moon mr-2"></i>
-                MoonScoped
-            </h1>
-            <div class="flex items-center relative">
-                <span class="mr-2" id="message-count">0/3</span>
-                <img alt="Default profile picture icon" class="w-10 h-10 rounded-full cursor-pointer" height="40" id="profile-picture" width="40"/>
-                <div class="hidden absolute top-0 right-0 bg-white shadow-lg rounded-lg w-32 mt-10 p-3" id="dropdown-menu">
-                    <ul>
-                        <li><a href="#" class="block text-sm py-1">Profile</a></li>
-                        <li><a href="#" class="block text-sm py-1">Logout</a></li>
-                    </ul>
+<body class="valentine-bg">
+
+    <!-- Section 1: Loading Screen -->
+    <div id="loadingScreen" class="flex flex-col items-center">
+        <div class="spinner mb-4"></div>
+        <h1 class="text-2xl font-light tracking-widest text-pink-200">Loading Hunny..</h1>
+    </div>
+
+    <!-- Section 2: Question 1 -->
+    <div id="step1" class="hidden flex flex-col items-center text-center px-6">
+        <h2 class="text-4xl font-bold mb-8 leading-tight">Do you know why I love you soooo much?</h2>
+        <div class="flex gap-8">
+            <button onclick="handleYes1()" class="btn-love px-8 py-3 rounded-full text-xl shadow-lg">Yes ❤️</button>
+            <button onclick="handleNo(this)" class="bg-gray-700 px-8 py-3 rounded-full text-xl opacity-50 transition-all duration-300">No 🖤</button>
+        </div>
+    </div>
+
+    <!-- Section 3: Good Girl & Question 2 -->
+    <div id="step2" class="hidden flex flex-col items-center text-center px-6">
+        <h2 class="text-6xl font-bold mb-4 text-pink-500 drop-shadow-lg">Good girl</h2>
+        <p class="text-2xl mt-4 opacity-90">Do you wanna know why I love you?</p>
+        <div class="flex gap-8 mt-8">
+            <button onclick="handleYes2()" class="btn-love px-8 py-3 rounded-full text-xl shadow-lg">Yes ❤️</button>
+            <button onclick="handleNo(this)" class="bg-gray-700 px-8 py-3 rounded-full text-xl opacity-50 transition-all duration-300">No 🖤</button>
+        </div>
+    </div>
+
+    <!-- Section 4: The Promise Letter -->
+    <div id="step3" class="hidden flex flex-col items-center text-center px-8 max-w-lg">
+        <div class="bg-white/10 p-10 rounded-3xl backdrop-blur-xl border-2 border-pink-500/30">
+            <h3 class="text-3xl mb-6 font-bold text-pink-300 italic font-serif">My Dearest Lover,</h3>
+            <p class="text-xl leading-relaxed mb-6 italic">
+                "I love you because you are the most wonderful girl I've ever met in my life. You have helped me and gone through so much stuff in life with me and I cannot believe it."
+            </p>
+            <p class="text-xl leading-relaxed mb-8 italic">
+                "This is a promise letter of me loving you so much and staying till the end. Every second with you feels like a dream I never want to wake up from."
+            </p>
+            <button onclick="handleNextLetter()" class="btn-love px-10 py-2 rounded-full font-bold">Read More...</button>
+        </div>
+    </div>
+
+    <!-- Section 5: Valentine's Special -->
+    <div id="stepValentine" class="hidden flex flex-col items-center text-center px-8 max-w-lg">
+        <h2 class="text-5xl font-bold text-pink-400 mb-6">Happy Valentine's ❤️</h2>
+        <div class="space-y-4 text-lg">
+            <p>You aren't just my wife, you're my best friend and my whole world.</p>
+            <p>Today and every day, I choose you.</p>
+        </div>
+        <button onclick="handleToTicket()" class="mt-10 text-pink-400 animate-bounce">
+            <p class="text-sm mb-2">Tap to see your gift</p>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- Section 6: The Ticket with Rip Check -->
+    <div id="step4" class="hidden flex flex-col items-center text-center w-full px-4">
+        <div id="ticketWrapper" class="ticket-container cursor-pointer" onclick="ripTicket()">
+            <!-- The Ticket Outer (The "Envelope") -->
+            <div class="ticket-part ticket-top">
+                <div class="text-4xl mb-2">💝</div>
+                <h2 class="text-2xl font-bold tracking-widest">VALENTINE'S</h2>
+                <div class="rip-line"></div>
+            </div>
+            
+            <div class="ticket-part ticket-bottom">
+                <h2 class="text-2xl font-bold tracking-widest">EDITION</h2>
+                <p class="text-[10px] mt-2 opacity-70">TAP TO RIP & REDEEM</p>
+            </div>
+
+            <!-- The Secret Content Inside -->
+            <div class="inner-content">
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/20 backdrop-blur-sm w-full">
+                    <p class="text-3xl font-bold uppercase tracking-tighter mb-4 text-pink-300">You have free Kisses for life and cuddles.</p>
+                    <div class="h-px bg-white/30 w-full my-4"></div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="flex flex-col items-center border-r border-white/20">
+                            <p class="text-[10px] uppercase opacity-80 mb-1">To My Beautiful Wife</p>
+                            <div id="sigBrooke" class="signature text-white">Brooke</div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <p class="text-[10px] uppercase opacity-80 mb-1">Forever Yours</p>
+                            <div id="sigSmithy" class="signature text-white">Smithy</div>
+                        </div>
+                    </div>
+                    <p class="mt-6 text-[10px] uppercase opacity-60 tracking-[0.2em]">Infinite Validity • L0V3-U-F0R3V3R</p>
                 </div>
             </div>
         </div>
-        <div class="p-4 flex-grow overflow-y-auto" id="chat-page">
-            <div id="alert-box" class="hidden text-center text-red-500 p-2 bg-red-100 mb-4 rounded-md">
-                You've reached the message limit.
-            </div>
-            <div class="mb-4" id="chat-container"></div>
-            <form class="flex items-center" id="chat-form">
-                <input type="text" id="message-input" placeholder="Type a message..." class="flex-grow p-2 border rounded-lg"/>
-                <button type="submit" class="ml-2 p-2 bg-blue-500 text-white rounded-lg">
-                    Send
-                </button>
-            </form>
-        </div>
-        <div class="hidden p-4" id="profile-page">
-            <h2 class="text-xl font-semibold mb-4">Profile</h2>
-            <p id="username-display"></p>
-            <p id="coin-count" class="mt-4">Coins: 0</p>
-            <p id="vip-status" class="mt-4">VIP Status: <span id="vip-badge"></span></p>
-            <button id="buy-button" class="mt-4 p-2 bg-green-500 text-white rounded-lg">Buy VIP</button>
-        </div>
+        <p id="ripInstruction" class="mt-8 text-sm opacity-60 animate-pulse">Tap the ticket to rip it open!</p>
     </div>
+
+    <script>
+        function transition(fromId, toId) {
+            const from = document.getElementById(fromId);
+            const to = document.getElementById(toId);
+            from.classList.add('fade-out');
+            setTimeout(() => {
+                from.classList.add('hidden');
+                to.classList.remove('hidden');
+                to.classList.add('fade-in');
+            }, 1500);
+        }
+
+        function createHearts() {
+            for (let i = 0; i < 40; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.innerHTML = ['❤️', '💖', '💕', '💗'][Math.floor(Math.random() * 4)];
+                    heart.className = 'heart';
+                    heart.style.left = Math.random() * 100 + 'vw';
+                    heart.style.top = '100vh';
+                    heart.style.setProperty('--r', Math.random());
+                    document.body.appendChild(heart);
+                    setTimeout(() => heart.remove(), 3000);
+                }, i * 80);
+            }
+        }
+
+        function startPetals() {
+            setInterval(() => {
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                petal.style.left = Math.random() * 100 + 'vw';
+                petal.style.top = '-10px';
+                petal.style.opacity = Math.random();
+                document.body.appendChild(petal);
+                setTimeout(() => petal.remove(), 5000);
+            }, 300);
+        }
+
+        window.onload = () => {
+            setTimeout(() => transition('loadingScreen', 'step1'), 5000);
+        };
+
+        function handleYes1() {
+            createHearts();
+            transition('step1', 'step2');
+        }
+
+        function handleYes2() {
+            transition('step2', 'step3');
+        }
+
+        function handleNextLetter() {
+            startPetals();
+            transition('step3', 'stepValentine');
+        }
+
+        function handleToTicket() {
+            transition('stepValentine', 'step4');
+        }
+
+        function ripTicket() {
+            const wrapper = document.getElementById('ticketWrapper');
+            const instruction = document.getElementById('ripInstruction');
+            
+            if (!wrapper.classList.contains('ripped')) {
+                wrapper.classList.add('ripped');
+                instruction.classList.add('fade-out');
+                
+                // Extra hearts on rip
+                createHearts();
+                
+                // Trigger signatures
+                setTimeout(() => {
+                    document.getElementById('sigBrooke').classList.add('animate');
+                    document.getElementById('sigSmithy').classList.add('animate');
+                }, 1000);
+            }
+        }
+
+        function handleNo(btn) {
+            btn.style.position = 'absolute';
+            btn.style.left = Math.random() * 80 + '%';
+            btn.style.top = Math.random() * 80 + '%';
+            btn.innerText = "Wrong button! 😜";
+        }
+    </script>
 </body>
 </html>
