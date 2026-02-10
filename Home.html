@@ -6,6 +6,11 @@
     <title>For My Dearest Lover</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
     <style>
         body {
             background-color: #000;
@@ -19,11 +24,8 @@
             justify-content: center;
         }
 
-        .fade-in { animation: fadeIn 1.5s ease-in forwards; }
-        .fade-out { animation: fadeOut 1.5s ease-out forwards; }
-        
+        .fade-in { animation: fadeIn 0.8s ease-in forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 
         .spinner {
             border: 4px solid rgba(255, 255, 255, 0.1);
@@ -35,314 +37,415 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        .valentine-bg { background: radial-gradient(circle, #2d0a10 0%, #000000 100%); }
+
+        .btn-love { background: #ff4d6d; transition: all 0.3s; cursor: pointer; }
+        .btn-love:hover { transform: scale(1.05); box-shadow: 0 0 20px #ff4d6d; }
+
+        /* Profile Panel */
+        #profilePanel { transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 100; }
+        #profilePanel.open { transform: translateX(0); }
+
+        /* Ticket Styling */
+        .ticket {
+            background: linear-gradient(135deg, #ffd700 0%, #b8860b 100%);
+            color: #000;
+            padding: 2rem;
+            border-radius: 1rem;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+            font-family: 'Dancing Script', cursive;
+        }
+        .ticket::before, .ticket::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40px;
+            height: 40px;
+            background: #000;
+            border-radius: 50%;
+            transform: translateY(-50%);
+        }
+        .ticket::before { left: -20px; }
+        .ticket::after { right: -20px; }
+
+        /* Admin Switch */
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #333; transition: .4s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #10b981; }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        /* Chat UI */
+        .chat-container {
+            display: flex; flex-direction: column; height: 100vh; width: 100vw;
+            background: #000; position: fixed; top: 0; left: 0; z-index: 150;
+        }
+        .message-bubble {
+            max-width: 80%; padding: 12px 16px; border-radius: 20px; margin-bottom: 8px;
+            word-wrap: break-word; font-size: 15px;
+        }
+        .msg-me { background: #ff4d6d; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .msg-them { background: #262626; align-self: flex-start; border-bottom-left-radius: 4px; }
+        
+        /* Floating Heart Animation */
         .heart {
             position: absolute;
             color: #ff4d6d;
             font-size: 20px;
-            pointer-events: none;
-            z-index: 50;
-            animation: flyUp 3s linear forwards;
-        }
-        @keyframes flyUp {
-            0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(-100vh) translateX(calc(-100px + 200px * var(--r))) scale(1.5) rotate(360deg); opacity: 0; }
-        }
-
-        .valentine-bg {
-            background: radial-gradient(circle, #2d0a10 0%, #000000 100%);
-        }
-
-        .signature {
-            font-family: 'Dancing Script', cursive;
-            font-size: 2.5rem;
+            animation: floatUp 4s linear infinite;
             opacity: 0;
+            z-index: 0;
         }
-        .signature.animate {
-            animation: write 2s ease-in-out forwards;
-        }
-        @keyframes write {
-            from { opacity: 0; filter: blur(5px); transform: translateX(-20px); }
-            to { opacity: 1; filter: blur(0); transform: translateX(0); }
-        }
-
-        /* Rip Animation Styles */
-        .ticket-container {
-            perspective: 1000px;
-            position: relative;
-            width: 350px;
-            height: 500px;
-        }
-
-        .ticket-part {
-            position: absolute;
-            width: 100%;
-            height: 50%;
-            background: linear-gradient(135deg, #ff1b6b 0%, #45caff 100%);
-            border: 4px dashed #fff;
-            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            backface-visibility: hidden;
-            overflow: hidden;
-        }
-
-        .ticket-top {
-            top: 0;
-            border-bottom: none;
-            border-radius: 20px 20px 0 0;
-            transform-origin: top;
-        }
-
-        .ticket-bottom {
-            bottom: 0;
-            border-top: 2px dashed rgba(255,255,255,0.5);
-            border-radius: 0 0 20px 20px;
-            transform-origin: bottom;
-        }
-
-        .ripped .ticket-top {
-            transform: translateY(-60px) rotateX(20deg);
-            opacity: 0.8;
-        }
-
-        .ripped .ticket-bottom {
-            transform: translateY(60px) rotateX(-20deg);
-            opacity: 0.8;
-        }
-
-        .inner-content {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 5;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 1s 0.5s;
-        }
-
-        .ripped .inner-content {
-            opacity: 1;
-        }
-
-        .btn-love {
-            background: #ff4d6d;
-            transition: all 0.3s;
-        }
-        .btn-love:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 20px #ff4d6d;
-        }
-
-        .petal {
-            position: absolute;
-            background: #ff4d6d;
-            width: 10px;
-            height: 10px;
-            border-radius: 50% 0 50% 0;
-            animation: fall 5s linear infinite;
-            opacity: 0.6;
-        }
-        @keyframes fall {
-            to { transform: translateY(100vh) rotate(720deg); }
-        }
-
-        .rip-line {
-            width: 100%;
-            height: 2px;
-            background: repeating-linear-gradient(to right, transparent, transparent 5px, white 5px, white 10px);
-            position: absolute;
-            bottom: 0;
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
         }
     </style>
 </head>
 <body class="valentine-bg">
 
-    <!-- Section 1: Loading Screen -->
-    <div id="loadingScreen" class="flex flex-col items-center">
-        <div class="spinner mb-4"></div>
-        <h1 class="text-2xl font-light tracking-widest text-pink-200">Loading Hunny..</h1>
-    </div>
+    <div id="heartsContainer"></div>
 
-    <!-- Section 2: Question 1 -->
-    <div id="step1" class="hidden flex flex-col items-center text-center px-6">
-        <h2 class="text-4xl font-bold mb-8 leading-tight">Do you know why I love you soooo much?</h2>
-        <div class="flex gap-8">
-            <button onclick="handleYes1()" class="btn-love px-8 py-3 rounded-full text-xl shadow-lg">Yes ❤️</button>
-            <button onclick="handleNo(this)" class="bg-gray-700 px-8 py-3 rounded-full text-xl opacity-50 transition-all duration-300">No 🖤</button>
-        </div>
-    </div>
-
-    <!-- Section 3: Good Girl & Question 2 -->
-    <div id="step2" class="hidden flex flex-col items-center text-center px-6">
-        <h2 class="text-6xl font-bold mb-4 text-pink-500 drop-shadow-lg">Good girl</h2>
-        <p class="text-2xl mt-4 opacity-90">Do you wanna know why I love you?</p>
-        <div class="flex gap-8 mt-8">
-            <button onclick="handleYes2()" class="btn-love px-8 py-3 rounded-full text-xl shadow-lg">Yes ❤️</button>
-            <button onclick="handleNo(this)" class="bg-gray-700 px-8 py-3 rounded-full text-xl opacity-50 transition-all duration-300">No 🖤</button>
-        </div>
-    </div>
-
-    <!-- Section 4: The Promise Letter -->
-    <div id="step3" class="hidden flex flex-col items-center text-center px-8 max-w-lg">
-        <div class="bg-white/10 p-10 rounded-3xl backdrop-blur-xl border-2 border-pink-500/30">
-            <h3 class="text-3xl mb-6 font-bold text-pink-300 italic font-serif">My Dearest Lover,</h3>
-            <p class="text-xl leading-relaxed mb-6 italic">
-                "I love you because you are the most wonderful girl I've ever met in my life. You have helped me and gone through so much stuff in life with me and I cannot believe it."
-            </p>
-            <p class="text-xl leading-relaxed mb-8 italic">
-                "This is a promise letter of me loving you so much and staying till the end. Every second with you feels like a dream I never want to wake up from."
-            </p>
-            <button onclick="handleNextLetter()" class="btn-love px-10 py-2 rounded-full font-bold">Read More...</button>
-        </div>
-    </div>
-
-    <!-- Section 5: Valentine's Special -->
-    <div id="stepValentine" class="hidden flex flex-col items-center text-center px-8 max-w-lg">
-        <h2 class="text-5xl font-bold text-pink-400 mb-6">Happy Valentine's ❤️</h2>
-        <div class="space-y-4 text-lg">
-            <p>You aren't just my wife, you're my best friend and my whole world.</p>
-            <p>Today and every day, I choose you.</p>
-        </div>
-        <button onclick="handleToTicket()" class="mt-10 text-pink-400 animate-bounce">
-            <p class="text-sm mb-2">Tap to see your gift</p>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+    <!-- Global App Buttons -->
+    <div id="actionButtons" class="hidden fixed top-6 right-6 z-[110] flex gap-3">
+        <button onclick="openChat()" class="bg-white/10 p-3 rounded-full border border-white/20 backdrop-blur-md hover:bg-white/20 transition-all text-pink-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+        </button>
+        <button onclick="toggleProfile()" class="bg-white/10 p-3 rounded-full border border-white/20 backdrop-blur-md hover:bg-white/20 transition-all text-pink-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
         </button>
     </div>
 
-    <!-- Section 6: The Ticket with Rip Check -->
-    <div id="step4" class="hidden flex flex-col items-center text-center w-full px-4">
-        <div id="ticketWrapper" class="ticket-container cursor-pointer" onclick="ripTicket()">
-            <!-- The Ticket Outer (The "Envelope") -->
-            <div class="ticket-part ticket-top">
-                <div class="text-4xl mb-2">💝</div>
-                <h2 class="text-2xl font-bold tracking-widest">VALENTINE'S</h2>
-                <div class="rip-line"></div>
+    <!-- Profile Slide Panel -->
+    <div id="profilePanel" class="fixed top-0 right-0 h-full w-80 bg-zinc-900/95 border-l border-white/10 backdrop-blur-xl p-8 flex flex-col">
+        <div class="flex justify-between items-center mb-10">
+            <h2 class="text-xl font-bold text-pink-500 tracking-tight">Identity Details</h2>
+            <button onclick="toggleProfile()" class="text-white/40 hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="space-y-6">
+            <div class="bg-white/5 p-4 rounded-2xl border border-white/10">
+                <p class="text-[10px] uppercase tracking-widest text-white/30 mb-1">Authenticated As</p>
+                <p id="profileName" class="text-lg font-bold text-white uppercase tracking-widest">---</p>
             </div>
-            
-            <div class="ticket-part ticket-bottom">
-                <h2 class="text-2xl font-bold tracking-widest">EDITION</h2>
-                <p class="text-[10px] mt-2 opacity-70">TAP TO RIP & REDEEM</p>
+            <div class="bg-white/5 p-4 rounded-2xl border border-white/10">
+                <p class="text-[10px] uppercase tracking-widest text-white/30 mb-1">Access Tier</p>
+                <p id="profileTier" class="text-sm font-medium text-pink-400 uppercase tracking-widest">Lover Access</p>
             </div>
+        </div>
+        <div class="mt-auto pt-10 border-t border-white/10 text-center">
+            <button onclick="location.reload()" class="w-full py-3 rounded-xl border border-white/10 text-white/40 text-xs font-bold uppercase tracking-widest hover:bg-white/5 transition-all">Sign Out</button>
+        </div>
+    </div>
 
-            <!-- The Secret Content Inside -->
-            <div class="inner-content">
-                <div class="bg-white/5 p-6 rounded-2xl border border-white/20 backdrop-blur-sm w-full">
-                    <p class="text-3xl font-bold uppercase tracking-tighter mb-4 text-pink-300">You have free Kisses for life and cuddles.</p>
-                    <div class="h-px bg-white/30 w-full my-4"></div>
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="flex flex-col items-center border-r border-white/20">
-                            <p class="text-[10px] uppercase opacity-80 mb-1">To My Beautiful Wife</p>
-                            <div id="sigBrooke" class="signature text-white">Brooke</div>
-                        </div>
-                        <div class="flex flex-col items-center">
-                            <p class="text-[10px] uppercase opacity-80 mb-1">Forever Yours</p>
-                            <div id="sigSmithy" class="signature text-white">Smithy</div>
-                        </div>
-                    </div>
-                    <p class="mt-6 text-[10px] uppercase opacity-60 tracking-[0.2em]">Infinite Validity • L0V3-U-F0R3V3R</p>
+    <!-- System Shutdown Overlay -->
+    <div id="shutdownOverlay" class="hidden fixed inset-0 z-[200] bg-black flex flex-col items-center justify-center text-center px-6">
+        <div class="text-pink-600 mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+        </div>
+        <h1 class="text-3xl font-bold mb-4">System Offline</h1>
+        <p class="text-white/60 max-w-sm mb-8">The secret letter is currently unavailable. Please check back later.</p>
+        <button onclick="showAdminLogin()" class="text-white/5 hover:text-white/20 transition-colors text-[10px] tracking-widest uppercase">Admin Login</button>
+    </div>
+
+    <!-- Security Check -->
+    <div id="securityCheck" class="flex flex-col items-center text-center px-6 max-md">
+        <div class="mb-6 text-pink-500"><svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg></div>
+        <h2 class="text-xl mb-6 font-medium tracking-tight">Confirmation required to enter this Secret Letter.</h2>
+        <input type="text" id="nameInput" placeholder="Enter your name..." class="bg-white/10 border-2 border-white/20 px-6 py-3 rounded-full text-center text-white focus:outline-none focus:border-pink-500/50 mb-4 w-full">
+        <button onclick="verifyName()" class="btn-love px-10 py-3 rounded-full font-bold w-full">Verify Identity</button>
+    </div>
+
+    <!-- Main Content Steps -->
+    <div id="loadingScreen" class="hidden flex flex-col items-center"><div class="spinner mb-4"></div><h1 class="text-2xl font-light tracking-widest text-pink-200 uppercase">Verifying..</h1></div>
+
+    <!-- Step 1: Initial Question -->
+    <div id="step1" class="hidden flex flex-col items-center text-center px-6 max-w-2xl">
+        <h2 class="text-4xl md:text-5xl font-bold mb-10 leading-tight">Do you know why I love you soooo much?</h2>
+        <div class="flex gap-8">
+            <button onclick="handleYes1()" class="btn-love px-10 py-4 rounded-full text-2xl font-bold shadow-xl">Yes ❤️</button>
+            <button onmouseover="handleNo(this)" onclick="handleNo(this)" class="bg-white/10 px-10 py-4 rounded-full text-2xl font-bold transition-all">No 🖤</button>
+        </div>
+    </div>
+
+    <!-- Step 2: The Ticket -->
+    <div id="stepTicket" class="hidden flex flex-col items-center text-center px-6">
+        <div class="ticket fade-in max-w-md">
+            <h3 class="text-3xl font-bold mb-2">Golden Ticket</h3>
+            <p class="text-xl mb-4 italic">One Night Out Together</p>
+            <div class="border-t-2 border-black/20 pt-4 text-sm font-bold uppercase tracking-widest">
+                To: My Brooke | From: Your Smithy
+            </div>
+        </div>
+        <button onclick="handleTicketNext()" class="mt-12 btn-love px-10 py-3 rounded-full font-bold">Open Letter ✉️</button>
+    </div>
+
+    <!-- Step 3: The Full Letter -->
+    <div id="stepLetter" class="hidden flex-col items-center text-center px-8 overflow-y-auto h-screen py-20">
+        <div class="max-w-2xl bg-white/5 p-8 rounded-3xl border border-white/10 backdrop-blur-md">
+            <h2 class="text-5xl font-bold text-pink-500 mb-8 font-['Dancing_Script']">My Dearest Brooke,</h2>
+            <div class="space-y-6 text-lg text-white/90 leading-relaxed text-left">
+                <p>I wanted to write you something that shows just how much you mean to me. Every single day, I find new reasons to fall in love with you all over again.</p>
+                <p>The way you smile, the way you laugh, and even the small moments we share together—they are the highlights of my life. You are my best friend, my rock, and my everything.</p>
+                <p>I am so incredibly lucky to have you by my side. Thank you for being the amazing person you are.</p>
+                <p>I love you more than words can ever describe. ❤️</p>
+            </div>
+            <div class="mt-10 text-right font-['Dancing_Script'] text-3xl text-pink-400">
+                Forever Yours,<br>Smithy
+            </div>
+        </div>
+        <button onclick="handleValentine()" class="mt-12 btn-love px-10 py-3 rounded-full font-bold">Happy Valentine's ❤️</button>
+    </div>
+
+    <!-- Step 4: Final Screen -->
+    <div id="stepValentine" class="hidden flex flex-col items-center text-center px-8">
+        <div class="mb-6">
+            <svg viewBox="0 0 32 32" class="w-24 h-24 fill-pink-600 animate-pulse"><path d="M16 28.5L14.1 26.6C7.2 20.4 3 16.5 3 11.5 3 7.4 6.4 4 10.5 4 12.8 4 15 5.1 16.5 6.8 18 5.1 20.2 4 22.5 4 26.6 4 30 7.4 30 11.5 30 16.5 25.8 20.4 18.9 26.6L16 28.5Z"/></svg>
+        </div>
+        <h2 class="text-6xl font-bold text-pink-400 mb-6 font-['Dancing_Script'] tracking-wider">Happy Valentine's!</h2>
+        <p class="text-white/60 text-xl">I love you more than everything else in this world.</p>
+    </div>
+
+    <!-- Admin Logic UI -->
+    <div id="adminPasswordCheck" class="hidden flex flex-col items-center text-center px-6 max-w-sm">
+        <h2 class="text-xl mb-6 font-bold text-pink-400 uppercase tracking-widest">Admin Authorization</h2>
+        <input type="password" id="adminPin" placeholder="ENTER PIN" class="bg-white/10 border-2 border-white/20 px-6 py-3 rounded-full text-center text-white tracking-widest mb-4 w-full">
+        <button onclick="verifyAdminPin()" class="btn-love w-full py-3 rounded-full font-bold">Log In</button>
+    </div>
+
+    <div id="adminPanel" class="hidden flex flex-col items-center text-center px-6 w-full max-w-3xl">
+        <div class="bg-white/10 p-10 rounded-3xl border border-white/20 backdrop-blur-xl w-full">
+            <div class="flex items-center justify-between mb-8">
+                <h1 class="text-2xl font-bold text-pink-400">Admin Dashboard</h1>
+                <div class="flex items-center gap-3 bg-black/40 px-4 py-2 rounded-2xl border border-white/10">
+                    <span id="statusLabel" class="text-xs font-bold text-green-400 uppercase tracking-widest">System Online</span>
+                    <label class="switch"><input type="checkbox" id="systemToggle" onchange="handleSystemToggle(this)"><span class="slider"></span></label>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                <div class="bg-white/5 p-5 rounded-2xl border border-white/5">
+                    <h3 class="text-pink-300 font-bold text-sm mb-1 uppercase tracking-widest">Control Center</h3>
+                    <p class="text-xs opacity-60">Master Switch for User Access</p>
+                </div>
+                <div class="bg-white/5 p-5 rounded-2xl border border-white/5 cursor-pointer hover:bg-white/10 transition-all" onclick="openChat()">
+                    <h3 class="text-pink-300 font-bold text-sm mb-1 uppercase tracking-widest">Live Chat</h3>
+                    <p class="text-xs opacity-60">Open Secret Chat Box</p>
                 </div>
             </div>
         </div>
-        <p id="ripInstruction" class="mt-8 text-sm opacity-60 animate-pulse">Tap the ticket to rip it open!</p>
+    </div>
+
+    <!-- Full Screen Chat UI -->
+    <div id="chatUI" class="hidden chat-container">
+        <div class="p-6 border-b border-white/10 flex items-center gap-4 bg-black/50 backdrop-blur-md">
+            <button onclick="closeChat()" class="text-white/50 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+            <div class="flex-1">
+                <h2 id="chatWithTitle" class="text-lg font-bold">Secure Chat</h2>
+                <div class="flex items-center gap-1.5">
+                    <div id="onlinePulse" class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span id="chatSystemStatus" class="text-[10px] uppercase tracking-widest text-white/40">Connected</span>
+                </div>
+            </div>
+        </div>
+        <div id="chatList" class="flex-1 overflow-y-auto p-6 flex flex-col relative">
+            <div id="chatOfflineNotice" class="hidden absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px] z-10">
+                <p class="text-white/20 text-xl font-bold uppercase tracking-[0.2em]">System Paused</p>
+            </div>
+        </div>
+        <div class="p-6 border-t border-white/10 bg-black/80 flex gap-3">
+            <input type="text" id="chatInput" placeholder="Message..." class="flex-1 bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-pink-500">
+            <button id="chatSendBtn" onclick="sendMessage()" class="bg-pink-600 p-4 rounded-2xl hover:bg-pink-500"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg></button>
+        </div>
     </div>
 
     <script>
-        function transition(fromId, toId) {
-            const from = document.getElementById(fromId);
-            const to = document.getElementById(toId);
-            from.classList.add('fade-out');
-            setTimeout(() => {
-                from.classList.add('hidden');
-                to.classList.remove('hidden');
-                to.classList.add('fade-in');
-            }, 1500);
-        }
-
-        function createHearts() {
-            for (let i = 0; i < 40; i++) {
-                setTimeout(() => {
-                    const heart = document.createElement('div');
-                    heart.innerHTML = ['❤️', '💖', '💕', '💗'][Math.floor(Math.random() * 4)];
-                    heart.className = 'heart';
-                    heart.style.left = Math.random() * 100 + 'vw';
-                    heart.style.top = '100vh';
-                    heart.style.setProperty('--r', Math.random());
-                    document.body.appendChild(heart);
-                    setTimeout(() => heart.remove(), 3000);
-                }, i * 80);
-            }
-        }
-
-        function startPetals() {
-            setInterval(() => {
-                const petal = document.createElement('div');
-                petal.className = 'petal';
-                petal.style.left = Math.random() * 100 + 'vw';
-                petal.style.top = '-10px';
-                petal.style.opacity = Math.random();
-                document.body.appendChild(petal);
-                setTimeout(() => petal.remove(), 5000);
-            }, 300);
-        }
-
-        window.onload = () => {
-            setTimeout(() => transition('loadingScreen', 'step1'), 5000);
+        const firebaseConfig = {
+            apiKey: "AIzaSyDlcI_JtmeNMcJxvjvUER5W1ROCH0uOfn4",
+            authDomain: "test-83d1d.firebaseapp.com",
+            databaseURL: "https://test-83d1d-default-rtdb.firebaseio.com",
+            projectId: "test-83d1d",
+            storageBucket: "test-83d1d.firebasestorage.app",
+            messagingSenderId: "1060438880379",
+            appId: "1:1060438880379:web:a22b03441ea97c16b3b2de"
         };
 
-        function handleYes1() {
-            createHearts();
-            transition('step1', 'step2');
-        }
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const systemRef = database.ref('system_status');
+        const chatRef = database.ref('private_chat');
 
-        function handleYes2() {
-            transition('step2', 'step3');
-        }
+        let isSystemActive = true;
+        let currentUserRole = null;
+        let currentUserName = "";
 
-        function handleNextLetter() {
-            startPetals();
-            transition('step3', 'stepValentine');
+        // Background Hearts
+        function createHeart() {
+            const container = document.getElementById('heartsContainer');
+            const heart = document.createElement('div');
+            heart.innerHTML = '❤️';
+            heart.className = 'heart';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
+            container.appendChild(heart);
+            setTimeout(() => heart.remove(), 5000);
         }
+        setInterval(createHeart, 600);
 
-        function handleToTicket() {
-            transition('stepValentine', 'step4');
-        }
+        systemRef.on('value', (s) => {
+            const data = s.val();
+            if (data) {
+                const wasOffline = !isSystemActive;
+                isSystemActive = data.active;
+                const toggle = document.getElementById('systemToggle');
+                if (toggle) toggle.checked = isSystemActive;
 
-        function ripTicket() {
-            const wrapper = document.getElementById('ticketWrapper');
-            const instruction = document.getElementById('ripInstruction');
-            
-            if (!wrapper.classList.contains('ripped')) {
-                wrapper.classList.add('ripped');
-                instruction.classList.add('fade-out');
-                
-                // Extra hearts on rip
-                createHearts();
-                
-                // Trigger signatures
-                setTimeout(() => {
-                    document.getElementById('sigBrooke').classList.add('animate');
-                    document.getElementById('sigSmithy').classList.add('animate');
-                }, 1000);
+                if (currentUserRole === 'admin') {
+                    updateSystemUI(isSystemActive);
+                    return;
+                }
+                if (wasOffline && isSystemActive && !document.getElementById('shutdownOverlay').classList.contains('hidden')) {
+                    location.reload(); 
+                } else {
+                    updateSystemUI(data.active);
+                }
             }
+        });
+
+        function updateSystemUI(active) {
+            const overlay = document.getElementById('shutdownOverlay');
+            const chatOverlay = document.getElementById('chatOfflineNotice');
+            const chatInput = document.getElementById('chatInput');
+            const chatSendBtn = document.getElementById('chatSendBtn');
+
+            if (currentUserRole !== 'admin') {
+                if (!active) {
+                    overlay.classList.remove('hidden');
+                    if (!document.getElementById('chatUI').classList.contains('hidden')) {
+                        chatOverlay.classList.remove('hidden');
+                        chatInput.disabled = chatSendBtn.disabled = true;
+                    }
+                } else {
+                    overlay.classList.add('hidden');
+                    chatOverlay.classList.add('hidden');
+                    chatInput.disabled = chatSendBtn.disabled = false;
+                }
+            } else {
+                overlay.classList.add('hidden');
+                chatOverlay.classList.add('hidden');
+            }
+            const label = document.getElementById('statusLabel');
+            if (label) {
+                label.innerText = active ? "System Online" : "System Offline";
+                label.className = active ? "text-xs font-bold text-green-400 uppercase tracking-widest" : "text-xs font-bold text-red-400 uppercase tracking-widest";
+            }
+        }
+
+        function verifyName() {
+            const val = document.getElementById('nameInput').value.trim().toLowerCase();
+            if (val === 'smith' || val === 'smithy') {
+                currentUserName = "Smithy";
+                transition('securityCheck', 'adminPasswordCheck');
+            } else if (val === 'brooke') {
+                if (!isSystemActive) return;
+                currentUserName = "Brooke";
+                currentUserRole = 'user';
+                transition('securityCheck', 'loadingScreen');
+                setTimeout(() => {
+                    document.getElementById('actionButtons').classList.remove('hidden');
+                    transition('loadingScreen', 'step1');
+                }, 2000);
+            }
+        }
+
+        function verifyAdminPin() {
+            if (document.getElementById('adminPin').value === '2009') {
+                currentUserRole = 'admin';
+                document.getElementById('actionButtons').classList.remove('hidden');
+                transition('adminPasswordCheck', 'adminPanel');
+            } else { alert("Access Denied."); }
+        }
+
+        function showAdminLogin() { 
+            transition('shutdownOverlay', 'adminPasswordCheck'); 
         }
 
         function handleNo(btn) {
             btn.style.position = 'absolute';
             btn.style.left = Math.random() * 80 + '%';
             btn.style.top = Math.random() * 80 + '%';
-            btn.innerText = "Wrong button! 😜";
         }
+
+        function handleYes1() { transition('step1', 'stepTicket'); }
+        function handleTicketNext() { transition('stepTicket', 'stepLetter'); }
+        function handleValentine() { transition('stepLetter', 'stepValentine'); }
+
+        function toggleProfile() {
+            document.getElementById('profilePanel').classList.toggle('open');
+            document.getElementById('profileName').innerText = currentUserName || "Guest";
+            document.getElementById('profileTier').innerText = currentUserRole === 'admin' ? "Super Admin" : "Lover Access";
+        }
+
+        function transition(f, t) {
+            document.getElementById(f).classList.add('hidden');
+            const to = document.getElementById(t);
+            to.classList.remove('hidden');
+            if(t !== 'stepLetter' && t !== 'adminPanel') to.classList.add('flex');
+            to.classList.add('fade-in');
+        }
+
+        function openChat() {
+            document.getElementById('chatUI').classList.remove('hidden');
+            document.getElementById('chatWithTitle').innerText = currentUserRole === 'admin' ? "Chat with Brooke" : "Chat with Smithy";
+            loadMessages();
+        }
+        function closeChat() { document.getElementById('chatUI').classList.add('hidden'); }
+
+        function loadMessages() {
+            chatRef.off();
+            chatRef.on('value', (snapshot) => {
+                const list = document.getElementById('chatList');
+                const data = snapshot.val();
+                const notice = document.getElementById('chatOfflineNotice');
+                list.innerHTML = "";
+                list.appendChild(notice);
+                if (data) {
+                    Object.values(data).forEach(msg => {
+                        const div = document.createElement('div');
+                        div.className = `message-bubble ${msg.sender === currentUserName ? 'msg-me' : 'msg-them'} fade-in`;
+                        div.innerText = msg.text;
+                        list.appendChild(div);
+                    });
+                    list.scrollTop = list.scrollHeight;
+                }
+            });
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (text && (isSystemActive || currentUserRole === 'admin')) {
+                chatRef.push({ sender: currentUserName, text: text, timestamp: Date.now() });
+                input.value = "";
+            }
+        }
+
+        function handleSystemToggle(cb) { systemRef.update({ active: cb.checked }); }
+        document.getElementById('chatInput').addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
     </script>
 </body>
 </html>
