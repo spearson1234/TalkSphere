@@ -292,6 +292,11 @@
             25% { transform: translateX(-5px); }
             75% { transform: translateX(5px); }
         }
+
+        .voice-effect-btn.active {
+            background: linear-gradient(135deg, #ff4d6d 0%, #ff1744 100%) !important;
+            border-color: rgba(255, 77, 109, 0.6) !important;
+        }
     </style>
 </head>
 <body class="valentine-bg">
@@ -1250,41 +1255,94 @@
         function showInCallScreen(otherPersonName) {
             const overlay = document.createElement('div');
             overlay.id = 'inCallOverlay';
-            overlay.className = 'fixed inset-0 bg-gradient-to-b from-pink-900/20 to-black z-[300] flex flex-col items-center justify-center';
+            overlay.className = 'fixed inset-0 bg-gradient-to-b from-purple-900/30 via-black to-black z-[300] flex flex-col';
             overlay.innerHTML = `
-                <div class="text-center">
-                    <div class="mb-8">
-                        <div class="w-32 h-32 bg-pink-600/20 rounded-full mx-auto flex items-center justify-center mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <!-- Top Section with Avatar -->
+                <div class="flex-1 flex flex-col items-center justify-center px-6 pt-12">
+                    <div class="relative mb-6">
+                        <!-- Animated rings around avatar -->
+                        <div class="absolute inset-0 bg-pink-500/20 rounded-full animate-ping"></div>
+                        <div class="absolute inset-0 bg-pink-500/10 rounded-full animate-pulse"></div>
+                        
+                        <!-- Avatar -->
+                        <div class="relative w-40 h-40 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center shadow-2xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                         </div>
                     </div>
-                    <h2 class="text-3xl font-bold mb-2">${otherPersonName}</h2>
-                    <p class="text-green-400 mb-2 text-lg font-semibold">Connected</p>
-                    <p id="callDuration" class="text-white/40 mb-12 text-sm">00:00</p>
                     
-                    <div class="flex gap-8 justify-center mb-8">
-                        <button id="muteBtn" onclick="toggleMute()" class="bg-white/10 p-5 rounded-full hover:bg-white/20 transition-all active:scale-95 flex flex-col items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                            </svg>
-                            <span class="text-xs">Mute</span>
+                    <!-- Name and Status -->
+                    <h2 class="text-4xl font-bold mb-3 text-white">${otherPersonName}</h2>
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <p class="text-green-400 text-lg font-semibold">Connected</p>
+                    </div>
+                    <p id="callDuration" class="text-white/60 text-xl font-mono tracking-wider">00:00</p>
+                </div>
+                
+                <!-- Voice Effects Section -->
+                <div class="px-6 pb-4">
+                    <p class="text-white/40 text-xs uppercase tracking-widest text-center mb-3">Voice Effects</p>
+                    <div class="flex gap-2 justify-center overflow-x-auto pb-2">
+                        <button onclick="setVoiceEffect('normal')" id="effect-normal" class="voice-effect-btn active flex-shrink-0 bg-white/10 px-4 py-2 rounded-full text-sm hover:bg-white/20 transition-all border border-white/20">
+                            Normal 😊
                         </button>
-                        
-                        <button id="speakerBtn" onclick="toggleSpeaker()" class="bg-white/10 p-5 rounded-full hover:bg-white/20 transition-all active:scale-95 flex flex-col items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                            </svg>
-                            <span class="text-xs">Speaker</span>
+                        <button onclick="setVoiceEffect('robot')" id="effect-robot" class="voice-effect-btn flex-shrink-0 bg-white/10 px-4 py-2 rounded-full text-sm hover:bg-white/20 transition-all border border-white/20">
+                            Robot 🤖
+                        </button>
+                        <button onclick="setVoiceEffect('chipmunk')" id="effect-chipmunk" class="voice-effect-btn flex-shrink-0 bg-white/10 px-4 py-2 rounded-full text-sm hover:bg-white/20 transition-all border border-white/20">
+                            Chipmunk 🐿️
+                        </button>
+                        <button onclick="setVoiceEffect('deep')" id="effect-deep" class="voice-effect-btn flex-shrink-0 bg-white/10 px-4 py-2 rounded-full text-sm hover:bg-white/20 transition-all border border-white/20">
+                            Deep 🎙️
+                        </button>
+                        <button onclick="setVoiceEffect('echo')" id="effect-echo" class="voice-effect-btn flex-shrink-0 bg-white/10 px-4 py-2 rounded-full text-sm hover:bg-white/20 transition-all border border-white/20">
+                            Echo 🌊
                         </button>
                     </div>
+                </div>
+                
+                <!-- Control Buttons -->
+                <div class="px-6 pb-8">
+                    <div class="grid grid-cols-3 gap-6 mb-8 max-w-md mx-auto">
+                        <!-- Mute Button -->
+                        <div class="flex flex-col items-center gap-2">
+                            <button id="muteBtn" onclick="toggleMute()" class="w-16 h-16 bg-white/10 rounded-full hover:bg-white/20 transition-all active:scale-95 flex items-center justify-center backdrop-blur-lg border border-white/20 shadow-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                                </svg>
+                            </button>
+                            <span class="text-xs text-white/60 font-medium">Mute</span>
+                        </div>
+                        
+                        <!-- Speaker Button -->
+                        <div class="flex flex-col items-center gap-2">
+                            <button id="speakerBtn" onclick="toggleSpeaker()" class="w-16 h-16 bg-white/10 rounded-full hover:bg-white/20 transition-all active:scale-95 flex items-center justify-center backdrop-blur-lg border border-white/20 shadow-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                                </svg>
+                            </button>
+                            <span class="text-xs text-white/60 font-medium">Speaker</span>
+                        </div>
+                        
+                        <!-- Video Button (disabled for voice-only) -->
+                        <div class="flex flex-col items-center gap-2">
+                            <button class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center backdrop-blur-lg border border-white/10 opacity-50 cursor-not-allowed">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                            </button>
+                            <span class="text-xs text-white/40 font-medium">Video</span>
+                        </div>
+                    </div>
                     
-                    <button onclick="endCall()" class="bg-red-600 px-10 py-4 rounded-full hover:bg-red-500 transition-all active:scale-95 flex items-center gap-3 mx-auto">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <!-- End Call Button -->
+                    <button onclick="endCall()" class="w-full max-w-md mx-auto bg-gradient-to-r from-red-600 to-red-500 px-8 py-5 rounded-full hover:from-red-500 hover:to-red-400 transition-all active:scale-95 flex items-center justify-center gap-3 shadow-2xl border border-red-400/30">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M5 3a2 2 0 00-2 2v1c0 8.284 6.716 15 15 15h1a2 2 0 002-2v-3.28a1 1 0 00-.684-.948l-4.493-1.498a1 1 0 00-1.21.502l-1.13 2.257a11.042 11.042 0 01-5.516-5.517l2.257-1.128a1 1 0 00.502-1.21L9.228 3.683A1 1 0 008.279 3H5z" />
                         </svg>
-                        <span class="font-bold">End Call</span>
+                        <span class="font-bold text-xl text-white">End Call</span>
                     </button>
                 </div>
             `;
@@ -1292,6 +1350,185 @@
             
             // Start call duration timer
             startCallTimer();
+            
+            // Initialize audio context for voice effects
+            initVoiceEffects();
+        }
+
+        // Voice effects variables
+        let audioContext = null;
+        let sourceNode = null;
+        let gainNode = null;
+        let currentEffect = 'normal';
+        let effectNodes = [];
+
+        // Initialize voice effects audio processing
+        function initVoiceEffects() {
+            if (!localStream) return;
+            
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Create source from local stream
+                sourceNode = audioContext.createMediaStreamSource(localStream);
+                
+                // Create gain node
+                gainNode = audioContext.createGain();
+                
+                // Create destination for modified stream
+                const destination = audioContext.createMediaStreamDestination();
+                
+                // Connect: source -> gain -> destination
+                sourceNode.connect(gainNode);
+                gainNode.connect(destination);
+                
+                // Replace tracks in peer connection with modified stream
+                if (peerConnection) {
+                    const modifiedTrack = destination.stream.getAudioTracks()[0];
+                    const sender = peerConnection.getSenders().find(s => s.track && s.track.kind === 'audio');
+                    if (sender) {
+                        sender.replaceTrack(modifiedTrack);
+                    }
+                }
+                
+                console.log('Voice effects initialized');
+            } catch (error) {
+                console.error('Error initializing voice effects:', error);
+            }
+        }
+
+        // Set voice effect
+        function setVoiceEffect(effect) {
+            currentEffect = effect;
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.voice-effect-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-pink-600', 'border-pink-400');
+                btn.classList.add('bg-white/10', 'border-white/20');
+            });
+            
+            // Add active class to selected button
+            const activeBtn = document.getElementById(`effect-${effect}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active', 'bg-pink-600', 'border-pink-400');
+                activeBtn.classList.remove('bg-white/10', 'border-white/20');
+            }
+            
+            if (!audioContext || !sourceNode || !gainNode) {
+                console.log('Audio context not ready');
+                return;
+            }
+            
+            // Remove existing effect nodes
+            effectNodes.forEach(node => {
+                try {
+                    node.disconnect();
+                } catch (e) {}
+            });
+            effectNodes = [];
+            
+            // Disconnect and reconnect base chain
+            try {
+                sourceNode.disconnect();
+                gainNode.disconnect();
+            } catch (e) {}
+            
+            const destination = audioContext.createMediaStreamDestination();
+            
+            // Apply effects
+            switch(effect) {
+                case 'robot':
+                    // Robot voice using oscillator modulation
+                    const robotOscillator = audioContext.createOscillator();
+                    const robotGain = audioContext.createGain();
+                    robotOscillator.frequency.value = 30;
+                    robotGain.gain.value = 0.5;
+                    
+                    sourceNode.connect(robotGain);
+                    robotOscillator.connect(robotGain.gain);
+                    robotGain.connect(destination);
+                    robotOscillator.start();
+                    
+                    effectNodes.push(robotOscillator, robotGain);
+                    showToast('🤖 Robot voice activated!');
+                    break;
+                    
+                case 'chipmunk':
+                    // High pitch chipmunk voice
+                    const pitchShifter = audioContext.createBiquadFilter();
+                    pitchShifter.type = 'highpass';
+                    pitchShifter.frequency.value = 2000;
+                    
+                    const chipmunkGain = audioContext.createGain();
+                    chipmunkGain.gain.value = 2;
+                    
+                    sourceNode.connect(pitchShifter);
+                    pitchShifter.connect(chipmunkGain);
+                    chipmunkGain.connect(destination);
+                    
+                    effectNodes.push(pitchShifter, chipmunkGain);
+                    showToast('🐿️ Chipmunk voice activated!');
+                    break;
+                    
+                case 'deep':
+                    // Deep bass voice
+                    const bassFilter = audioContext.createBiquadFilter();
+                    bassFilter.type = 'lowpass';
+                    bassFilter.frequency.value = 400;
+                    
+                    const deepGain = audioContext.createGain();
+                    deepGain.gain.value = 1.5;
+                    
+                    sourceNode.connect(bassFilter);
+                    bassFilter.connect(deepGain);
+                    deepGain.connect(destination);
+                    
+                    effectNodes.push(bassFilter, deepGain);
+                    showToast('🎙️ Deep voice activated!');
+                    break;
+                    
+                case 'echo':
+                    // Echo effect
+                    const delay = audioContext.createDelay();
+                    delay.delayTime.value = 0.3;
+                    
+                    const feedback = audioContext.createGain();
+                    feedback.gain.value = 0.4;
+                    
+                    const echoGain = audioContext.createGain();
+                    echoGain.gain.value = 0.7;
+                    
+                    sourceNode.connect(echoGain);
+                    echoGain.connect(destination);
+                    
+                    echoGain.connect(delay);
+                    delay.connect(feedback);
+                    feedback.connect(delay);
+                    delay.connect(destination);
+                    
+                    effectNodes.push(delay, feedback, echoGain);
+                    showToast('🌊 Echo effect activated!');
+                    break;
+                    
+                default: // normal
+                    sourceNode.connect(gainNode);
+                    gainNode.connect(destination);
+                    showToast('😊 Normal voice');
+                    break;
+            }
+            
+            // Update track in peer connection
+            if (peerConnection) {
+                const modifiedTrack = destination.stream.getAudioTracks()[0];
+                const sender = peerConnection.getSenders().find(s => s.track && s.track.kind === 'audio');
+                if (sender) {
+                    sender.replaceTrack(modifiedTrack).catch(err => {
+                        console.error('Error replacing track:', err);
+                    });
+                }
+            }
+            
+            vibrate([50]);
         }
 
         // Call duration timer
@@ -1370,6 +1607,24 @@
                 clearInterval(callTimer);
                 callTimer = null;
             }
+            
+            // Clean up voice effects
+            if (audioContext) {
+                effectNodes.forEach(node => {
+                    try {
+                        node.disconnect();
+                    } catch (e) {}
+                });
+                effectNodes = [];
+                
+                try {
+                    audioContext.close();
+                } catch (e) {}
+                audioContext = null;
+                sourceNode = null;
+                gainNode = null;
+            }
+            currentEffect = 'normal';
             
             // Close peer connection
             if (peerConnection) {
